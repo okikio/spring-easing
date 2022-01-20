@@ -137,8 +137,8 @@ SpringEasing has 3 properties they are `easing` (all the easings from [EasingFun
 By default, Spring Easing support easings in the form,
 
 | constant | accelerate | decelerate | accelerate-decelerate | decelerate-accelerate |
-| :------- | :--------- | :--------- | :-------------------- | :-------------------- ||
-|            | spring / spring-in | spring-out     | spring-in-out         | spring-out-in         |
+| :------- | :--------- | :--------- | :-------------------- | :-------------------- |
+|          | spring / spring-in | spring-out     | spring-in-out         | spring-out-in         |
 
 All **Spring** easing's can be configured using theses parameters,
 
