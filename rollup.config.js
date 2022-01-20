@@ -1,5 +1,5 @@
+import { nodeResolve } from "@rollup/plugin-node-resolve";
 import { terser } from "rollup-plugin-terser";
-import { nodeResolve } from '@rollup/plugin-node-resolve';
 
 import commonjs from "@rollup/plugin-commonjs";
 import esbuild from "rollup-plugin-esbuild";
@@ -12,7 +12,7 @@ import { fileURLToPath } from "url";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-import pkg from './package.json';
+import pkg from "./package.json";
 
 export default {
     input: "src/index.ts",
@@ -20,12 +20,12 @@ export default {
         {
             file: path.join(__dirname, pkg.module),
             exports: "named",
-            format: "es"
+            format: "es",
         },
         {
             file: path.join(__dirname, pkg.main),
             exports: "named",
-            format: "cjs"
+            format: "cjs",
         },
         {
             file: path.join(__dirname, pkg.legacy),
@@ -53,7 +53,8 @@ export default {
         bundleSize(),
         terser({
             ecma: 2021,
-            compress: true, mangle: true
-        })
+            compress: true,
+            mangle: true,
+        }),
     ],
-}
+};

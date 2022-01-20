@@ -1,11 +1,11 @@
-import { unified } from 'unified';
-import glob from 'fast-glob';
+import glob from "fast-glob";
+import { unified } from "unified";
 
 import fs from "fs/promises";
 import path from "path";
 
 import rehypeParse from "rehype-parse";
-import rehypeStringify from 'rehype-stringify';
+import rehypeStringify from "rehype-stringify";
 
 import { h, s } from "hastscript";
 
@@ -50,38 +50,43 @@ const __dirname = path.resolve(path.dirname(""));
         ["rehype-slug"],
         ["rehype-urls", redirectURLs],
         ["rehype-accessible-emojis"],
-        ["rehype-external-links", { 
-            target: "_blank", 
+        ["rehype-external-links", {
+            target: "_blank",
             rel: ["noopener"],
             content: [
                 // Based on the external icon from https://www.gitpod.io/blog/workspace-networking
                 h("span.external-icon", [
-                    s('svg', {xmlns: 'http://www.w3.org/2000/svg', width:"10", height:"10", viewBox:"0 0 14 14", fill:"none"}, [
-                        s("path", { 
-                            d: "M1 13L13 1m0 0H5m8 0v7", 
-                            "stroke":"currentColor", 
-                            "stroke-width": "2", 
-                            "stroke-linecap":"round", 
-                            "stroke-linejoin":"round" 
-                        })
-                    ])
-                ]), 
+                    s("svg", {
+                        xmlns: "http://www.w3.org/2000/svg",
+                        width: "10",
+                        height: "10",
+                        viewBox: "0 0 14 14",
+                        fill: "none",
+                    }, [
+                        s("path", {
+                            d: "M1 13L13 1m0 0H5m8 0v7",
+                            "stroke": "currentColor",
+                            "stroke-width": "2",
+                            "stroke-linecap": "round",
+                            "stroke-linejoin": "round",
+                        }),
+                    ]),
+                ]),
                 // `<span><svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 14 14" fill="none"><path d="M1 13L13 1m0 0H5m8 0v7" stroke="#1155cc" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span>`
-        ]
-        }]
+            ],
+        }],
     ];
 
-    
     let parser = unified()
         .use(rehypeParse)
         .use(rehypeStringify);
-    
+
     const loadedRehypePlugins = await Promise.all(loadPlugins(plugins));
     loadedRehypePlugins.forEach(([plugin, opts]) => {
-      parser.use(plugin, opts);
+        parser.use(plugin, opts);
     });
-  
-    const paths = await glob('docs/**/*.html');
+
+    const paths = await glob("docs/**/*.html");
     let result;
     try {
         paths.forEach((p) => {
@@ -91,10 +96,10 @@ const __dirname = path.resolve(path.dirname(""));
                 const vfile = await parser
                     .process(content.toString());
                 result = vfile.toString();
-                await fs.writeFile(currentPath, result, "utf-8")
+                await fs.writeFile(currentPath, result, "utf-8");
             })();
         });
     } catch (err) {
-      throw err;
+        throw err;
     }
 })();

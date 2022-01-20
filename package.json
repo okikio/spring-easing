@@ -30,7 +30,7 @@
     "@types"
   ],
   "scripts": {
-    "typedoc": "rm -r -f docs/ && typedoc && node ./rehype.js && cp -a static/. docs/",
+    "typedoc": "rm -r -f docs/ && typedoc && node ./rehype.js && (cp -a static/. docs/ | cp -a assets/. docs/assets/.)",
     "dts": "rm -r -f @types/ && tsc -p dts.tsconfig.json",
     "preview": "vite docs",
     "commit": "git cz",
@@ -93,6 +93,7 @@
     "@rollup/plugin-commonjs": "^21.0.1",
     "@rollup/plugin-node-resolve": "^13.1.3",
     "@types/web": "^0.0.49",
+    "dprint": "^0.20.0",
     "esbuild": "^0.14.11",
     "fast-glob": "^3.2.11",
     "hastscript": "^7.0.2",
@@ -116,6 +117,7 @@
     "typedoc-plugin-missing-exports": "^0.22.6",
     "typescript": "^4.5.4",
     "unified": "^10.1.1",
-    "vite": "^2.7.13"
+    "vite": "^2.7.13",
+    "vitest": "^0.1.24"
   }
 }

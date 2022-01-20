@@ -21,7 +21,11 @@ export declare const limit: (value: number, min: number, max: number) => number;
  *
  * _**Note**: Be very careful of only setting some of the spring parameters, it can cause errors if you are not careful_
  */
-export declare type TypeFrameFunction = (t: number, [mass, stiffness, damping, velocity]?: number[], duration?: number) => number;
+export declare type TypeFrameFunction = (
+    t: number,
+    [mass, stiffness, damping, velocity]?: number[],
+    duration?: number,
+) => number;
 /**
  * Generates a single frame of the spring easing at a specific time between (0 to 1) with the spring parameters given [mass, stiffness, damping, velocity]
  *
@@ -148,12 +152,12 @@ export declare const toFixed: (value: number, decimal: number) => number;
 
   Basic interpolation works by scaling `t` from 0 - 1, to some start number and end number, in this case lets use
   0 as our start number and 100 as our end number, so, basic interpolation would interpolate between 0 to 100.
-  
+
   If we use a `t` of 0.5, the interpolated value between 0 to 100, is 50.
   {@link interpolateNumber} takes it further, by allowing you to interpolate with more than 2 values,
   it allows for multiple values.
   E.g. Given an Array of values [0, 100, 0], and a `t` of 0.5, the interpolated value would become 100.
-  
+
   Based on d3.interpolateBasis [https://github.com/d3/d3-interpolate#interpolateBasis],
   check out the link above for more detail.
 */
@@ -186,19 +190,16 @@ export declare type TypeEasings = `${keyof typeof EasingFunctions}(${string})` |
  */
 export declare type TypeEasingOptions = {
     /**
-     *
      * By default, Spring Easing support easings in the form,
      *
      * | constant   | accelerate         | decelerate     | accelerate-decelerate | decelerate-accelerate |
      * | :--------- | :----------------- | :------------- | :-------------------- | :-------------------- |
      * |            | spring / spring-in | spring-out     | spring-in-out         | spring-out-in         |
      *
-     *
      * All **Spring** easing's can be configured using theses parameters,
      *
      * `"spring-*(mass, stiffness, damping, velocity)"` or
      * `[SpringOutFrame, mass, stiffness, damping, velocity]`
-     *
      *
      * Each parameter comes with these defaults
      *
@@ -244,21 +245,21 @@ export declare const EasingOptions: (options?: TypeEasingOptions | TypeEasingOpt
 */
 export declare const FramePtsCache: Map<any, any>;
 /**
-  * Create an Array of frames using the easing specified.
-  * The array size `numPoints` large, which is by default 100.
-  * Easing can be use custom defined frame functions, so, instead of string you can use,
-  * e.g.
-  * ```ts
-  * GenerateSpringFrames({
-  *     easing: [SpringOutInFrame, 1, 100, 10, 0],
-  *     numPoints: 100
-  * })
-  * ```
-  *
-  * _**Note**: Be very careful of only setting some of the spring parameters, it can cause errors if you are not careful_
-  *
-  * Based on https://github.com/w3c/csswg-drafts/issues/229#issuecomment-861415901
-*/
+ * Create an Array of frames using the easing specified.
+ * The array size `numPoints` large, which is by default 100.
+ * Easing can be use custom defined frame functions, so, instead of string you can use,
+ * e.g.
+ * ```ts
+ * GenerateSpringFrames({
+ *     easing: [SpringOutInFrame, 1, 100, 10, 0],
+ *     numPoints: 100
+ * })
+ * ```
+ *
+ * _**Note**: Be very careful of only setting some of the spring parameters, it can cause errors if you are not careful_
+ *
+ * Based on https://github.com/w3c/csswg-drafts/issues/229#issuecomment-861415901
+ */
 export declare const GenerateSpringFrames: (options?: TypeEasingOptions) => [number[], number];
 /**
  * Generates an Array of values using frame functions which in turn create the effect of spring easing.
@@ -326,5 +327,8 @@ export declare const GenerateSpringFrames: (options?: TypeEasingOptions) => [num
  *  })
  *  ```
  */
-export declare const SpringEasing: (values: number[], options?: TypeEasingOptions | TypeEasingOptions["easing"]) => [number[], number];
+export declare const SpringEasing: (
+    values: number[],
+    options?: TypeEasingOptions | TypeEasingOptions["easing"],
+) => [number[], number];
 export default SpringEasing;

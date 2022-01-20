@@ -8,46 +8,45 @@
  * @param max maximum limit
  * @returns limited/constrained number
  */
-export const limit = (value: number, min: number, max: number) =>
-    Math.min(Math.max(value, min), max);
+export const limit = (value: number, min: number, max: number) => Math.min(Math.max(value, min), max);
 
 /**
  * The format to use when defining custom frame functions
  * An example of a frame function is {@link SpringFrame}
- * 
+ *
  * @param t time value between 0 & 1
- * @param spring-parameters 
- *  - mass = mass of object 
+ * @param spring-parameters
+ *  - mass = mass of object
  *  - stiffness = stiffness of spring
  *  - damping = amount to dampen spring motion
  *  - velocity = initial velocity of spring
- * @param duration (optional) the maximum duration (in milliseconds) required for a spring (with its specified spring parameters) to reach a resting position. It's used to ensure the progress of all spring frames put together are smooth 
- * @returns a single frame of the frame function at the time specified 
- * 
+ * @param duration (optional) the maximum duration (in milliseconds) required for a spring (with its specified spring parameters) to reach a resting position. It's used to ensure the progress of all spring frames put together are smooth
+ * @returns a single frame of the frame function at the time specified
+ *
  * _**Note**: Be very careful of only setting some of the spring parameters, it can cause errors if you are not careful_
  */
 export type TypeFrameFunction = (
     t: number,
     [mass, stiffness, damping, velocity]?: number[],
-    duration?: number
+    duration?: number,
 ) => number;
 
 /**
  * Generates a single frame of the spring easing at a specific time between (0 to 1) with the spring parameters given [mass, stiffness, damping, velocity]
- * 
+ *
  * @param t time value between 0 & 1
- * @param spring-parameters 
- *  - mass = mass of object 
+ * @param spring-parameters
+ *  - mass = mass of object
  *  - stiffness = stiffness of spring
  *  - damping = amount to dampen spring motion
  *  - velocity = initial velocity of spring
- * @param duration (optional) the maximum duration (in milliseconds) required for a spring (with its specified spring parameters) to reach a resting position. It's used to ensure the progress of all spring frames put together are smooth 
- * @returns a single frame of the spring easing at the time specified 
- * 
+ * @param duration (optional) the maximum duration (in milliseconds) required for a spring (with its specified spring parameters) to reach a resting position. It's used to ensure the progress of all spring frames put together are smooth
+ * @returns a single frame of the spring easing at the time specified
+ *
  * _**Note**: Be very careful of only setting some of the spring parameters, it can cause errors if you are not careful_
- * 
+ *
  * Based on [animejs](https://github.com/juliangarnier/anime/blob/3ebfd913a04f7dc59cc3d52e38275272a5a12ae6/src/index.js#L76)
- * 
+ *
  * Spring solver inspired by Webkit Copyright © 2016 Apple Inc. All rights reserved. https://webkit.org/demos/spring/spring.js
  *
  * Redistribution and use in source and binary forms, with or without
@@ -74,9 +73,8 @@ export type TypeFrameFunction = (
 export const SpringFrame: TypeFrameFunction = (
     t,
     [mass = 1, stiffness = 100, damping = 10, velocity = 0] = [],
-    duration
+    duration,
 ) => {
-
     mass = limit(mass, 0.1, 1000);
     stiffness = limit(stiffness, 0.1, 1000);
     damping = limit(damping, 0.1, 1000);
@@ -90,9 +88,8 @@ export const SpringFrame: TypeFrameFunction = (
 
     let progress = duration ? (duration * t) / 1000 : t;
     if (zeta < 1) {
-        progress =
-            Math.exp(-progress * zeta * w0) *
-            (a * Math.cos(wd * progress) + b * Math.sin(wd * progress));
+        progress = Math.exp(-progress * zeta * w0)
+            * (a * Math.cos(wd * progress) + b * Math.sin(wd * progress));
     } else {
         progress = (a + b * progress) * Math.exp(-progress * w0);
     }
@@ -118,22 +115,22 @@ export const INTINITE_LOOP_LIMIT = 100_000;
  * The spring easing function will only look smooth at certain durations, with certain parameters.
  * This functions returns the optimal duration to create a smooth springy animation based on physics
 
- * @param spring-parameters 
- *  - mass = mass of object 
+ * @param spring-parameters
+ *  - mass = mass of object
  *  - stiffness = stiffness of spring
  *  - damping = amount to dampen spring motion
  *  - velocity = initial velocity of spring
  * @return (optional) optimal duration for spring easings
- * 
+ *
  * _**Note**: Be very careful of only setting some of the spring parameters, it can cause errors if you are not careful_
- * 
+ *
  * Based on a function of the same name in [animejs](https://github.com/juliangarnier/anime/blob/3ebfd913a04f7dc59cc3d52e38275272a5a12ae6/src/index.js#L100)
  */
 export const getSpringDuration = ([mass, stiffness, damping, velocity]: number[] = []) => {
     let params = [mass, stiffness, damping, velocity];
     let easing = `${params}`;
     if (EasingDurationCache.has(easing)) return EasingDurationCache.get(easing);
-    
+
     const frame = 1 / 6;
     let elapsed = 0;
     let rest = 0;
@@ -155,26 +152,26 @@ export const getSpringDuration = ([mass, stiffness, damping, velocity]: number[]
     return duration;
 };
 
-/** 
+/**
  * Creates a new frame function where each frame follows an `out` pattern
- * 
+ *
  * @param frame frame function (see {@link TypeFrameFunction}, to learn more about frame functions)
  * @returns A new frame function that represents the ease-out version of the frame function given as an argument
- * 
- * Based off of another library, but I can't remember which. If any devs are able to find 
+ *
+ * Based off of another library, but I can't remember which. If any devs are able to find
  * the source, I'll gladily place a link to the original source here
  */
 export const EaseOut = (frame: TypeFrameFunction): TypeFrameFunction => {
     return (t, params = [], duration) => 1 - frame(1 - t, params, duration);
 };
 
-/** 
+/**
  * Creates a new frame function where each frame follows an `in-out` pattern
- * 
+ *
  * @param frame frame function (see {@link TypeFrameFunction}, to learn more about frame functions)
  * @returns A new frame function that represents the ease-in-out version of the frame function given as an argument
- * 
- * Based off of another library, but I can't remember which. If any devs are able to find 
+ *
+ * Based off of another library, but I can't remember which. If any devs are able to find
  * the source, I'll gladily place a link to the original source here
  */
 export const EaseInOut = (frame: TypeFrameFunction): TypeFrameFunction => {
@@ -184,13 +181,13 @@ export const EaseInOut = (frame: TypeFrameFunction): TypeFrameFunction => {
             : 1 - frame(t * -2 + 2, params, duration) / 2;
 };
 
-/** 
+/**
  * Creates a new frame function where each frame follows an `out-in` pattern
- * 
+ *
  * @param frame frame function (see {@link TypeFrameFunction}, to learn more about frame functions)
  * @returns A new frame function that represents the ease-in-out version of the frame function given as an argument
- * 
- * Based off of another library, but I can't remember which. If any devs are able to find 
+ *
+ * Based off of another library, but I can't remember which. If any devs are able to find
  * the source, I'll gladily place a link to the original source here
  */
 export const EaseOutIn = (frame: TypeFrameFunction): TypeFrameFunction => {
@@ -208,46 +205,44 @@ export const EaseOutIn = (frame: TypeFrameFunction): TypeFrameFunction => {
 export const SpringInFrame = SpringFrame;
 
 /**
- * "spring-out" frame function where each {@link SpringFrame} follows an ease `out` pattern 
- * 
+ * "spring-out" frame function where each {@link SpringFrame} follows an ease `out` pattern
+ *
  * _**Note**: Be very careful of only setting some of the spring parameters, it can cause errors if you are not careful_
  */
 export const SpringOutFrame = EaseOut(SpringFrame);
 
 /**
- * "spring-in-out" frame function where each {@link SpringFrame} follows an ease `in-out` pattern 
- * 
+ * "spring-in-out" frame function where each {@link SpringFrame} follows an ease `in-out` pattern
+ *
  * _**Note**: Be very careful of only setting some of the spring parameters, it can cause errors if you are not careful_
  */
 export const SpringInOutFrame = EaseInOut(SpringFrame);
 
 /**
- * "spring-out-in" frame function where each {@link SpringFrame} follows an ease `out-in` pattern 
- * 
+ * "spring-out-in" frame function where each {@link SpringFrame} follows an ease `out-in` pattern
+ *
  * _**Note**: Be very careful of only setting some of the spring parameters, it can cause errors if you are not careful_
  */
 export const SpringOutInFrame = EaseOutIn(SpringFrame);
 
 /** map `t` from 0 to 1, to `start` to `end` */
-export const scale = (t: number, start: number, end: number) =>
-    start + (end - start) * t;
+export const scale = (t: number, start: number, end: number) => start + (end - start) * t;
 
 /** Rounds numbers to a fixed decimal place */
-export const toFixed = (value: number, decimal: number) =>
-    Math.round(value * 10 ** decimal) / 10 ** decimal;
+export const toFixed = (value: number, decimal: number) => Math.round(value * 10 ** decimal) / 10 ** decimal;
 
-/** 
+/**
   Given an Array of numbers, estimate the resulting number, at a `t` value between 0 to 1
 
-  Basic interpolation works by scaling `t` from 0 - 1, to some start number and end number, in this case lets use 
+  Basic interpolation works by scaling `t` from 0 - 1, to some start number and end number, in this case lets use
   0 as our start number and 100 as our end number, so, basic interpolation would interpolate between 0 to 100.
-  
-  If we use a `t` of 0.5, the interpolated value between 0 to 100, is 50. 
-  {@link interpolateNumber} takes it further, by allowing you to interpolate with more than 2 values, 
-  it allows for multiple values. 
-  E.g. Given an Array of values [0, 100, 0], and a `t` of 0.5, the interpolated value would become 100. 
-  
-  Based on d3.interpolateBasis [https://github.com/d3/d3-interpolate#interpolateBasis], 
+
+  If we use a `t` of 0.5, the interpolated value between 0 to 100, is 50.
+  {@link interpolateNumber} takes it further, by allowing you to interpolate with more than 2 values,
+  it allows for multiple values.
+  E.g. Given an Array of values [0, 100, 0], and a `t` of 0.5, the interpolated value would become 100.
+
+  Based on d3.interpolateBasis [https://github.com/d3/d3-interpolate#interpolateBasis],
   check out the link above for more detail.
 */
 export const interpolateNumber = (t: number, values: number[], decimal = 3) => {
@@ -265,19 +260,19 @@ export const interpolateNumber = (t: number, values: number[], decimal = 3) => {
 };
 
 /**
- * The array frame function format for easings, 
- * @example 
+ * The array frame function format for easings,
+ * @example
  * `[SpringFrame, mass, stiffness, damping, velocity]`
  */
 export type TypeArrayFrameFunctionFormat = [TypeFrameFunction, ...number[]];
 
 /**
- * The formats supported for easings, 
- * @example 
- * * `"spring(mass, stiffness, damping, velocity)"` 
- * * `"spring-in(mass, stiffness, damping, velocity)"` 
- * * `"spring-out(mass, stiffness, damping, velocity)"` 
- * * `"spring-in-out(mass, stiffness, damping, velocity)"` 
+ * The formats supported for easings,
+ * @example
+ * * `"spring(mass, stiffness, damping, velocity)"`
+ * * `"spring-in(mass, stiffness, damping, velocity)"`
+ * * `"spring-out(mass, stiffness, damping, velocity)"`
+ * * `"spring-in-out(mass, stiffness, damping, velocity)"`
  * * `"spring-out-in(mass, stiffness, damping, velocity)"`
  * `[SpringFrame, mass, stiffness, damping, velocity]`
  */
@@ -292,21 +287,18 @@ export type TypeEasings = `${keyof typeof EasingFunctions}(${string})` | TypeArr
  * | `numPoints` | `50`                    |
  * | `decimal`   | `3`                     |
  */
- export type TypeEasingOptions = {
+export type TypeEasingOptions = {
     /**
-     *
      * By default, Spring Easing support easings in the form,
      *
      * | constant   | accelerate         | decelerate     | accelerate-decelerate | decelerate-accelerate |
      * | :--------- | :----------------- | :------------- | :-------------------- | :-------------------- |
      * |            | spring / spring-in | spring-out     | spring-in-out         | spring-out-in         |
      *
-     *
      * All **Spring** easing's can be configured using theses parameters,
      *
      * `"spring-*(mass, stiffness, damping, velocity)"` or
      * `[SpringOutFrame, mass, stiffness, damping, velocity]`
-     * 
      *
      * Each parameter comes with these defaults
      *
@@ -333,41 +325,41 @@ export const EasingFunctions = {
     "spring-out-in": SpringOutInFrame,
 };
 
-/** 
- * Convert easing parameters to Array of numbers, e.g. "spring(2, 500)" to [2, 500] 
- * 
+/**
+ * Convert easing parameters to Array of numbers, e.g. "spring(2, 500)" to [2, 500]
+ *
  * Based off of [animejs](https://github.com/juliangarnier/anime/blob/3ebfd913a04f7dc59cc3d52e38275272a5a12ae6/src/index.js#L69)
  */
 export const parseEasingParameters = (str: string) => {
     const match = /(\(|\s)([^)]+)\)?/.exec(str.toString());
     return match
         ? match[2].split(",").map((value) => {
-              let num = parseFloat(value);
-              return !Number.isNaN(num) ? num : value.trim();
-          })
+            let num = parseFloat(value);
+            return !Number.isNaN(num) ? num : value.trim();
+        })
         : [];
 };
 
 /**
  * Returns a {@link TypeEasingOptions} object from a easing "string", or frame function array
- * 
+ *
  * _**Note**: Be very careful of only setting some of the spring parameters, it can cause errors if you are not careful_
  */
 export const EasingOptions = (
-    options: TypeEasingOptions | TypeEasingOptions["easing"] = {}
+    options: TypeEasingOptions | TypeEasingOptions["easing"] = {},
 ) => {
     let isEasing = typeof options == "string" || (Array.isArray(options) && typeof options == "function");
     let {
         easing = [SpringFrame, 1, 100, 10, 0],
         numPoints = 100,
-        decimal = 3
+        decimal = 3,
     } = (isEasing ? { easing: options } : options) as TypeEasingOptions;
 
     if (typeof easing == "string") {
         let frameFunction = EasingFunctions[
             easing.replace(/(\(|\s).+/, "") // Remove the function brackets and parameters
-            .toLowerCase()
-            .trim()
+                .toLowerCase()
+                .trim()
         ];
 
         let params = parseEasingParameters(easing);
@@ -375,47 +367,58 @@ export const EasingOptions = (
     }
 
     if (Array.isArray(easing)) {
-        if (typeof easing[0] != "function") 
-            throw new Error("[spring-easing] A frame function is required as the first element in the easing array, e.g. [SpringFrame, ...]");
-        
-        // // Be careful of only setting some of the spring parameters 
-        // // if (easing.length > 1 && easing.length < 5) 
+        if (typeof easing[0] != "function") {
+            throw new Error(
+                "[spring-easing] A frame function is required as the first element in the easing array, e.g. [SpringFrame, ...]",
+            );
+        }
+
+        // // Be careful of only setting some of the spring parameters
+        // // if (easing.length > 1 && easing.length < 5)
         //     console.warn(`[spring-easing] You are still missing ${5 - easing.length} spring parameter(s). The easing needs to be in the format: \n* "spring-out(mass, stiffness, damping, velocity)" or \n* [SpringOutFrame, mass, stiffness, damping, velocity].`);
-        
-        if (easing.length > 5) 
-            console.warn(`[spring-easing] You entered ${5 - easing.length} more spring parameter(s) than necessary. The easing needs to be in the format: \n* "spring-out(mass, stiffness, damping, velocity)" or \n* [SpringOutFrame, mass, stiffness, damping, velocity].`);
-    } else 
-        throw new Error(`[spring-easing] The easing needs to be in the format:  \n* "spring-out(mass, stiffness, damping, velocity)" or \n* [SpringOutFrame, mass, stiffness, damping, velocity], the easing recieved is "${easing}", [spring-easing] doesn't really know what to do with that.`);
+
+        if (easing.length > 5) {
+            console.warn(
+                `[spring-easing] You entered ${
+                    5 - easing.length
+                } more spring parameter(s) than necessary. The easing needs to be in the format: \n* "spring-out(mass, stiffness, damping, velocity)" or \n* [SpringOutFrame, mass, stiffness, damping, velocity].`,
+            );
+        }
+    } else {
+        throw new Error(
+            `[spring-easing] The easing needs to be in the format:  \n* "spring-out(mass, stiffness, damping, velocity)" or \n* [SpringOutFrame, mass, stiffness, damping, velocity], the easing recieved is "${easing}", [spring-easing] doesn't really know what to do with that.`,
+        );
+    }
 
     return { easing, numPoints, decimal };
 };
 
-/** 
-  Cache generated frame points for commonly used easing functions  
+/**
+  Cache generated frame points for commonly used easing functions
 */
 export const FramePtsCache = new Map();
 
-/** 
-  * Create an Array of frames using the easing specified. 
-  * The array size `numPoints` large, which is by default 100.
-  * Easing can be use custom defined frame functions, so, instead of string you can use,
-  * e.g.
-  * ```ts
-  * GenerateSpringFrames({
-  *     easing: [SpringOutInFrame, 1, 100, 10, 0],
-  *     numPoints: 100
-  * })
-  * ```
-  * 
-  * _**Note**: Be very careful of only setting some of the spring parameters, it can cause errors if you are not careful_
-  * 
-  * Based on https://github.com/w3c/csswg-drafts/issues/229#issuecomment-861415901 
-*/
+/**
+ * Create an Array of frames using the easing specified.
+ * The array size `numPoints` large, which is by default 100.
+ * Easing can be use custom defined frame functions, so, instead of string you can use,
+ * e.g.
+ * ```ts
+ * GenerateSpringFrames({
+ *     easing: [SpringOutInFrame, 1, 100, 10, 0],
+ *     numPoints: 100
+ * })
+ * ```
+ *
+ * _**Note**: Be very careful of only setting some of the spring parameters, it can cause errors if you are not careful_
+ *
+ * Based on https://github.com/w3c/csswg-drafts/issues/229#issuecomment-861415901
+ */
 export const GenerateSpringFrames = (options: TypeEasingOptions = {}): [number[], number] => {
     let {
         easing,
-        numPoints
-    } = EasingOptions(options)
+        numPoints,
+    } = EasingOptions(options);
     const key = `${easing}${numPoints}`;
     if (FramePtsCache.has(key)) return FramePtsCache.get(key);
 
@@ -466,7 +469,7 @@ export const GenerateSpringFrames = (options: TypeEasingOptions = {}): [number[]
  *  ```ts
  *  import { SpringEasing, SpringOutFrame } from "spring-easing";
  *  import anime from "animejs";
- * 
+ *
  *  // Note: this is the return value of {@link SpringEasing} and {@link GenerateSpringFrames}, you don't need the object to get this format
  *  let [translateX, duration] = SpringEasing([0, 250], {
  *      easing: "spring-out-in(1, 100, 10, 0)",
@@ -478,10 +481,10 @@ export const GenerateSpringFrames = (options: TypeEasingOptions = {}): [number[]
  *      // This option doesn't exist on {@link GenerateSpringFrames}
  *      decimal: 5,
  *  });
- * 
+ *
  *  anime({
  *    targets: "div",
- *    
+ *
  *    // Using spring easing animate from [0 to 250] using `spring-out-in`
  *    translateX,
  *
@@ -490,7 +493,7 @@ export const GenerateSpringFrames = (options: TypeEasingOptions = {}): [number[]
  *
  *    // TIP... Use linear easing for the proper effect
  *    easing: "linear",
- *    
+ *
  *    // The optimal duration for this specific spring
  *    duration
  *  })
@@ -498,16 +501,14 @@ export const GenerateSpringFrames = (options: TypeEasingOptions = {}): [number[]
  */
 export const SpringEasing = (
     values: number[],
-    options: TypeEasingOptions | TypeEasingOptions["easing"] = {}
+    options: TypeEasingOptions | TypeEasingOptions["easing"] = {},
 ): [number[], number] => {
     let optionsObj = EasingOptions(options);
     let [frames, duration] = GenerateSpringFrames(optionsObj);
 
     return [
-        frames.map((t) =>
-            interpolateNumber(t, values, optionsObj.decimal)
-        ), 
-        duration
+        frames.map((t) => interpolateNumber(t, values, optionsObj.decimal)),
+        duration,
     ];
 };
 

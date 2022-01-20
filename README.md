@@ -1,21 +1,26 @@
 # spring-easing
 
-[![Open Bundle](https://bundle.js.org/badge-light.svg)](https://bundle.js.org/?q=spring-easing&bundle)
+[![Open Bundle](https://bundle.js.org/badge-light.svg)](https://bundle.js.org/?q=spring-easing&bundle "Check the total bundle size of spring-easing with whichever animation library you choose.")
 
-[NPM](https://www.npmjs.com/package/spring-easing) <span style="padding-inline: 1rem">|</span> [Github](https://github.com/okikio/spring-easing#readme) <span style="padding-inline: 1rem">|</span> [Docs](https://spring-easing.okikio.dev) <span style="padding-inline: 1rem">|</span> [Licence](./LICENSE)  
+[NPM](https://www.npmjs.com/package/spring-easing) <span style="padding-inline: 1rem">|</span> [Github](https://github.com/okikio/spring-easing#readme) <span style="padding-inline: 1rem">|</span> [Docs](https://spring-easing.okikio.dev) <span style="padding-inline: 1rem">|</span> [Licence](./LICENSE)
 
+Quick and easy spring animations. Works with other animation libraries ([gsap](https://greensock.com/), [animejs](https://animejs.com/), [@okikio/animate](http://npmjs.com/@okikio/animate), [motion one](https://motion.dev/), [framer motion](https://www.framer.com/docs/animation/), etc...) or the [Web Animation API (WAAPI)](https://developer.mozilla.org/en-US/docs/Web/API/Web_Animations_API/Using_the_Web_Animations_API), you can learn more in the [Usage](#use-with-animation-libraries) section.
 
-Quick and easy spring easing's. Works with other animation libraries ([animejs](https://animejs.com/), [@okikio/animate](http://npmjs.com/@okikio/animate), [motion one](https://motion.dev/), [framer motion](https://www.framer.com/docs/animation/), etc...)  or the Web Animation API (WAAPI).
+`spring-easing` works by generating arrays of `frame`'s which when placed in linear order creates a smooth spring like animation.
 
-`spring-easing` works by generating arrays of `frame`'s  which when placed in linear order creates a smooth spring like animation.
-
-> A `frame` represent a single frame of an animation 
+> A `frame` represent a single frame of an animation
 
 > _**Note**: the `spring-easing` package also supports 4 extra varients of [`spring`](https://spring-easing.okikio.dev/modules.html#SpringFrame), namely [`spring-in`](https://spring-easing.okikio.dev/modules.html#SpringInFrame), [`spring-out`](https://spring-easing.okikio.dev/modules.html#SpringOutFrame), [`spring-out-in`](https://spring-easing.okikio.dev/modules.html#SpringOutInFrame), and [`spring-in-out`](https://spring-easing.okikio.dev/modules.html#SpringInOutFrame), you can use these easing to create some really unique spring like animations._
 
-> You can also read the [blog post](https://blog.okikio.dev/spring-easing), created for it's launch. 
+<!-- > You can also read the [blog post](https://blog.okikio.dev/spring-easing), created for it's launch. -->
+
+You can create animation's like this with `spring-easing`,
+
+<img src="assets/spring-easing-demo-video.gif" width="1920" loading="lazy" alt="A demo of the various spring-easings available" align="center" style="border-radius: 1rem; 
+    aspect-ratio: auto 1920 / 899;" />
 
 ## Installation
+
 ```bash
 npm install spring-easing
 ```
@@ -27,22 +32,24 @@ npm install spring-easing
 yarn add spring-easing
 ```
 
-or 
+or
 
 ```bash
 pnpm install spring-easing
 ```
+
 </details>
 
 ## Usage
 
 ```ts
 import { SpringEasing } from "spring-easing";
-// or 
+// or
 import SpringEasing from "spring-easing";
 ```
 
 You can also use it directly through a script tag:
+
 ```html
 <script src="https://unpkg.com/spring-easing" type="module"></script>
 <script type="module">
@@ -52,9 +59,10 @@ You can also use it directly through a script tag:
 ```
 
 You can also use it via a CDN, e.g.
+
 ```ts
 import SpringEasing from "https://cdn.skypack.dev/spring-easing";
-// or 
+// or
 import SpringEasing from "https://cdn.jsdelivr.net/npm/spring-easing";
 // or any number of other CDN's
 ```
@@ -74,11 +82,11 @@ The libraries that have been tested are:
 | [@okikio/animate](https://okikio.github.io/native/packages/animate)                              | ✅ Yes - [Array Keyframes](https://okikio.github.io/native/packages/animate/#animations)                         | Codepen |
 | [Web Animation API (WAAPI)](https://developer.mozilla.org/en-US/docs/Web/API/Web_Animations_API) | ✅ Yes - [Array Keyframes](https://developer.mozilla.org/en-US/docs/Web/API/Web_Animations_API/Keyframe_Formats) | Codepen |
 
+e.g.
 
-e.g. 
 ```ts
-import { SpringEasing, SpringOutFrame } from "spring-easing";
 import anime from "animejs";
+import { SpringEasing, SpringOutFrame } from "spring-easing";
 
 // Note: this is the return value of {@link SpringEasing} and {@link GenerateSpringFrames}, you don't need the object to get this format
 let [translateX, duration] = SpringEasing([0, 250], {
@@ -91,17 +99,18 @@ let [translateX, duration] = SpringEasing([0, 250], {
 });
 
 anime({
-  targets: "div",
-  
-  // Using spring easing animate from [0 to 250] using `spring-out-in`
-  translateX,
-  // You can set the easing without an object
-  rotate: SpringEasing(["0turn", 1, 0, 0.5], [SpringOutFrame, 1, 100, 10, 0])[0],
-  // TIP... Use linear easing for the proper effect
-  easing: "linear",
-  
-  // The optimal duration for this specific spring
-  duration
+    targets: "div",
+
+    // Using spring easing animate from [0 to 250] using `spring-out-in`
+    translateX,
+    // You can set the easing without an object
+    rotate:
+        SpringEasing(["0turn", 1, 0, 0.5], [SpringOutFrame, 1, 100, 10, 0])[0],
+    // TIP... Use linear easing for the proper effect
+    easing: "linear",
+
+    // The optimal duration for this specific spring
+    duration,
 });
 ```
 
@@ -111,8 +120,9 @@ anime({
 
 ## Showcase
 
-A couple sites that use `spring-easing`:
-* Your site/project here...
+A couple sites/projects that use `spring-easing`:
+
+- Your site/project here...
 
 ## API
 
@@ -148,7 +158,7 @@ Each parameter comes with these defaults
 | damping   | `10`          |
 | velocity  | `0`           |
 
-> _**Note:** the return value of the `SpringEasing` function is actually `[Array of frames, duration]`, in that order._ 
+> _**Note:** the return value of the `SpringEasing` function is actually `[Array of frames, duration]`, in that order._
 
 Check out the [API site](https://spring-easing.okikio.dev) for detailed API documentation.
 
@@ -160,27 +170,30 @@ Check out the [API site](https://spring-easing.okikio.dev) for detailed API docu
 
 Native support for `spring-easing` is great as it doesn't use any browser specific or nodejs specific API's, you should be good to use `spring-easing` in any environment.
 
-
 ## Contributing
 
 I encourage you to use [pnpm](https://pnpm.io/configuring) to contribute to this repo, but you can also use [yarn](https://classic.yarnpkg.com/lang/en/) or [npm](https://npmjs.com) if you prefer.
 
 Install all necessary packages
+
 ```bash
 npm install
 ```
 
 Then run tests (WIP)
+
 ```bash
 npm test
 ```
 
-Build project 
+Build project
+
 ```bash
 npm run build
 ```
 
 Preview API Docs
+
 ```bash
 npm run typedoc && npm run preview
 ```
@@ -188,5 +201,5 @@ npm run typedoc && npm run preview
 > _**Note**: this project uses [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/) standard for commits, so, please format your commits using the rules it sets out._
 
 ## Licence
-See the [LICENSE](./LICENSE) file for license rights and limitations (MIT).
 
+See the [LICENSE](./LICENSE) file for license rights and limitations (MIT).
