@@ -34,6 +34,7 @@
     "dts": "rm -r -f @types/ && tsc -p dts.tsconfig.json",
     "preview": "vite docs",
     "commit": "git cz",
+    "test": "vitest",
     "build": "rm -r -f lib/ && rollup -c",
     "pre-release": "pnpm build && pnpm typedoc && pnpm dts",
     "semantic-release": "semantic-release"
