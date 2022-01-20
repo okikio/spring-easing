@@ -9,7 +9,7 @@ Quick and easy spring easing's. Works with other animation libraries ([animejs](
 
 `spring-easing` works by generating Arrays of `frames`  which when placed in linear order create a smooth spring like animation.
 
-> * `frames` represent a single frame of an animation 
+> `frames` represent a single frame of an animation 
 
 > _**Note**: the `spring-easing` package also supports 4 extra varients of [`spring`](https://spring-easing.okikio.dev/modules.html#SpringFrame), namely [`spring-in`](https://spring-easing.okikio.dev/modules.html#SpringInFrame), [`spring-out`](https://spring-easing.okikio.dev/modules.html#SpringOutFrame), [`spring-out-in`](https://spring-easing.okikio.dev/modules.html#SpringOutInFrame), and [`spring-in-out`](https://spring-easing.okikio.dev/modules.html#SpringInOutFrame), you can use these easing to create some really unique spring like animations._
 
