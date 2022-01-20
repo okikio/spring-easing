@@ -1,0 +1,121 @@
+{
+  "name": "spring-easing",
+  "version": "1.0.3",
+  "type": "module",
+  "sideEffects": false,
+  "description": "Quick and easy spring easing's. Works with other animation libraries (animejs, framer motion, motion one, @okikio/animate, etc...) or the Web Animation API (WAAPI).",
+  "umd": "SpringEasing",
+  "access": "public",
+  "legacy": "lib/index.js",
+  "main": "lib/index.cjs",
+  "types": "@types/index.d.ts",
+  "browser": "lib/index.mjs",
+  "module": "lib/index.mjs",
+  "exports": {
+    ".": {
+      "require": "./lib/index.cjs",
+      "import": "./lib/index.mjs",
+      "default": "./lib/index.mjs"
+    },
+    "./lib/*": "./lib/*"
+  },
+  "directories": {
+    "lib": "./lib",
+    "src": "./src",
+    "@types": "./@types"
+  },
+  "files": [
+    "lib",
+    "src",
+    "@types"
+  ],
+  "scripts": {
+    "typedoc": "rm -r -f docs/ && typedoc && node ./rehype.js && cp -a static/. docs/",
+    "dts": "rm -r -f @types/ && tsc -p dts.tsconfig.json",
+    "preview": "vite docs",
+    "commit": "git cz",
+    "build": "rm -r -f lib/ && rollup -c",
+    "pre-release": "pnpm build && pnpm typedoc && pnpm dts",
+    "semantic-release": "semantic-release"
+  },
+  "release": {
+    "branches": [
+      "main"
+    ]
+  },
+  "changelog": {
+    "repo": "spring-easing",
+    "labels": {
+      "breaking": ":boom: Breaking Change",
+      "enhancement": ":rocket: Enhancement",
+      "bug": ":bug: Bug Fix",
+      "documentation": ":memo: Documentation",
+      "internal": ":house: Internal"
+    },
+    "cacheDir": ".changelog"
+  },
+  "husky": {
+    "hooks": {
+      "commit-msg": "commitlint -E HUSKY_GIT_PARAMS --verbose"
+    }
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/okikio/spring-easing.git"
+  },
+  "keywords": [
+    "spring-easing",
+    "typescript",
+    "animation",
+    "easing",
+    "spring",
+    "framer-motion",
+    "motion-one",
+    "@okikio/animate",
+    "Web-Animation-API",
+    "WAAPI",
+    "es2021"
+  ],
+  "author": {
+    "name": "Okiki Ojo",
+    "email": "hey@okikio.dev",
+    "url": "https://blog.okikio.dev"
+  },
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/okikio/spring-easing/issues"
+  },
+  "homepage": "https://spring-easing.okikio.dev",
+  "devDependencies": {
+    "@commitlint/cli": "^16.0.3",
+    "@commitlint/config-conventional": "^16.0.0",
+    "@playwright/test": "^1.17.2",
+    "@rollup/plugin-commonjs": "^21.0.1",
+    "@rollup/plugin-node-resolve": "^13.1.3",
+    "@types/web": "^0.0.49",
+    "esbuild": "^0.14.11",
+    "fast-glob": "^3.2.11",
+    "hastscript": "^7.0.2",
+    "husky": "^7.0.4",
+    "playwright": "^1.17.2",
+    "pnpm": "^6.27.1",
+    "rehype-accessible-emojis": "^0.3.2",
+    "rehype-external-links": "^1.0.1",
+    "rehype-parse": "^8.0.3",
+    "rehype-slug": "^5.0.1",
+    "rehype-stringify": "^9.0.2",
+    "rehype-urls": "^1.1.1",
+    "rollup": "^2.64.0",
+    "rollup-plugin-bundle-size": "^1.0.3",
+    "rollup-plugin-esbuild": "^4.8.2",
+    "rollup-plugin-terser": "^7.0.2",
+    "semantic-release": "^19.0.2",
+    "typedoc": "^0.22.11",
+    "typedoc-plugin-extras": "^2.2.3",
+    "typedoc-plugin-mdn-links": "^1.0.4",
+    "typedoc-plugin-missing-exports": "^0.22.6",
+    "typescript": "^4.5.4",
+    "unified": "^10.1.1",
+    "vite": "^2.7.13"
+  }
+}
