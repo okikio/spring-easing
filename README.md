@@ -10,7 +10,7 @@ Quick and easy spring animations. Works with other animation libraries ([gsap](h
 
 > A `frame` represent a single frame of an animation
 
-> _**Note**: the `spring-easing` package also supports 4 extra varients of [`spring`](https://spring-easing.okikio.dev/modules.html#SpringFrame), namely [`spring-in`](https://spring-easing.okikio.dev/modules.html#SpringInFrame), [`spring-out`](https://spring-easing.okikio.dev/modules.html#SpringOutFrame), [`spring-out-in`](https://spring-easing.okikio.dev/modules.html#SpringOutInFrame), and [`spring-in-out`](https://spring-easing.okikio.dev/modules.html#SpringInOutFrame), you can use these easing to create some really unique spring like animations._
+> _**Note**: the `spring-easing` package also supports 4 extra variants of [`spring`](https://spring-easing.okikio.dev/modules.html#SpringFrame), namely [`spring-in`](https://spring-easing.okikio.dev/modules.html#SpringInFrame), [`spring-out`](https://spring-easing.okikio.dev/modules.html#SpringOutFrame), [`spring-out-in`](https://spring-easing.okikio.dev/modules.html#SpringOutInFrame), and [`spring-in-out`](https://spring-easing.okikio.dev/modules.html#SpringInOutFrame), you can use these easing to create some really unique spring like animations._
 
 <!-- > You can also read the [blog post](https://blog.okikio.dev/spring-easing), created for it's launch. -->
 
@@ -18,6 +18,8 @@ You can create animation's like this with `spring-easing`,
 
 <img src="assets/spring-easing-demo-video.gif" width="1920" loading="lazy" alt="A demo of the various spring-easings available" align="center" style="border-radius: 1rem; 
     aspect-ratio: auto 1920 / 899;" />
+
+> _Check out the spring easing variants on [Codepen →](https://codepen.io/okikio/pen/MWEMEgJ)._
 
 ## Installation
 
