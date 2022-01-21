@@ -69,18 +69,18 @@ import SpringEasing from "https://cdn.jsdelivr.net/npm/spring-easing";
 
 ### Use with Animation Libraries
 
-> _**Note:** not every animation library works with `spring-easing`, for example, if an animation library doesn't support array values as keyframes, it won't work well with `spring-easing`._
+> _**Note:** I cannot guarantee that every animation library works with `spring-easing`, for example, if an animation library doesn't support array values as keyframes, it won't work well with `spring-easing`._
 
 The libraries that have been tested are:
 
 | Animation Library                                                                                | Support                                                                                                         | Demo    |
 | ------------------------------------------------------------------------------------------------ | --------------------------------------------------------------------------------------------------------------- | ------- |
-| [GSAP](https://greensock.com/)                                                                   | ✅ Yes - [Wrap Method](https://greensock.com/docs/v3/GSAP/UtilityMethods/wrap())                                 | Codepen |
-| [animejs](https://animejs.com)                                                                   | ✅ Yes - [Array Keyframes](https://animejs.com/documentation/#animationKeyframes)                                | Codepen |
-| [Framer Motion](https://www.framer.com/motion/)                                                  | ✅ Yes - [Array Keyframes](https://www.framer.com/docs/animation/##keyframes)                                    | Codepen |
-| [Motion One](https://motion.dev)                                                                 | ✅ Yes - [Array Keyframes](https://motion.dev/dom/animate#keyframes)                                             | Codepen |
-| [@okikio/animate](https://okikio.github.io/native/packages/animate)                              | ✅ Yes - [Array Keyframes](https://okikio.github.io/native/packages/animate/#animations)                         | Codepen |
-| [Web Animation API (WAAPI)](https://developer.mozilla.org/en-US/docs/Web/API/Web_Animations_API) | ✅ Yes - [Array Keyframes](https://developer.mozilla.org/en-US/docs/Web/API/Web_Animations_API/Keyframe_Formats) | Codepen |
+| [GSAP](https://greensock.com/)                                                                   | ✅ Yes - [Wrap Method](https://greensock.com/docs/v3/GSAP/UtilityMethods/wrap())                                 | [Codepen](https://codepen.io/okikio/pen/MWEMEgJ) |
+| [animejs](https://animejs.com)                                                                   | ✅ Yes - [Array Keyframes](https://animejs.com/documentation/#animationKeyframes)                                | [Codepen](https://codepen.io/okikio/pen/MWEMEgJ) |
+| [Framer Motion](https://www.framer.com/motion/)                                                  | ✅ Yes - [Array Keyframes](https://www.framer.com/docs/animation/##keyframes)                                    | [Codepen](https://codepen.io/okikio/pen/MWEMEgJ) |
+| [Motion One](https://motion.dev)                                                                 | ✅ Yes - [Array Keyframes](https://motion.dev/dom/animate#keyframes)                                             | [Codepen](https://codepen.io/okikio/pen/MWEMEgJ) |
+| [@okikio/animate](https://okikio.github.io/native/packages/animate)                              | ✅ Yes - [Array Keyframes](https://okikio.github.io/native/packages/animate/#animations)                         | [Codepen](https://codepen.io/okikio/pen/MWEMEgJ) |
+| [Web Animation API (WAAPI)](https://developer.mozilla.org/en-US/docs/Web/API/Web_Animations_API) | ✅ Yes - [Array Keyframes](https://developer.mozilla.org/en-US/docs/Web/API/Web_Animations_API/Keyframe_Formats) | [Codepen](https://codepen.io/okikio/pen/MWEMEgJ) |
 
 e.g.
 
@@ -88,13 +88,13 @@ e.g.
 import anime from "animejs";
 import { SpringEasing, SpringOutFrame } from "spring-easing";
 
-// Note: this is the return value of {@link SpringEasing} and {@link GenerateSpringFrames}, you don't need the object to get this format
+// Note: this is the return value of `SpringEasing` and `GenerateSpringFrames`, you don't need the object to get this format
 let [translateX, duration] = SpringEasing([0, 250], {
     easing: "spring-out-in(1, 100, 10, 0)",
     // You can change the size of Array for the SpringEasing function to generate
     numPoints: 200,
     // The number of decimal places to round, final values in the generated Array
-    // This option doesn't exist on {@link GenerateSpringFrames}
+    // This option doesn't exist on `GenerateSpringFrames`
     decimal: 5,
 });
 
@@ -114,7 +114,7 @@ anime({
 });
 ```
 
-> _**Note**: make sure to read the comments above they are valuable resources for understanding what is happening._
+> _**Note**: make sure to read the comments above, as they are valuable resources for understanding what is happening._
 
 > Check out this demo on [Codepen →](https://codepen.io/okikio/pen/MWEdzNg)
 
@@ -126,12 +126,12 @@ A couple sites/projects that use `spring-easing`:
 
 ## API
 
-The API of `spring-easing` is pretty straight forward, the `SpringEasing` function generates an array of values using frame functions which in turn create the effect of spring easing.
+The API of `spring-easing` is pretty straight forward, the `SpringEasing` function generates an array of values using a frame functions, which in turn creates the effect of spring easing.
 
 To use this properly make sure to set the easing animation option to "linear".
 Check out a demo of `SpringEasing` at <https://codepen.io/okikio/pen/MWEdzNg>
 
-`SpringEasing` has 3 properties they are `easing` (all the easings from [EasingFunctions](https://spring-easing.okikio.dev/modules.html#EasingOptions) are supported on top of frame functions like SpringFrame, SpringFrameOut, etc..), `numPoints` (the size of the Array the frame function should create), and `decimal` (the number of decimal places of the values within said Array).
+`SpringEasing` has 3 properties they are `easing` (all the easings from [EasingFunctions](https://spring-easing.okikio.dev/modules.html#EasingOptions) are supported on top of frame functions like `SpringFrame`, `SpringFrameOut`, etc..), `numPoints` (the size of the Array the frame function should create), and `decimal` (the number of decimal places of the values within said Array).
 
 | Properties  | Default Value           |
 | ----------- | ----------------------- |
@@ -180,7 +180,7 @@ Install all necessary packages
 npm install
 ```
 
-Then run tests (WIP)
+Then run tests
 
 ```bash
 npm test

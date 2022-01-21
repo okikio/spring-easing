@@ -348,7 +348,7 @@ export const parseEasingParameters = (str: string) => {
 export const EasingOptions = (
     options: TypeEasingOptions | TypeEasingOptions["easing"] = {},
 ) => {
-    let isEasing = typeof options == "string" || (Array.isArray(options) && typeof options == "function");
+    let isEasing = typeof options == "string" || (Array.isArray(options) && typeof options[0] == "function");
     let {
         easing = [SpringFrame, 1, 100, 10, 0],
         numPoints = 100,
@@ -366,37 +366,13 @@ export const EasingOptions = (
         easing = [frameFunction, ...params] as TypeArrayFrameFunctionFormat;
     }
 
-    if (Array.isArray(easing)) {
-        if (typeof easing[0] != "function") {
-            throw new Error(
-                "[spring-easing] A frame function is required as the first element in the easing array, e.g. [SpringFrame, ...]",
-            );
-        }
-
-        // // Be careful of only setting some of the spring parameters
-        // // if (easing.length > 1 && easing.length < 5)
-        //     console.warn(`[spring-easing] You are still missing ${5 - easing.length} spring parameter(s). The easing needs to be in the format: \n* "spring-out(mass, stiffness, damping, velocity)" or \n* [SpringOutFrame, mass, stiffness, damping, velocity].`);
-
-        if (easing.length > 5) {
-            console.warn(
-                `[spring-easing] You entered ${
-                    5 - easing.length
-                } more spring parameter(s) than necessary. The easing needs to be in the format: \n* "spring-out(mass, stiffness, damping, velocity)" or \n* [SpringOutFrame, mass, stiffness, damping, velocity].`,
-            );
-        }
-    } else {
-        throw new Error(
-            `[spring-easing] The easing needs to be in the format:  \n* "spring-out(mass, stiffness, damping, velocity)" or \n* [SpringOutFrame, mass, stiffness, damping, velocity], the easing recieved is "${easing}", [spring-easing] doesn't really know what to do with that.`,
-        );
-    }
-
     return { easing, numPoints, decimal };
 };
 
 /**
   Cache generated frame points for commonly used easing functions
 */
-export const FramePtsCache = new Map();
+export const FramePtsCache = new Map<string, WeakMap<Function, [number[], number]>>();
 
 /**
  * Create an Array of frames using the easing specified.
@@ -419,17 +395,49 @@ export const GenerateSpringFrames = (options: TypeEasingOptions = {}): [number[]
         easing,
         numPoints,
     } = EasingOptions(options);
-    const key = `${easing}${numPoints}`;
-    if (FramePtsCache.has(key)) return FramePtsCache.get(key);
+
+    if (Array.isArray(easing)) {
+        if (typeof easing[0] != "function") {
+            throw new Error(
+                "[spring-easing] A frame function is required as the first element in the easing array, e.g. [SpringFrame, ...]",
+            );
+        }
+
+        // Be careful of only setting some of the spring parameters
+        if (easing.length > 1 && easing.length < 5)
+            console.warn(`[spring-easing] Be careful of only setting some of the spring parameters, you've only set ${5 - easing.length} spring parameter(s). The easing works best in the format: \n* "spring-out(mass, stiffness, damping, velocity)" or \n* [SpringOutFrame, mass, stiffness, damping, velocity].`);
+
+        if (easing.length > 5) {
+            console.warn(
+                `[spring-easing] You entered ${
+                    5 - easing.length
+                } more spring parameter(s) than necessary. The easing needs to be in the format: \n* "spring-out(mass, stiffness, damping, velocity)" or \n* [SpringOutFrame, mass, stiffness, damping, velocity].`,
+            );
+        }
+    } else {
+        throw new Error(
+            `[spring-easing] The easing needs to be in the format:  \n* "spring-out(mass, stiffness, damping, velocity)" or \n* [SpringOutFrame, mass, stiffness, damping, velocity], the easing recieved is "${easing}", [spring-easing] doesn't really know what to do with that.`,
+        );
+    }
+
+    let [frameFunction, ...params] = easing as TypeArrayFrameFunctionFormat;
+    const key = `${params},${numPoints}`;
+
+    if (FramePtsCache.has(key)) {
+        let tempObj = FramePtsCache.get(key);
+        if (tempObj.has(frameFunction))
+            return tempObj.get(frameFunction);
+    }
 
     const pts: number[] = [];
-    let [frameFunction, ...params] = easing as TypeArrayFrameFunctionFormat;
     let duration = getSpringDuration(params);
     for (let i = 0; i < numPoints; i++) {
         pts[i] = frameFunction(i / (numPoints - 1), params, duration);
     }
 
-    FramePtsCache.set(key, pts);
+    let tempObj = FramePtsCache.has(key) ? FramePtsCache.get(key) : new WeakMap();
+    tempObj.set(frameFunction, [pts, duration]);
+    FramePtsCache.set(key, tempObj);
     return [pts, duration];
 };
 
@@ -508,7 +516,7 @@ export const SpringEasing = (
 
     return [
         frames.map((t) => interpolateNumber(t, values, optionsObj.decimal)),
-        duration,
+        duration
     ];
 };
 
