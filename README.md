@@ -82,7 +82,7 @@ The libraries that have been tested are:
 | [Framer Motion](https://www.framer.com/motion/)                                                  | ✅ Yes - [Array Keyframes](https://www.framer.com/docs/animation/##keyframes)                                    | [Codepen](https://codepen.io/okikio/pen/MWEMEgJ) |
 | [Motion One](https://motion.dev)                                                                 | ✅ Yes - [Array Keyframes](https://motion.dev/dom/animate#keyframes)                                             | [Codepen](https://codepen.io/okikio/pen/MWEMEgJ) |
 | [@okikio/animate](https://okikio.github.io/native/packages/animate)                              | ✅ Yes - [Array Keyframes](https://okikio.github.io/native/packages/animate/#animations)                         | [Codepen](https://codepen.io/okikio/pen/MWEMEgJ) |
-| [Web Animation API (WAAPI)](https://developer.mozilla.org/en-US/docs/Web/API/Web_Animations_API) | ✅ Yes - [Array Keyframes](https://developer.mozilla.org/en-US/docs/Web/API/Web_Animations_API/Keyframe_Formats) | [Codepen](https://codepen.io/okikio/pen/MWEMEgJ) |
+| [Web Animation API (WAAPI)](https://developer.mozilla.org/en-US/docs/Web/API/Web_Animations_API) | ✅ Yes - [Array Keyframes](https://developer.mozilla.org/en-US/docs/Web/API/Web_Animations_API/Keyframe_Formats#:~:text=An-,object,-containing%20key%2Dvalue) | [Codepen](https://codepen.io/okikio/pen/MWEMEgJ) |
 
 e.g.
 
