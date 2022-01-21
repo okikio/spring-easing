@@ -21,11 +21,7 @@ export declare const limit: (value: number, min: number, max: number) => number;
  *
  * _**Note**: Be very careful of only setting some of the spring parameters, it can cause errors if you are not careful_
  */
-export declare type TypeFrameFunction = (
-    t: number,
-    [mass, stiffness, damping, velocity]?: number[],
-    duration?: number,
-) => number;
+export declare type TypeFrameFunction = (t: number, [mass, stiffness, damping, velocity]?: number[], duration?: number) => number;
 /**
  * Generates a single frame of the spring easing at a specific time between (0 to 1) with the spring parameters given [mass, stiffness, damping, velocity]
  *
@@ -243,7 +239,7 @@ export declare const EasingOptions: (options?: TypeEasingOptions | TypeEasingOpt
 /**
   Cache generated frame points for commonly used easing functions
 */
-export declare const FramePtsCache: Map<any, any>;
+export declare const FramePtsCache: Map<string, WeakMap<Function, [number[], number]>>;
 /**
  * Create an Array of frames using the easing specified.
  * The array size `numPoints` large, which is by default 100.
@@ -327,8 +323,5 @@ export declare const GenerateSpringFrames: (options?: TypeEasingOptions) => [num
  *  })
  *  ```
  */
-export declare const SpringEasing: (
-    values: number[],
-    options?: TypeEasingOptions | TypeEasingOptions["easing"],
-) => [number[], number];
+export declare const SpringEasing: (values: number[], options?: TypeEasingOptions | TypeEasingOptions["easing"]) => [number[], number];
 export default SpringEasing;
