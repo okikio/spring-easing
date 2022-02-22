@@ -158,6 +158,33 @@ export declare const toFixed: (value: number, decimal: number) => number;
   check out the link above for more detail.
 */
 export declare const interpolateNumber: (t: number, values: number[], decimal?: number) => number;
+/** If a value can be converted to a valid number, then it's most likely a number */
+export declare const isNumberLike: (num: string | number) => boolean;
+/**
+  Given an Array of values, find a value using `t` (`t` goes from 0 to 1), by
+  using `t` to estimate the index of said value in the array of `values`
+
+  This is meant for interploating strings that aren't number-like
+*/
+export declare const interpolateUsingIndex: (t: number, values: (string | number)[]) => string | number;
+/**
+ * Returns the unit of a string, it does this by removing the number in the string
+ */
+export declare const getUnit: (str: string | number) => string;
+/**
+  Functions the same way {@link interpolateNumber} works.
+  Convert strings to numbers, and then interpolates the numbers,
+  at the end if there are units on the first value in the `values` array,
+  it will use that unit for the interpolated result.
+  Make sure to read {@link interpolateNumber}.
+*/
+export declare const interpolateString: (t: number, values: (string | number)[], decimal?: number) => string;
+/**
+  Interpolates all types of values including number, string, color, and complex values.
+  Complex values are values like "10px solid red", that border, and other CSS Properties use.
+  Make sure to read {@link interpolateNumber}, and {@link interpolateString}.
+*/
+export declare const interpolateComplex: (t: number, values: (string | number)[], decimal?: number) => string | number;
 /**
  * The array frame function format for easings,
  * @example
@@ -254,6 +281,8 @@ export declare const FramePtsCache: Map<string, WeakMap<Function, [number[], num
  *
  * _**Note**: Be very careful of only setting some of the spring parameters, it can cause errors if you are not careful_
  *
+ * @param options Accepts {@link TypeEasingOptions EasingOptions}
+ *
  * Based on https://github.com/w3c/csswg-drafts/issues/229#issuecomment-861415901
  */
 export declare const GenerateSpringFrames: (options?: TypeEasingOptions) => [number[], number];
@@ -273,7 +302,7 @@ export declare const GenerateSpringFrames: (options?: TypeEasingOptions) => [num
  * By default, Spring Easing support easings in the form,
  *
  * | constant   | accelerate         | decelerate     | accelerate-decelerate | decelerate-accelerate |
- * | :--------- | :----------------- | :------------- | :-------------------- | :-------------------- |      |
+ * | :--------- | :----------------- | :------------- | :-------------------- | :-------------------- |
  * |            | spring / spring-in | spring-out     | spring-in-out         | spring-out-in         |
  *
  * All **Spring** easing's can be configured using theses parameters,
@@ -322,6 +351,20 @@ export declare const GenerateSpringFrames: (options?: TypeEasingOptions) => [num
  *    duration
  *  })
  *  ```
+ *
+ * @param values Values to animate between, e.g. `["50px", 60]`
+ * > _**Note**: You can interpolate with more than 2 values, but it's very confusing, so, it's best to choose 2_
+ * @param options Accepts {@link TypeEasingOptions EasingOptions} or {@link TypeEasingOptions.easing array frame functions}
+ * @param interpolationFunction If you wish to use your own interpolation functions you may
+ * @return
+ * ```ts
+ * // An array of keyframes that represent said spring animation and
+ * // Total duration (in milliseconds) required to create a smooth spring animation
+ * [
+ *   [50, 55, 60, 70, 80, ...],
+ *   3500
+ * ]
+ * ```
  */
-export declare const SpringEasing: (values: number[], options?: TypeEasingOptions | TypeEasingOptions["easing"]) => [number[], number];
+export declare const SpringEasing: (values: (string | number)[], options?: TypeEasingOptions | TypeEasingOptions["easing"], customInterpolate?: (t: number, values: any[], decimal?: number) => string | number) => [(string | number)[], number];
 export default SpringEasing;
