@@ -201,7 +201,7 @@ export declare type TypeArrayFrameFunctionFormat = [TypeFrameFunction, ...number
  * * `"spring-out-in(mass, stiffness, damping, velocity)"`
  * `[SpringFrame, mass, stiffness, damping, velocity]`
  */
-export declare type TypeEasings = `${keyof typeof EasingFunctions}(${string})` | TypeArrayFrameFunctionFormat;
+export declare type TypeEasings = `${keyof typeof EasingFunctions}` | `${keyof typeof EasingFunctions}(${string})` | TypeArrayFrameFunctionFormat;
 /**
  * Spring Easing has 3 properties they are `easing` (all spring frame functions are supported), `numPoints` (the size of the Array the frmae function should create), and `decimal` (the number of decimal places of the values within said Array).
  *
@@ -366,5 +366,5 @@ export declare const GenerateSpringFrames: (options?: TypeEasingOptions) => [num
  * ]
  * ```
  */
-export declare const SpringEasing: (values: (string | number)[], options?: TypeEasingOptions | TypeEasingOptions["easing"], customInterpolate?: (t: number, values: any[], decimal?: number) => string | number) => [(string | number)[], number];
+export declare const SpringEasing: (values: (string | number)[], options?: TypeEasingOptions | TypeEasingOptions["easing"], customInterpolate?: (t: number, values: any[], decimal?: number) => string | number | any) => [(string | number | any)[], number];
 export default SpringEasing;
