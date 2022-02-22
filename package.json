@@ -94,6 +94,7 @@
     "@rollup/plugin-commonjs": "^21.0.1",
     "@rollup/plugin-node-resolve": "^13.1.3",
     "@types/web": "^0.0.53",
+    "color-rgba": "^2.4.0",
     "esbuild": "^0.14.23",
     "fast-glob": "^3.2.11",
     "hastscript": "^7.0.2",

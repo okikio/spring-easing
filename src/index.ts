@@ -339,7 +339,7 @@ export const interpolateComplex = (
         return interpolateString(t, values as (number | string)[], decimal);
 
     // Interpolate pure strings, e.g. "inherit", "solid", etc...
-    else return interpolateUsingIndex(t, values as string[]);
+    return interpolateUsingIndex(t, values as string[]);
 };
 
 /**
@@ -359,7 +359,7 @@ export type TypeArrayFrameFunctionFormat = [TypeFrameFunction, ...number[]];
  * * `"spring-out-in(mass, stiffness, damping, velocity)"`
  * `[SpringFrame, mass, stiffness, damping, velocity]`
  */
-export type TypeEasings = `${keyof typeof EasingFunctions}(${string})` | TypeArrayFrameFunctionFormat;
+export type TypeEasings = `${keyof typeof EasingFunctions}` | `${keyof typeof EasingFunctions}(${string})` | TypeArrayFrameFunctionFormat;
 
 /**
  * Spring Easing has 3 properties they are `easing` (all spring frame functions are supported), `numPoints` (the size of the Array the frmae function should create), and `decimal` (the number of decimal places of the values within said Array).
@@ -609,8 +609,8 @@ export const GenerateSpringFrames = (options: TypeEasingOptions = {}): [number[]
 export const SpringEasing = (
     values: (string | number)[],
     options: TypeEasingOptions | TypeEasingOptions["easing"] = {},
-    customInterpolate: (t: number, values: any[], decimal?: number) => string | number = interpolateComplex
-): [(string | number)[], number] => {
+    customInterpolate: (t: number, values: any[], decimal?: number) => string | number | any = interpolateComplex
+): [(string | number | any)[], number] => {
     let optionsObj = EasingOptions(options);
     let [frames, duration] = GenerateSpringFrames(optionsObj);
 
