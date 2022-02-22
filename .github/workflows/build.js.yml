@@ -7,12 +7,15 @@ on:
   push:
     branches: [main]
     paths:
+      - '*.ts'
       - '*.js'
       - '*.json'
       - '*.css'
       - 'README.md'
       - 'src/**/*'
       - 'static/**/*'
+      - 'assets/**/*'
+      - 'tests/**/*'
 
 jobs:
   build:
