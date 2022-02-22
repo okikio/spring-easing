@@ -259,6 +259,89 @@ export const interpolateNumber = (t: number, values: number[], decimal = 3) => {
     return toFixed(scale(progress, start, end), decimal);
 };
 
+/** If a value can be converted to a valid number, then it's most likely a number */
+export const isNumberLike = (num: string | number) => {
+    let value = parseFloat(num as string);
+    return typeof value == "number" && !Number.isNaN(value);
+};
+
+/** 
+  Given an Array of values, find a value using `t` (`t` goes from 0 to 1), by
+  using `t` to estimate the index of said value in the array of `values` 
+
+  This is meant for interploating strings that aren't number-like
+*/
+export const interpolateUsingIndex = (
+    t: number,
+    values: (string | number)[]
+) => {
+    // limit `t`, to a min of 0 and a max of 1
+    t = limit(t, 0, 1);
+
+    // nth index
+    let n = values.length - 1;
+
+    // The current index given t
+    let i = Math.round(t * n);
+    return values[i];
+};
+
+/**
+ * Returns the unit of a string, it does this by removing the number in the string
+ */
+export const getUnit = (str: string | number) => {
+    let num = parseFloat(str as string);
+    return (str.toString()).replace(num.toString(), "");
+};
+
+/** 
+  Functions the same way {@link interpolateNumber} works.
+  Convert strings to numbers, and then interpolates the numbers,
+  at the end if there are units on the first value in the `values` array,
+  it will use that unit for the interpolated result.
+  Make sure to read {@link interpolateNumber}.
+*/
+export const interpolateString = (
+    t: number,
+    values: (string | number)[],
+    decimal = 3
+) => {
+    let units = "";
+
+    // If the first value looks like a number with a unit
+    if (isNumberLike(values[0])) units = getUnit(values[0]);
+    return (
+        interpolateNumber(
+            t,
+            values.map((v) => (typeof v == "number" ? v : parseFloat(v))),
+            decimal
+        ) + units
+    );
+};
+
+/**
+  Interpolates all types of values including number, string, color, and complex values. 
+  Complex values are values like "10px solid red", that border, and other CSS Properties use.
+  Make sure to read {@link interpolateNumber}, and {@link interpolateString}.
+*/
+export const interpolateComplex = (
+    t: number,
+    values: (string | number)[],
+    decimal = 3
+) => {
+    // Interpolate numbers
+    let isNumber = values.every((v) => typeof v == "number");
+    if (isNumber) return interpolateNumber(t, values as number[], decimal);
+
+    // Interpolate strings with numbers, e.g. "5px"
+    let isLikeNumber = values.every((v) => isNumberLike(v as string));
+    if (isLikeNumber) 
+        return interpolateString(t, values as (number | string)[], decimal);
+
+    // Interpolate pure strings, e.g. "inherit", "solid", etc...
+    else return interpolateUsingIndex(t, values as string[]);
+};
+
 /**
  * The array frame function format for easings,
  * @example
@@ -388,6 +471,8 @@ export const FramePtsCache = new Map<string, WeakMap<Function, [number[], number
  *
  * _**Note**: Be very careful of only setting some of the spring parameters, it can cause errors if you are not careful_
  *
+ * @param options Accepts {@link TypeEasingOptions EasingOptions}
+ * 
  * Based on https://github.com/w3c/csswg-drafts/issues/229#issuecomment-861415901
  */
 export const GenerateSpringFrames = (options: TypeEasingOptions = {}): [number[], number] => {
@@ -457,7 +542,7 @@ export const GenerateSpringFrames = (options: TypeEasingOptions = {}): [number[]
  * By default, Spring Easing support easings in the form,
  *
  * | constant   | accelerate         | decelerate     | accelerate-decelerate | decelerate-accelerate |
- * | :--------- | :----------------- | :------------- | :-------------------- | :-------------------- |      |
+ * | :--------- | :----------------- | :------------- | :-------------------- | :-------------------- |      
  * |            | spring / spring-in | spring-out     | spring-in-out         | spring-out-in         |
  *
  * All **Spring** easing's can be configured using theses parameters,
@@ -506,16 +591,31 @@ export const GenerateSpringFrames = (options: TypeEasingOptions = {}): [number[]
  *    duration
  *  })
  *  ```
+ * 
+ * @param values Values to animate between, e.g. `["50px", 60]`
+ * > _**Note**: You can interpolate with more than 2 values, but it's very confusing, so, it's best to choose 2_
+ * @param options Accepts {@link TypeEasingOptions EasingOptions} or {@link TypeEasingOptions.easing array frame functions}
+ * @param interpolationFunction If you wish to use your own interpolation functions you may
+ * @return 
+ * ```ts
+ * // An array of keyframes that represent said spring animation and
+ * // Total duration (in milliseconds) required to create a smooth spring animation
+ * [
+ *   [50, 55, 60, 70, 80, ...], 
+ *   3500 
+ * ]
+ * ```
  */
 export const SpringEasing = (
-    values: number[],
+    values: (string | number)[],
     options: TypeEasingOptions | TypeEasingOptions["easing"] = {},
-): [number[], number] => {
+    customInterpolate: (t: number, values: any[], decimal?: number) => string | number = interpolateComplex
+): [(string | number)[], number] => {
     let optionsObj = EasingOptions(options);
     let [frames, duration] = GenerateSpringFrames(optionsObj);
 
     return [
-        frames.map((t) => interpolateNumber(t, values, optionsObj.decimal)),
+        frames.map((t) => customInterpolate(t, values, optionsObj.decimal)),
         duration
     ];
 };
