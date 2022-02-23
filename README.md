@@ -174,6 +174,7 @@ A couple sites/projects that use `spring-easing`:
 
 </details>
 
+
 The API of `spring-easing` is pretty straight forward, the `SpringEasing` function generates an array of values using a frame functions, which in turn creates the effect of spring easing.
 
 To use this properly make sure to set the easing animation option to "linear".
