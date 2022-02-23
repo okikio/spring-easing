@@ -12,6 +12,7 @@ on:
       - '*.json'
       - '*.css'
       - 'README.md'
+      - '.github/**/*.yml'
       - 'src/**/*'
       - 'static/**/*'
       - 'assets/**/*'
