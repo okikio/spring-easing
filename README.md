@@ -144,7 +144,7 @@ A couple sites/projects that use `spring-easing`:
 <details open>
 <summary><strong><em>What's New...</em></strong></summary>
 
-> **`NEW`** _SpringEasing now support interpolating between strings. It treats the units of the first value as the units for the rest of the values to interpolate bwtween._
+> **`NEW`** _SpringEasing now support interpolating between strings. It treats the units of the first value as the units for the rest of the values to interpolate between._
 > e.g.
 >
 > ```ts
@@ -153,7 +153,11 @@ A couple sites/projects that use `spring-easing`:
 >
 > _**Important** All the values above get transformed to `["0turn", "1turn", "18turn", "125turn", "25turn"]`, before being interpolated._
 
-> **`NEW`** _Custom interpolation functions are now supported. `interpolateStrings`, `interpolateUsingIndex`, and `interpolateComplex`, are now built-in, they allow for supporting string keyframes._
+
+> **`NEW`** _`interpolateStrings`, `interpolateUsingIndex`, and `interpolateComplex`, are now built-in, they allow for supporting string keyframes._
+> 
+
+> **`NEW`** _Custom interpolation functions are now supported._
 > e.g.
 >
 > ```ts
