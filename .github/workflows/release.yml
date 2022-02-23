@@ -41,6 +41,16 @@ jobs:
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
         run: pnpm semantic-release
 
+      - name: Update Docs
+        run: pnpm pre-release
+
+      - name: Add api and demo to Git
+        if: ${{ github.ref == 'refs/heads/main' }}
+        run: |
+          git add --force docs/
+          git add --force @types/
+          git add --force lib/
+
       - name: Commit files
         if: ${{ github.ref == 'refs/heads/main' }}
         run: |
