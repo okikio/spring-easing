@@ -1,6 +1,6 @@
 # spring-easing
 
-[![Open Bundle](https://bundle.js.org/badge-light.svg)](https://bundle.js.org/?q=spring-easing&bundle "Check the total bundle size of spring-easing with whichever animation library you choose.")
+[![Open Bundle](https://bundlejs.com/badge-light.svg)](https://bundlejs.com/?q=spring-easing&bundle "Check the total bundle size of spring-easing with whichever animation library you choose.")
 
 [NPM](https://www.npmjs.com/package/spring-easing) <span style="padding-inline: 1rem">|</span> [Github](https://github.com/okikio/spring-easing#readme) <span style="padding-inline: 1rem">|</span> [Docs](https://spring-easing.okikio.dev) <span style="padding-inline: 1rem">|</span> [Licence](./LICENSE)
 
