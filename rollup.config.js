@@ -40,12 +40,10 @@ export default {
             logLevel: "info",
 
             color: true,
-            bundle: true,
             minify: true,
             treeShaking: true,
 
             sourcemap: true,
-            platform: "browser",
             tsconfig: "./tsconfig.json",
         }),
         nodeResolve(),
