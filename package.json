@@ -30,9 +30,10 @@
     "@types"
   ],
   "scripts": {
-    "typedoc": "rm -r -f docs/ && typedoc && node ./rehype.js && (cp -a static/. docs/ | cp -a assets/. docs/assets/.)",
+    "typedoc": "rm -r -f docs/ && esbuild typedoc.tsx --jsx-factory=JSX.createElement --jsx-fragment=JSX.Fragment --format=cjs --outfile=typedoc.cjs && typedoc && node ./rehype.js && (cp -a static/. docs/ | cp -a assets/. docs/assets/.)",
     "dts": "rm -r -f @types/ && tsc -p dts.tsconfig.json",
     "preview": "vite docs",
+    "start": "vite docs",
     "commit": "git cz",
     "test": "vitest",
     "test:run": "vitest run",

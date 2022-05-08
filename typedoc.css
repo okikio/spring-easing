@@ -244,7 +244,7 @@ body.light .tsd-panel {
     text-decoration-style: wavy;
 }
 
-.tsd-panel img[src="https://bundle.js.org/badge-light.svg"] {
+.tsd-panel img[src="https://bundlejs.com/badge-light.svg"] {
     overflow: hidden;
     border-radius: 20em;
     border: 1px solid rgb(20 20 20 / 0.25);
@@ -263,7 +263,7 @@ body:not(.light) .tsd-panel a {
     opacity: 0.6;
 }
 
-.tsd-panel a[target]:is([href*="https://gitpod.io/#"],[href*="https://bundle.js.org/?"]) .external-icon
+.tsd-panel a[target]:is([href*="https://gitpod.io/#"],[href*="https://bundlejs.com/?"]) .external-icon
 {
     display: none;
 }
