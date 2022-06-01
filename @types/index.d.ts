@@ -69,7 +69,7 @@ export declare const EasingDurationCache: Map<string, number>;
 /**
  * The threshold for an infinite loop
  */
-export declare const INTINITE_LOOP_LIMIT = 100000;
+export declare const INFINITE_LOOP_LIMIT = 100000;
 /**
  * The spring easing function will only look smooth at certain durations, with certain parameters.
  * This functions returns the optimal duration to create a smooth springy animation based on physics
