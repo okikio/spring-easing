@@ -45,7 +45,7 @@ export const CSS_CACHE = new Map<string, any | any[]>();
  * Convert colors to an [r, g, b, a] Array
 */
 export const toRGBAArr = (color = "transparent") => {
-    let result: number[];
+    let result: number[] | null = null;
 
     color = color.trim();
     if (CSS_CACHE.has(color)) return CSS_CACHE.get(color);
@@ -65,11 +65,11 @@ export const toRGBAArr = (color = "transparent") => {
         let { backgroundColor } = globalThis?.getComputedStyle?.(el);
         el.remove();
 
-        let computedColor = /\(([^)]+)\)?/.exec(backgroundColor)?.[1].split(",");
-        result = (computedColor.length == 3 ? [...computedColor, "1"] : computedColor).map(v => parseFloat(v));
+        let computedColor = /\(([^)]+)\)?/.exec(backgroundColor)?.[1].split(",") ?? [];
+        result = (computedColor?.length == 3 ? [...computedColor, "1"] : computedColor).map(v => parseFloat(v as string));
     }
 
-    CSS_CACHE.set(color, result);
+    if (result) CSS_CACHE.set(color, result);
     return result;
 };
 
@@ -145,7 +145,7 @@ export const transpose = (...args: (any | any[])[]) => {
     });
 
     // Flip the rows and columns of arrays
-    let result = [];
+    let result: any[][] = [];
     let len = args.length;
     for (let col = 0; col < largestArrLen; col++) {
         result[col] = [];
