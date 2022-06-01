@@ -109,7 +109,7 @@ export const EasingDurationCache: Map<
 /**
  * The threshold for an infinite loop
  */
-export const INTINITE_LOOP_LIMIT = 100_000;
+export const INFINITE_LOOP_LIMIT = 100_000;
 
 /**
  * The spring easing function will only look smooth at certain durations, with certain parameters.
@@ -137,7 +137,7 @@ export const getSpringDuration = ([mass, stiffness, damping, velocity]: number[]
     let count = 0;
 
     // Add a loop limit, to avoid situations with infinite loops
-    while (++count < INTINITE_LOOP_LIMIT) {
+    while (++count < INFINITE_LOOP_LIMIT) {
         elapsed += frame;
         if (SpringFrame(elapsed, params, null) === 1) {
             rest++;
