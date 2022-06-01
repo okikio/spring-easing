@@ -75,6 +75,8 @@ export const SpringFrame: TypeFrameFunction = (
     [mass = 1, stiffness = 100, damping = 10, velocity = 0] = [],
     duration,
 ) => {
+    if (t === 0 || t === 1) return t;
+    
     mass = limit(mass, 0.1, 1000);
     stiffness = limit(stiffness, 0.1, 1000);
     damping = limit(damping, 0.1, 1000);
@@ -93,8 +95,7 @@ export const SpringFrame: TypeFrameFunction = (
     } else {
         progress = (a + b * progress) * Math.exp(-progress * w0);
     }
-
-    if (t === 0 || t === 1) return t;
+    
     return 1 - progress;
 };
 
