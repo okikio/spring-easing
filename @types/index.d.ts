@@ -1,5 +1,8 @@
 /**
  * Limit a number to a minimum of `min` and a maximum of `max`
+ *
+ * @source Source code of `limit`
+ *
  * @param value number to limit
  * @param min minimum limit
  * @param max maximum limit
@@ -9,6 +12,8 @@ export declare const limit: (value: number, min: number, max: number) => number;
 /**
  * The format to use when defining custom frame functions
  * An example of a frame function is {@link SpringFrame}
+ *
+ * @source Source code of `TypeFrameFunction`
  *
  * @param t time value between 0 & 1
  * @param spring-parameters
@@ -68,6 +73,8 @@ export declare const SpringFrame: TypeFrameFunction;
 export declare const EasingDurationCache: Map<string, number>;
 /**
  * The threshold for an infinite loop
+ *
+ * @source Source code of `INFINITE_LOOP_LIMIT`
  */
 export declare const INFINITE_LOOP_LIMIT = 100000;
 /**
@@ -88,6 +95,8 @@ export declare const INFINITE_LOOP_LIMIT = 100000;
 export declare const getSpringDuration: ([mass, stiffness, damping, velocity]?: number[]) => number;
 /**
  * Creates a new frame function where each frame follows an `out` pattern
+ *
+ * @source Source code of `EaseOut`
  *
  * @param frame frame function (see {@link TypeFrameFunction}, to learn more about frame functions)
  * @returns A new frame function that represents the ease-out version of the frame function given as an argument
@@ -125,64 +134,88 @@ export declare const SpringInFrame: TypeFrameFunction;
  * "spring-out" frame function where each {@link SpringFrame} follows an ease `out` pattern
  *
  * _**Note**: Be very careful of only setting some of the spring parameters, it can cause errors if you are not careful_
+ *
+ * @source Source code of `SpringOutFrame`
  */
 export declare const SpringOutFrame: TypeFrameFunction;
 /**
  * "spring-in-out" frame function where each {@link SpringFrame} follows an ease `in-out` pattern
  *
  * _**Note**: Be very careful of only setting some of the spring parameters, it can cause errors if you are not careful_
+ *
+ * @source Source code of `SpringInOutFrame`
  */
 export declare const SpringInOutFrame: TypeFrameFunction;
 /**
  * "spring-out-in" frame function where each {@link SpringFrame} follows an ease `out-in` pattern
  *
  * _**Note**: Be very careful of only setting some of the spring parameters, it can cause errors if you are not careful_
+ *
+ * @source Source code of `SpringOutInFrame`
  */
 export declare const SpringOutInFrame: TypeFrameFunction;
-/** map `t` from 0 to 1, to `start` to `end` */
+/**
+ * map `t` from 0 to 1, to `start` to `end`
+ *
+ * @source Source code of `scale`
+ */
 export declare const scale: (t: number, start: number, end: number) => number;
-/** Rounds numbers to a fixed decimal place */
+/**
+ * Rounds numbers to a fixed decimal place
+ *
+ * @source Source code of `toFixed`
+ */
 export declare const toFixed: (value: number, decimal: number) => number;
 /**
-  Given an Array of numbers, estimate the resulting number, at a `t` value between 0 to 1
+ * Given an Array of numbers, estimate the resulting number, at a `t` value between 0 to 1
 
-  Basic interpolation works by scaling `t` from 0 - 1, to some start number and end number, in this case lets use
-  0 as our start number and 100 as our end number, so, basic interpolation would interpolate between 0 to 100.
+ * Basic interpolation works by scaling `t` from 0 - 1, to some start number and end number, in this case lets use
+ * 0 as our start number and 100 as our end number, so, basic interpolation would interpolate between 0 to 100.
 
-  If we use a `t` of 0.5, the interpolated value between 0 to 100, is 50.
-  {@link interpolateNumber} takes it further, by allowing you to interpolate with more than 2 values,
-  it allows for multiple values.
-  E.g. Given an Array of values [0, 100, 0], and a `t` of 0.5, the interpolated value would become 100.
+ * If we use a `t` of 0.5, the interpolated value between 0 to 100, is 50.
+ * {@link interpolateNumber} takes it further, by allowing you to interpolate with more than 2 values,
+ * it allows for multiple values.
+ * E.g. Given an Array of values [0, 100, 0], and a `t` of 0.5, the interpolated value would become 100.
 
-  Based on d3.interpolateBasis [https://github.com/d3/d3-interpolate#interpolateBasis],
-  check out the link above for more detail.
+ * Based on d3.interpolateBasis [https://github.com/d3/d3-interpolate#interpolateBasis],
+ * check out the link above for more detail.
+ *
+ * @source Source code of `interpolateNumber`
 */
 export declare const interpolateNumber: (t: number, values: number[], decimal?: number) => number;
-/** If a value can be converted to a valid number, then it's most likely a number */
+/**
+ * If a value can be converted to a valid number, then it's most likely a number
+ *
+ * @source Source code of `isNumberLike`
+ */
 export declare const isNumberLike: (num: string | number) => boolean;
 /**
-  Given an Array of values, find a value using `t` (`t` goes from 0 to 1), by
-  using `t` to estimate the index of said value in the array of `values`
+ * Given an Array of values, find a value using `t` (`t` goes from 0 to 1), by
+ * using `t` to estimate the index of said value in the array of `values`
 
-  This is meant for interploating strings that aren't number-like
+ * This is meant for interploating strings that aren't number-like
+
+ * @source Source code of `interpolateUsingIndex`
 */
 export declare const interpolateUsingIndex: (t: number, values: (string | number)[]) => string | number;
 /**
  * Returns the unit of a string, it does this by removing the number in the string
+ *
+ * @source Source code of `getUnit`
  */
 export declare const getUnit: (str: string | number) => string;
 /**
-  Functions the same way {@link interpolateNumber} works.
-  Convert strings to numbers, and then interpolates the numbers,
-  at the end if there are units on the first value in the `values` array,
-  it will use that unit for the interpolated result.
-  Make sure to read {@link interpolateNumber}.
+ * Functions the same way {@link interpolateNumber} works.
+ * Convert strings to numbers, and then interpolates the numbers,
+ * at the end if there are units on the first value in the `values` array,
+ * it will use that unit for the interpolated result.
+ * Make sure to read {@link interpolateNumber}.
 */
 export declare const interpolateString: (t: number, values: (string | number)[], decimal?: number) => string;
 /**
-  Interpolates all types of values including number, string, color, and complex values.
-  Complex values are values like "10px solid red", that border, and other CSS Properties use.
-  Make sure to read {@link interpolateNumber}, and {@link interpolateString}.
+ * Interpolates all types of values including number, string, color, and complex values.
+ * Complex values are values like "10px solid red", that border, and other CSS Properties use.
+ * Make sure to read {@link interpolateNumber}, and {@link interpolateString}.
 */
 export declare const interpolateComplex: (t: number, values: (string | number)[], decimal?: number) => string | number;
 /**
