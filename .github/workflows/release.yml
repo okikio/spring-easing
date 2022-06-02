@@ -35,16 +35,16 @@ jobs:
       - name: Install dependencies
         run: pnpm install
 
+      - name: Pre-release
+        run: pnpm pre-release
+
       - name: Release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
         run: pnpm semantic-release
 
-      - name: Update Docs
-        run: pnpm pre-release
-
-      - name: Add api and demo to Git
+      - name: Add lib, types and docs to Git
         if: ${{ github.ref == 'refs/heads/main' }}
         run: |
           git add --force docs/
