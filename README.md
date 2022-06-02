@@ -2,7 +2,7 @@
 
 [![Open Bundle](https://bundlejs.com/badge-light.svg)](https://bundlejs.com/?q=spring-easing&bundle "Check the total bundle size of spring-easing with whichever animation library you choose.")
 
-[NPM](https://www.npmjs.com/package/spring-easing) <span style="padding-inline: 1rem">|</span> [Github](https://github.com/okikio/spring-easing#readme) <span style="padding-inline: 1rem">|</span> [Docs](https://spring-easing.okikio.dev) <span style="padding-inline: 1rem">|</span> [Licence](./LICENSE)
+[NPM](https://www.npmjs.com/package/spring-easing) <span style="padding-inline: 1rem">|</span> [GitHub](https://github.com/okikio/spring-easing#readme) <span style="padding-inline: 1rem">|</span> [Docs](https://spring-easing.okikio.dev) <span style="padding-inline: 1rem">|</span> [Licence](./LICENSE)
 
 Quick and easy spring animations. Works with other animation libraries ([gsap](https://greensock.com/), [animejs](https://animejs.com/), [@okikio/animate](http://npmjs.com/@okikio/animate), [motion one](https://motion.dev/), [framer motion](https://www.framer.com/docs/animation/), etc...) or the [Web Animation API (WAAPI)](https://developer.mozilla.org/en-US/docs/Web/API/Web_Animations_API/Using_the_Web_Animations_API), you can learn more in the [Usage](#use-with-animation-libraries) section.
 
@@ -16,7 +16,7 @@ Quick and easy spring animations. Works with other animation libraries ([gsap](h
 
 You can create animation's like this with `spring-easing`,
 
-<img src="assets/spring-easing-demo-video.gif" width="1920" loading="lazy" alt="A demo of the various spring-easings available" align="center" style="border-radius: 1rem; 
+<img src="media/assets/spring-easing-demo-video.gif" width="1920" loading="lazy" alt="A demo of the various spring-easings available" align="center" style="border-radius: 1rem; 
     aspect-ratio: auto 1920 / 899;" />
 
 > _Check out the spring easing variants on [Codepen](https://codepen.io/okikio/pen/MWEMEgJ)._

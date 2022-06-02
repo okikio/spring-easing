@@ -20,9 +20,8 @@ export function redirectURLs(url) {
 }
 
 async function importPlugin(p) {
-    if (typeof p === "string") {
+    if (typeof p === "string") 
         return await import(p);
-    }
 
     return await p;
 }

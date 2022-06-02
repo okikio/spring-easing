@@ -104,10 +104,6 @@ dist
 .tern-port
 
 # Project specific files
-/lib
-/docs
-/@types
-
 lib/
 docs/
 @types/
