@@ -7,15 +7,16 @@ on:
   push:
     branches: [main]
     paths:
+      - '.typedoc/**/*'
       - '*.ts'
       - '*.js'
       - '*.json'
       - '*.css'
+      - '*.yaml'
       - 'README.md'
       - '.github/**/*.yml'
       - 'src/**/*'
-      - 'static/**/*'
-      - 'assets/**/*'
+      - 'media/**/*'
       - 'tests/**/*'
 
 jobs:
@@ -53,7 +54,7 @@ jobs:
       - name: Pre-Release
         run: pnpm pre-release
 
-      - name: Add api and demo to Git
+      - name: Add lib, types and docs to Git
         if: ${{ github.ref == 'refs/heads/main' }}
         run: |
           git add --force docs/
