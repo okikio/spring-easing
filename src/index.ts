@@ -1,4 +1,4 @@
-// Adapted from https://github.com/okikio/native/blob/beta/packages/animate/src/custom-easing.ts, which is licensed under the MIT license.
+// Adapted from https://github.com/okikio/native/blob/726b26bc3f7a84d2750aa2ffc13572a2a4de905c/packages/animate/src/custom-easing.ts, which is licensed under the MIT license.
 // If the above file is removed or modified, you can access the original state in the following GitHub Gist: https://gist.github.com/okikio/bed53ed621cb7f60e9a8b1ef92897471
 
 /**
