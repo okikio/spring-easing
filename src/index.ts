@@ -370,8 +370,6 @@ export const interpolateComplex = (
   // Interpolate strings with numbers, e.g. "5px"
   let isLikeNumber = values.every((v) => isNumberLike(v as string));
   if (isLikeNumber)
-    if (isLikeNumber) 
-  if (isLikeNumber)
     return interpolateString(t, values as (number | string)[], decimal);
 
   // Interpolate pure strings, e.g. "inherit", "solid", etc...
