@@ -1,3 +1,20 @@
+# [1.2.0](https://github.com/okikio/spring-easing/compare/v1.1.1...v1.2.0) (2022-09-05)
+
+
+### Bug Fixes
+
+* bugs ([7c2e24a](https://github.com/okikio/spring-easing/commit/7c2e24a4f16f41b24ed2f201de38b8b64a66d0a7))
+
+
+### Features
+
+* add registerEasingFunction(s) function ([e97cb1d](https://github.com/okikio/spring-easing/commit/e97cb1d838f01678d86ea6bf372eaf75137446b9))
+
+
+### Performance Improvements
+
+* optimize interploation functions ([7787db5](https://github.com/okikio/spring-easing/commit/7787db509b0cf94b25ed611f23b5f0bb3298cb00))
+
 ## [1.1.1](https://github.com/okikio/spring-easing/compare/v1.1.0...v1.1.1) (2022-06-02)
 
 
