@@ -1,17 +1,8 @@
 // Adapted from https://github.com/okikio/native/blob/726b26bc3f7a84d2750aa2ffc13572a2a4de905c/packages/animate/src/custom-easing.ts, which is licensed under the MIT license.
 // If the above file is removed or modified, you can access the original state in the following GitHub Gist: https://gist.github.com/okikio/bed53ed621cb7f60e9a8b1ef92897471
+import { getUnit, isNumberLike, limit, scale, toFixed } from "./utils";
 
-/**
- * Limit a number to a minimum of `min` and a maximum of `max`
- *
- * @source Source code of `limit`
- * 
- * @param value number to limit
- * @param min minimum limit
- * @param max maximum limit
- * @returns limited/constrained number
- */
-export function limit (value: number, min: number, max: number) { return Math.min(Math.max(value, min), max) }
+export * from "./utils";
 
 /**
  * The format to use when defining custom frame functions
@@ -75,11 +66,11 @@ export type TypeFrameFunction = (
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
-export function SpringFrame: TypeFrameFunction (
+export const SpringFrame: TypeFrameFunction = (
   t,
   [mass = 1, stiffness = 100, damping = 10, velocity = 0] = [],
   duration,
-) {
+) => {
   if (t === 0 || t === 1) return t;
 
   mass = limit(mass, 0.1, 1000);
@@ -134,10 +125,11 @@ export const INFINITE_LOOP_LIMIT = 100_000;
  *
  * Based on a function of the same name in [animejs](https://github.com/juliangarnier/anime/blob/3ebfd913a04f7dc59cc3d52e38275272a5a12ae6/src/index.js#L100)
  */
-export function getSpringDuration ([mass, stiffness, damping, velocity]: number[] = []) {
+export function getSpringDuration([mass, stiffness, damping, velocity]: number[] = []) {
   let params = [mass, stiffness, damping, velocity];
   let easing = `${params}`;
-  if (EasingDurationCache.has(easing)) return EasingDurationCache.get(easing);
+  if (EasingDurationCache.has(easing)) 
+    return EasingDurationCache.get(easing);
 
   const frame = 1 / 6;
   let elapsed = 0;
@@ -171,7 +163,7 @@ export function getSpringDuration ([mass, stiffness, damping, velocity]: number[
  * Based off of another library, but I can't remember which. If any devs are able to find
  * the source, I'll gladily place a link to the original source here
  */
-export function EaseOut (frame: TypeFrameFunction): TypeFrameFunction {
+export function EaseOut(frame: TypeFrameFunction): TypeFrameFunction {
   return (t, params = [], duration) => 1 - frame(1 - t, params, duration);
 }
 
@@ -184,7 +176,7 @@ export function EaseOut (frame: TypeFrameFunction): TypeFrameFunction {
  * Based off of another library, but I can't remember which. If any devs are able to find
  * the source, I'll gladily place a link to the original source here
  */
-export function EaseInOut (frame: TypeFrameFunction): TypeFrameFunction {
+export function EaseInOut(frame: TypeFrameFunction): TypeFrameFunction {
   return function (t, params = [], duration) {
     return t < 0.5
       ? frame(t * 2, params, duration) / 2
@@ -201,7 +193,7 @@ export function EaseInOut (frame: TypeFrameFunction): TypeFrameFunction {
  * Based off of another library, but I can't remember which. If any devs are able to find
  * the source, I'll gladily place a link to the original source here
  */
-export function EaseOutIn (frame: TypeFrameFunction): TypeFrameFunction {
+export function EaseOutIn(frame: TypeFrameFunction): TypeFrameFunction {
   return function (t, params = [], duration) {
     return t < 0.5
       ? (1 - frame(1 - t * 2, params, duration)) / 2
@@ -242,20 +234,6 @@ export const SpringInOutFrame = EaseInOut(SpringFrame);
  */
 export const SpringOutInFrame = EaseOutIn(SpringFrame);
 
-/** 
- * map `t` from 0 to 1, to `start` to `end`
- *
- * @source Source code of `scale` 
- */
-export function scale (t: number, start: number, end: number) { return start + (end - start) * t }
-
-/** 
- * Rounds numbers to a fixed decimal place 
- *
- * @source Source code of `toFixed`
- */
-export function toFixed (value: number, decimal: number) { return Math.round(value * 10 ** decimal) / 10 ** decimal }
-
 /**
  * Given an Array of numbers, estimate the resulting number, at a `t` value between 0 to 1
 
@@ -272,28 +250,20 @@ export function toFixed (value: number, decimal: number) { return Math.round(val
  *
  * @source Source code of `interpolateNumber`
 */
-export function interpolateNumber (t: number, values: number[], decimal = 3) {
+export function interpolateNumber(frames: number[], values: number[], decimal = 3) {
   // nth index
-  let n = values.length - 1;
+  const n = values.length - 1;
 
-  // The current index given t
-  let i = limit(Math.floor(t * n), 0, n - 1);
+  return frames.map(t => {
+    // The current index given t
+    const i = limit(Math.floor(t * n), 0, n - 1);
 
-  let start = values[i];
-  let end = values[i + 1];
-  let progress = (t - i / n) * n;
+    const start = values[i];
+    const end = values[i + 1];
+    const progress = (t - i / n) * n;
 
-  return toFixed(scale(progress, start, end), decimal);
-}
-
-/** 
- * If a value can be converted to a valid number, then it's most likely a number 
- *
- * @source Source code of `isNumberLike`
- */
-export function isNumberLike (num: string | number) {
-  let value = parseFloat(num as string);
-  return typeof value == "number" && !Number.isNaN(value);
+    return toFixed(scale(progress, start, end), decimal);
+  });
 }
 
 /** 
@@ -304,29 +274,21 @@ export function isNumberLike (num: string | number) {
 
  * @source Source code of `interpolateUsingIndex`
 */
-export function interpolateUsingIndex (
-  t: number,
+export function interpolateUsingIndex(
+  frames: number[],
   values: (string | number)[]
 ) {
-  // limit `t`, to a min of 0 and a max of 1
-  t = limit(t, 0, 1);
-
   // nth index
-  let n = values.length - 1;
+  const n = values.length - 1;
 
-  // The current index given t
-  let i = Math.round(t * n);
-  return values[i];
-}
+  return frames.map(t => {
+    // limit `t`, to a min of 0 and a max of 1
+    t = limit(t, 0, 1);
 
-/**
- * Returns the unit of a string, it does this by removing the number in the string
- * 
- * @source Source code of `getUnit`
- */
-export function getUnit (str: string | number) {
-  let num = parseFloat(str as string);
-  return (str.toString()).replace(num.toString(), "");
+    // The current index given t
+    const i = Math.round(t * n);
+    return values[i];
+  });
 }
 
 /** 
@@ -336,8 +298,8 @@ export function getUnit (str: string | number) {
  * it will use that unit for the interpolated result.
  * Make sure to read {@link interpolateNumber}.
 */
-export function interpolateString (
-  t: number,
+export function interpolateString(
+  frames: number[],
   values: (string | number)[],
   decimal = 3
 ) {
@@ -347,10 +309,10 @@ export function interpolateString (
   if (isNumberLike(values[0])) units = getUnit(values[0]);
   return (
     interpolateNumber(
-      t,
+      frames,
       values.map((v) => (typeof v == "number" ? v : parseFloat(v))),
       decimal
-    ) + units
+    ).map(value => value + units)
   );
 }
 
@@ -359,22 +321,22 @@ export function interpolateString (
  * Complex values are values like "10px solid red", that border, and other CSS Properties use.
  * Make sure to read {@link interpolateNumber}, and {@link interpolateString}.
 */
-export function interpolateComplex (
-  t: number,
+export function interpolateComplex(
+  frames: number[],
   values: (string | number)[],
   decimal = 3
 ) {
   // Interpolate numbers
-  let isNumber = values.every((v) => typeof v == "number");
-  if (isNumber) return interpolateNumber(t, values as number[], decimal);
+  const isNumber = values.every((v) => typeof v == "number");
+  if (isNumber) return interpolateNumber(frames, values as number[], decimal);
 
   // Interpolate strings with numbers, e.g. "5px"
-  let isLikeNumber = values.every((v) => isNumberLike(v as string));
+  const isLikeNumber = values.every((v) => isNumberLike(v as string));
   if (isLikeNumber)
-    return interpolateString(t, values as (number | string)[], decimal);
+    return interpolateString(frames, values as (number | string)[], decimal);
 
   // Interpolate pure strings, e.g. "inherit", "solid", etc...
-  return interpolateUsingIndex(t, values as string[]);
+  return interpolateUsingIndex(frames, values as string[]);
 }
 
 /**
@@ -448,7 +410,7 @@ export let EasingFunctionKeys = Object.keys(EasingFunctions);
 /**
  * Allows you to register new easing functions
  */
-export function registerEasingFunction (key: string, fn?: TypeEasingFunction) {
+export function registerEasingFunction(key: string, fn?: TypeFrameFunction) {
   Object.assign(EasingFunctions, { [key]: fn });
   EasingFunctionKeys = Object.keys(EasingFunctions);
 }
@@ -456,7 +418,7 @@ export function registerEasingFunction (key: string, fn?: TypeEasingFunction) {
 /**
  * Allows you to register multiple new easing functions
  */
-export function registerEasingFunctions (...obj: Array<Record<string, any>>) {
+export function registerEasingFunctions(...obj: Array<Record<string, any>>) {
   Object.assign(EasingFunctions, ...obj);
   EasingFunctionKeys = Object.keys(EasingFunctions);
 }
@@ -466,7 +428,7 @@ export function registerEasingFunctions (...obj: Array<Record<string, any>>) {
  *
  * Based off of [animejs](https://github.com/juliangarnier/anime/blob/3ebfd913a04f7dc59cc3d52e38275272a5a12ae6/src/index.js#L69)
  */
-export function parseEasingParameters (str: string) {
+export function parseEasingParameters(str: string) {
   const match = /(\(|\s)([^)]+)\)?/.exec(str.toString());
   return match
     ? match[2].split(",").map((value) => {
@@ -481,10 +443,10 @@ export function parseEasingParameters (str: string) {
  *
  * _**Note**: Be very careful of only setting some of the spring parameters, it can cause errors if you are not careful_
  */
-export function EasingOptions (
+export function EasingOptions(
   options: TypeEasingOptions | TypeEasingOptions["easing"] = {},
 ) {
-  let isEasing = typeof options == "string" || (Array.isArray(options) && typeof options[0] == "function");
+  const isEasing = typeof options == "string" || (Array.isArray(options) && typeof options[0] == "function");
   let {
     easing = [SpringFrame, 1, 100, 10, 0],
     numPoints = 100,
@@ -492,13 +454,13 @@ export function EasingOptions (
   } = (isEasing ? { easing: options } : options) as TypeEasingOptions;
 
   if (typeof easing == "string") {
-    let frameFunction = EasingFunctions[
+    const frameFunction = EasingFunctions[
       easing.replace(/(\(|\s).+/, "") // Remove the function brackets and parameters
         .toLowerCase()
         .trim()
     ];
 
-    let params = parseEasingParameters(easing);
+    const params = parseEasingParameters(easing);
     easing = [frameFunction, ...params] as TypeArrayFrameFunctionFormat;
   }
 
@@ -506,8 +468,8 @@ export function EasingOptions (
 }
 
 /**
-  Cache generated frame points for commonly used easing functions
-*/
+ * Cache generated frame points for commonly used easing functions
+ */
 export const FramePtsCache = new Map<string, WeakMap<Function, [number[], number]>>();
 
 /**
@@ -528,7 +490,7 @@ export const FramePtsCache = new Map<string, WeakMap<Function, [number[], number
  * 
  * Based on https://github.com/w3c/csswg-drafts/issues/229#issuecomment-861415901
  */
-export function GenerateSpringFrames (options: TypeEasingOptions = {}): [number[], number] {
+export function GenerateSpringFrames(options: TypeEasingOptions = {}): [number[], number] {
   let {
     easing,
     numPoints,
@@ -567,12 +529,12 @@ export function GenerateSpringFrames (options: TypeEasingOptions = {}): [number[
   }
 
   const pts: number[] = [];
-  let duration = getSpringDuration(params);
+  const duration = getSpringDuration(params);
   for (let i = 0; i < numPoints; i++) {
     pts[i] = frameFunction(i / (numPoints - 1), params, duration);
   }
 
-  let tempObj = FramePtsCache.has(key) ? FramePtsCache.get(key) : new WeakMap();
+  const tempObj = FramePtsCache.has(key) ? FramePtsCache.get(key) : new WeakMap();
   tempObj.set(frameFunction, [pts, duration]);
   FramePtsCache.set(key, tempObj);
   return [pts, duration];
@@ -658,16 +620,16 @@ export function GenerateSpringFrames (options: TypeEasingOptions = {}): [number[
  * ]
  * ```
  */
-export function SpringEasing (
+export function SpringEasing(
   values: (string | number)[],
   options: TypeEasingOptions | TypeEasingOptions["easing"] = {},
-  customInterpolate: (t: number, values: any[], decimal?: number) => string | number | any = interpolateComplex
+  customInterpolate: (frames: number[], values: any[], decimal?: number) => string | number | any = interpolateComplex
 ): [(string | number | any)[], number] {
-  let optionsObj = EasingOptions(options);
-  let [frames, duration] = GenerateSpringFrames(optionsObj);
+  const optionsObj = EasingOptions(options);
+  const [frames, duration] = GenerateSpringFrames(optionsObj);
 
   return [
-    frames.map((t) => customInterpolate(t, values, optionsObj.decimal)),
+    customInterpolate(frames, values, optionsObj.decimal),
     duration
   ];
 }
