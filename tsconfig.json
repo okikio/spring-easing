@@ -16,7 +16,7 @@
   },
   "include": [
     "src"
-  ],
+, "tests/utils/color-parse.ts"  ],
   "exclude": [
     "node_modules"
   ]

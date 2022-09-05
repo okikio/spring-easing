@@ -22,7 +22,8 @@ You can create animation's like this with `spring-easing`,
 > _Check out the spring easing variants on [Codepen](https://codepen.io/okikio/pen/MWEMEgJ)._
 
 > _**Attention**: This entire library is a lightweight version of the [`CustomEasing`](https://native.okikio.dev/animate/api/custom-easing/) implemented in [`@okikio/animate`](https://native.okikio.dev/animate), which supports only string and number interpolation. If you'd like the complete `CustomEasing` with color interpolation, complex value interpolation, and more, go through the source code as a [Github Gist](https://gist.github.com/okikio/bed53ed621cb7f60e9a8b1ef92897471#file-custom-easing-ts), which is licensed under the MIT license._
-<br>
+> <br>
+
 ## Installation
 
 ```bash
@@ -44,8 +45,6 @@ pnpm install spring-easing
 
 </details>
 
-
-
 ## Usage
 
 ```ts
@@ -59,8 +58,8 @@ You can also use it directly through a script tag:
 ```html
 <script src="https://unpkg.com/spring-easing" type="module"></script>
 <script type="module">
-    // You can then use it like this
-    const { SpringEasing } = window.SpringEasing;
+  // You can then use it like this
+  const { SpringEasing } = window.SpringEasing;
 </script>
 ```
 
@@ -96,34 +95,34 @@ import { SpringEasing, SpringOutFrame } from "spring-easing";
 
 // Note: this is the return value of `SpringEasing` and `GenerateSpringFrames`
 let [translateX, duration] = SpringEasing([0, 250], {
-    easing: "spring-out-in(1, 100, 10, 0)",
-    // You can change the size of Array for the SpringEasing function to generate
-    numPoints: 200,
-    // The number of decimal places to round, final values in the generated Array
-    // This option doesn't exist on `GenerateSpringFrames`
-    decimal: 5,
+  easing: "spring-out-in(1, 100, 10, 0)",
+  // You can change the size of Array for the SpringEasing function to generate
+  numPoints: 200,
+  // The number of decimal places to round, final values in the generated Array
+  // This option doesn't exist on `GenerateSpringFrames`
+  decimal: 5,
 });
 
 anime({
-    targets: "div",
+  targets: "div",
 
-    // Using spring easing animate from [0 to 250] using `spring-out-in`
-    translateX,
+  // Using spring easing animate from [0 to 250] using `spring-out-in`
+  translateX,
 
-    // You can interpolate between strings
-    // You can set the easing without an easing options object
-    // You can interpolate between more than 2 values
-    // Remember the `0` index of `SpringEasing` is an array of spring animation keyframes
-    rotate: SpringEasing(
-        ["0turn", 1, 0, 0.5],
-        [SpringOutFrame, 1, 100, 10, 0]
-    )[0],
+  // You can interpolate between strings
+  // You can set the easing without an easing options object
+  // You can interpolate between more than 2 values
+  // Remember the `0` index of `SpringEasing` is an array of spring animation keyframes
+  rotate: SpringEasing(
+    ["0turn", 1, 0, 0.5],
+    [SpringOutFrame, 1, 100, 10, 0]
+  )[0],
 
-    // TIP... Use linear easing for the proper springy effect
-    easing: "linear",
+  // TIP... Use linear easing for the proper springy effect
+  easing: "linear",
 
-    // The optimal duration for this specific spring configuration, e.g. mass, velocity, damping, etc...
-    duration,
+  // The optimal duration for this specific spring configuration, e.g. mass, velocity, damping, etc...
+  duration,
 });
 ```
 
@@ -135,11 +134,9 @@ anime({
 
 A couple sites/projects that use `spring-easing`:
 
--   Your site/project here...
+- Your site/project here...
 
 ## API
-
-
 
 <details open>
 <summary><strong><em>What's New...</em></strong></summary>
@@ -153,9 +150,7 @@ A couple sites/projects that use `spring-easing`:
 >
 > _**Important** All the values above get transformed to `["0turn", "1turn", "18turn", "125turn", "25turn"]`, before being interpolated._
 
-
 > **`NEW`** _`interpolateStrings`, `interpolateUsingIndex`, and `interpolateComplex`, are now built-in, they allow for supporting string keyframes._
-> 
 
 > **`NEW`** _Custom interpolation functions are now supported._
 > e.g.
@@ -163,21 +158,24 @@ A couple sites/projects that use `spring-easing`:
 > ```ts
 > import { interpolateNumber } from "spring-easing";
 > // ...
-> export const interpolateColor = (t, values, decimal) => {
->     return transpose(...values.map((v) => toRGBAArr(v))).map(
->         (colors, i) => {
->             let result = interpolateNumber(t, colors);
->             return i < 3 ? Math.round(result) : toFixed(result, decimal);
->         }
->     );
-> };
+> export function interpolateColor(frames, values, decimal = 3) {
+>   const rgbColors = transpose(...values.map((v) => rgba(v)))
+>     .filter((colors) => Array.isArray(colors));
 > 
-> SpringEasing(["red", "green", "#4f4"], "spring", interpolateColor)
+>   return transpose(
+>     ...rgbColors.map((colors, i) => {
+>       return interpolateNumber(frames, colors as number[])
+>         .map(result => i < 3 ? Math.round(result) : toFixed(result, decimal));
+>     })
+>   ).map(color => `rgba(${color.join()})`);
+> }
+>
+> SpringEasing(["red", "green", "#4f4"], "spring", interpolateColor);
 > ```
-> _**Important** The logic for color interpolation is defined in this [Github Gist](https://gist.github.com/okikio/bed53ed621cb7f60e9a8b1ef92897471#file-utils-ts)._
+>
+> _**Important** The logic for color interpolation is defined in this [tests/utils/interpolate-color.ts](https://github.com/okikio/spring-easing/blob/main/tests/utils/interpolate-color.ts)._
 
 </details>
-
 
 The API of `spring-easing` is pretty straight forward, the `SpringEasing` function generates an array of values using a frame functions, which in turn creates the effect of spring easing.
 
