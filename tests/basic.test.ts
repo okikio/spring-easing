@@ -1,6 +1,6 @@
 
 import { describe, expect, it } from 'vitest';
-import { interpolateColor } from "./utils/color-interpolate";
+import { interpolateColor } from "./utils/interpolate-color";
 import { SpringEasing, SpringFrame, SpringOutFrame, SpringInOutFrame, SpringOutInFrame } from "../src/index";
 
 describe("SpringFrame", () => {
@@ -311,7 +311,7 @@ describe("SpringFrame", () => {
         1666.6666666666663
       ]);
   })
-  
+
   it('String interpolation & Custom interpolation functions', () => {
     // string interpolation
     let [keyframes] = SpringEasing(["0turn", 5, "50deg", "700", 0], {
@@ -319,7 +319,7 @@ describe("SpringFrame", () => {
       numPoints: 100,
       decimal: 2
     });
-    expect( keyframes.every(str => /turn$/.test(str as string)) ).toEqual(true)
+    expect(keyframes.every(str => /turn$/.test(str as string))).toEqual(true)
 
     let [keyframes2] = SpringEasing(["red", "blue", "#4f4", "rgb(0, 0, 0)"], {
       // Enforce a linear easing frame function
@@ -329,14 +329,15 @@ describe("SpringFrame", () => {
       decimal: 2
     }, interpolateColor);
     expect(keyframes2)
-      .toEqual(['rgba(255,0,0,1)',
-    'rgba(146,0,109,1)',
-      'rgba(36,0,219,1)',
-      'rgba(19,73,202,1)',
-      'rgba(49,182,121,1)',
-      'rgba(58,219,58,1)',
-      'rgba(29,109,29,1)',
-      'rgba(0,0,0,1)'
+      .toEqual([
+        'rgba(255,0,0,1)',
+        'rgba(146,0,109,1)',
+        'rgba(36,0,219,1)',
+        'rgba(19,73,202,1)',
+        'rgba(49,182,121,1)',
+        'rgba(58,219,58,1)',
+        'rgba(29,109,29,1)',
+        'rgba(0,0,0,1)'
       ]);
   })
 })
