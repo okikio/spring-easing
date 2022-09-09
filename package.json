@@ -113,10 +113,10 @@
     "@types/web": "^0.0.72",
     "esbuild": "^0.15.7",
     "esno": "^0.16.3",
-    "fast-glob": "^3.2.11",
+    "fast-glob": "^3.2.12",
     "hastscript": "^7.0.2",
     "husky": "^8.0.1",
-    "pnpm": "^7.10.0",
+    "pnpm": "^7.11.0",
     "rehype-accessible-emojis": "^0.3.2",
     "rehype-external-links": "^2.0.1",
     "rehype-parse": "^8.0.4",
@@ -128,10 +128,10 @@
     "typedoc-plugin-extras": "^2.3.0",
     "typedoc-plugin-inline-sources": "^1.0.1",
     "typedoc-plugin-mdn-links": "^2.0.0",
-    "typescript": "^4.8.2",
+    "typescript": "^4.8.3",
     "unified": "^10.1.2",
-    "vite": "^3.0.9",
+    "vite": "^3.1.0",
     "vite-plugin-dts": "^1.4.1",
-    "vitest": "^0.23.0"
+    "vitest": "^0.23.1"
   }
 }
