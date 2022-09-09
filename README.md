@@ -44,6 +44,7 @@ pnpm install spring-easing
 ```
 
 </details>
+<br>
 
 ## Usage
 
@@ -71,6 +72,8 @@ import SpringEasing from "https://cdn.skypack.dev/spring-easing";
 import SpringEasing from "https://cdn.jsdelivr.net/npm/spring-easing";
 // or any number of other CDN's
 ```
+
+<br>
 
 ### Use with Animation Libraries
 
@@ -130,16 +133,113 @@ anime({
 
 > Check out this demo on [Codepen](https://codepen.io/okikio/pen/MWEdzNg)
 
+<br>
+
 ## Showcase
 
 A couple sites/projects that use `spring-easing`:
 
 - Your site/project here...
+  
+<br>
 
 ## API
 
 <details open>
 <summary><strong><em>What's New...</em></strong></summary>
+
+> **`BREAKING CHANGE`** _Interpolation functions use a new syntax._
+> 
+> _In older versions of `spring-easing` interpolation functions used to follow a syntax called the instantaneous interpolation function `(t, values, decimal) => string | number | any`, the new syntax is called interpolation function `(frames, values, decimal) => string[] | number[] | any[]`._
+> 
+> _The key difference between both syntaxes are the parameters each function takes and the return value of each function._
+> 
+> _The older syntax returned instantaneous frame values at a specific t-value, but the new syntax returns all the frames that make the entire animation, allowing for performance optimizations that couldn't be done before._
+> 
+> _For the most part this shouldn't leave too much of an effect as all the built-in interpolation functions have been updated to use the new synatax._
+> e.g.
+>
+> ```ts
+> function interpolateNumber(frames: number[], values: number[], decimal = 3) {
+>   // nth index
+>   const n = values.length - 1;
+> 
+>   return frames.map(t => {
+>     // The current index given t
+>     const i = limit(Math.floor(t * n), 0, n - 1);
+> 
+>     const start = values[i];
+>     const end = values[i + 1];
+>     const progress = (t - i / n) * n;
+> 
+>     return toFixed(scale(progress, start, end), decimal);
+>   });
+> }
+> 
+> SpringEasing([0, 250], `spring`, interpolateNumber)
+> ```
+
+> **`NEW`** _There is a new `toAnimationFrames` function that be used on instantaneous interpolation functions, to transform them into complete animation interpolation functions._
+> e.g.
+>
+> ```ts
+> import { SpringEasing, toAnimationFrames, toFixed, scale, limit } from "spring-easing";
+> 
+> function interpolateNumber(t: number, values: number[], decimal = 3) {
+>   // nth index
+>   const n = values.length - 1;
+> 
+>   // The current index given t
+>   const i = limit(Math.floor(t * n), 0, n - 1);
+> 
+>   const start = values[i];
+>   const end = values[i + 1];
+>   const progress = (t - i / n) * n;
+> 
+>   return toFixed(scale(progress, start, end), decimal);
+> }
+> 
+> function interpolatePixels(t: number, values: number[], decimal = 3) { 
+>   const result = interpolateNumber(t, values, decimal);
+>   return `${result}px`;
+> }
+> 
+> SpringEasing(
+>   [0, 250], 
+>   'spring', 
+>   toAnimationFrames(interpolatePixels)
+> );
+
+> **`NEW`** _Easily register new easing functions._
+> e.g.
+>
+> ```ts
+> import { SpringEasing, register, toAnimationFrames, toFixed, scale, limit } from "spring-easing";
+> 
+> function interpolateNumber(t: number, values: number[], decimal = 3) {
+>   // nth index
+>   const n = values.length - 1;
+> 
+>   // The current index given t
+>   const i = limit(Math.floor(t * n), 0, n - 1);
+> 
+>   const start = values[i];
+>   const end = values[i + 1];
+>   const progress = (t - i / n) * n;
+> 
+>   return toFixed(scale(progress, start, end), decimal);
+> }
+> 
+> function interpolatePixels(t: number, values: number[], decimal = 3) { 
+>   const result = interpolateNumber(t, values, decimal);
+>   return `${result}px`;
+> }
+> 
+> SpringEasing(
+>   [0, 250], 
+>   'spring', 
+>   toAnimationFrames(interpolatePixels)
+> );
 
 > **`NEW`** _SpringEasing now support interpolating between strings. It treats the units of the first value as the units for the rest of the values to interpolate between._
 > e.g.

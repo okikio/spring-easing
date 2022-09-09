@@ -1,5 +1,6 @@
 // Adapted from https://github.com/okikio/native/blob/726b26bc3f7a84d2750aa2ffc13572a2a4de905c/packages/animate/src/custom-easing.ts, which is licensed under the MIT license.
 // If the above file is removed or modified, you can access the original state in the following GitHub Gist: https://gist.github.com/okikio/bed53ed621cb7f60e9a8b1ef92897471
+import type { TypeInterpolationFunction } from "./utils";
 import { getUnit, isNumberLike, limit, scale, toFixed } from "./utils";
 
 export * from "./utils";
@@ -347,6 +348,35 @@ export function interpolateComplex(
 export type TypeArrayFrameFunctionFormat = [TypeFrameFunction, ...number[]];
 
 /**
+ * The list of spring easing functions
+ */
+export let EasingFunctions = {
+  spring: SpringFrame,
+  "spring-in": SpringInFrame,
+  "spring-out": SpringOutFrame,
+  "spring-in-out": SpringInOutFrame,
+  "spring-out-in": SpringOutInFrame,
+};
+
+export let EasingFunctionKeys = Object.keys(EasingFunctions);
+
+/**
+ * Allows you to register new easing functions
+ */
+export function registerEasingFunction<T extends string>(key: T, fn?: TypeFrameFunction) {
+  EasingFunctions = { ...EasingFunctions, [key]: fn };
+  EasingFunctionKeys = Object.keys(EasingFunctions);
+}
+
+/**
+ * Allows you to register multiple new easing functions
+ */
+export function registerEasingFunctions<T extends Record<string, TypeFrameFunction>>(obj: T) {
+  EasingFunctions = { ...EasingFunctions, ...obj };
+  EasingFunctionKeys = Object.keys(EasingFunctions);
+}
+
+/**
  * The formats supported for easings,
  * @example
  * * `"spring(mass, stiffness, damping, velocity)"`
@@ -356,7 +386,7 @@ export type TypeArrayFrameFunctionFormat = [TypeFrameFunction, ...number[]];
  * * `"spring-out-in(mass, stiffness, damping, velocity)"`
  * `[SpringFrame, mass, stiffness, damping, velocity]`
  */
-export type TypeEasings = `${keyof typeof EasingFunctions}` | `${keyof typeof EasingFunctions}(${string})` | TypeArrayFrameFunctionFormat;
+export type TypeEasings = `${keyof typeof EasingFunctions}` | `${keyof typeof EasingFunctions}(${string})` | (string & {}) | TypeArrayFrameFunctionFormat;
 
 /**
  * Spring Easing has 3 properties they are `easing` (all spring frame functions are supported), `numPoints` (the size of the Array the frmae function should create), and `decimal` (the number of decimal places of the values within said Array).
@@ -393,35 +423,6 @@ export type TypeEasingOptions = {
   numPoints?: number;
   decimal?: number;
 };
-
-/**
- * The list of spring easing functions
- */
-export const EasingFunctions = {
-  spring: SpringFrame,
-  "spring-in": SpringInFrame,
-  "spring-out": SpringOutFrame,
-  "spring-in-out": SpringInOutFrame,
-  "spring-out-in": SpringOutInFrame,
-};
-
-export let EasingFunctionKeys = Object.keys(EasingFunctions);
-
-/**
- * Allows you to register new easing functions
- */
-export function registerEasingFunction(key: string, fn?: TypeFrameFunction) {
-  Object.assign(EasingFunctions, { [key]: fn });
-  EasingFunctionKeys = Object.keys(EasingFunctions);
-}
-
-/**
- * Allows you to register multiple new easing functions
- */
-export function registerEasingFunctions(...obj: Array<Record<string, any>>) {
-  Object.assign(EasingFunctions, ...obj);
-  EasingFunctionKeys = Object.keys(EasingFunctions);
-}
 
 /**
  * Convert easing parameters to Array of numbers, e.g. "spring(2, 500)" to [2, 500]
@@ -623,7 +624,7 @@ export function GenerateSpringFrames(options: TypeEasingOptions = {}): [number[]
 export function SpringEasing(
   values: (string | number)[],
   options: TypeEasingOptions | TypeEasingOptions["easing"] = {},
-  customInterpolate: (frames: number[], values: any[], decimal?: number) => string | number | any = interpolateComplex
+  customInterpolate: TypeInterpolationFunction = interpolateComplex
 ): [(string | number | any)[], number] {
   const optionsObj = EasingOptions(options);
   const [frames, duration] = GenerateSpringFrames(optionsObj);

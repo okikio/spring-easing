@@ -49,3 +49,53 @@ export function getUnit(str: string | number) {
   const num = parseFloat(str as string);
   return (str.toString()).replace(num.toString(), "");
 }
+
+/**
+ * The type for interpolation functions which at an instant in the animation, generate the corresponding interpolated frame
+ */
+export type TypeInstantaneousInterpolationFunction = (t: number, values: any[], decimal?: number) => string | number | any;
+
+/**
+ * The type for interpolation functions which use an array of frames to generate the corresponding interpolated resulting frames
+ */
+export type TypeInterpolationFunction = (frames: number[], values: any[], decimal?: number) => (string | number | any)[];
+
+/**
+ * Converts old interpolation syntax (the instantaneous interpolation function, e.g. `(t, values, decimal) => { ... }`) 
+ * to complete animation frames
+ * 
+ * You use it like so, 
+ * ```ts
+ * import { SpringEasing, toAnimationFrames, toFixed, scale, limit } from "spring-easing";
+ * 
+ * function interpolateNumber(t: number, values: number[], decimal = 3) {
+ *   // nth index
+ *   const n = values.length - 1;
+ * 
+ *   // The current index given t
+ *   const i = limit(Math.floor(t * n), 0, n - 1);
+ * 
+ *   const start = values[i];
+ *   const end = values[i + 1];
+ *   const progress = (t - i / n) * n;
+ * 
+ *   return toFixed(scale(progress, start, end), decimal);
+ * }
+ * 
+ * function interpolatePixels(t: number, values: number[], decimal = 3) { 
+ *   const result = interpolateNumber(t, values, decimal);
+ *   return `${result}px`;
+ * }
+ * 
+ * SpringEasing(
+ *   [0, 250], 
+ *   'spring', 
+ *   toAnimationFrames(interpolatePixels)
+ * );
+ * ```
+ */
+export function toAnimationFrames(customInterpolate: TypeInstantaneousInterpolationFunction): TypeInterpolationFunction {
+  return function (frames, values, decimal) {
+    return frames.map(t => customInterpolate(t, values, decimal));
+  }
+}

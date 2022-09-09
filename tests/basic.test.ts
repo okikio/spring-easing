@@ -1,7 +1,8 @@
 
 import { describe, expect, it } from 'vitest';
 import { interpolateColor } from "./utils/interpolate-color";
-import { SpringEasing, SpringFrame, SpringOutFrame, SpringInOutFrame, SpringOutInFrame } from "../src/index";
+import { toAnimationFrames, toFixed, scale, limit } from "../src/utils";
+import { SpringEasing, SpringFrame, SpringOutFrame, SpringInOutFrame, SpringOutInFrame, registerEasingFunction, registerEasingFunctions } from "../src/index";
 
 describe("SpringFrame", () => {
   it('With 2 simple values [0, 25]', () => {
@@ -339,5 +340,174 @@ describe("SpringFrame", () => {
         'rgba(29,109,29,1)',
         'rgba(0,0,0,1)'
       ]);
+  })
+
+  it('Instantaneous interpolation function', () => {
+    function interpolateNumber(t: number, values: number[], decimal = 3) {
+      // nth index
+      const n = values.length - 1;
+
+      // The current index given t
+      const i = limit(Math.floor(t * n), 0, n - 1);
+
+      const start = values[i];
+      const end = values[i + 1];
+      const progress = (t - i / n) * n;
+
+      return toFixed(scale(progress, start, end), decimal);
+    }
+
+    function interpolatePixels(t: number, values: number[], decimal = 3) {
+      const result = interpolateNumber(t, values, decimal);
+      return `${result}px`;
+    }
+
+    let [keyframes] = SpringEasing(
+      [0, 250],
+      {
+        easing: "spring",
+        numPoints: 100,
+        decimal: 2
+      },
+      toAnimationFrames(interpolatePixels)
+    );
+
+    expect(keyframes).toEqual([
+      '0px', '3.73px', '13.29px', '27.53px', '45.35px',
+      '65.74px', '87.76px', '110.59px', '133.52px', '155.92px',
+      '177.3px', '197.26px', '215.49px', '231.81px', '246.06px',
+      '258.21px', '268.27px', '276.29px', '282.38px', '286.69px',
+      '289.37px', '290.62px', '290.61px', '289.55px', '287.63px',
+      '285.02px', '281.9px', '278.44px', '274.78px', '271.03px',
+      '267.32px', '263.74px', '260.35px', '257.22px', '254.38px',
+      '251.87px', '249.7px', '247.88px', '246.39px', '245.23px',
+      '244.37px', '243.79px', '243.46px', '243.35px', '243.44px',
+      '243.68px', '244.05px', '244.51px', '245.05px', '245.63px',
+      '246.24px', '246.85px', '247.44px', '248.01px', '248.55px',
+      '249.04px', '249.48px', '249.86px', '250.19px', '250.46px',
+      '250.68px', '250.85px', '250.97px', '251.04px', '251.08px',
+      '251.08px', '251.06px', '251.01px', '250.94px', '250.86px',
+      '250.77px', '250.67px', '250.57px', '250.47px', '250.37px',
+      '250.28px', '250.2px', '250.12px', '250.06px', '250px',
+      '249.95px', '249.91px', '249.88px', '249.85px', '249.84px',
+      '249.83px', '249.82px', '249.83px', '249.83px', '249.84px',
+      '249.85px', '249.87px', '249.88px', '249.9px', '249.91px',
+      '249.93px', '249.95px', '249.96px', '249.97px', '250px'
+    ])
+  })
+
+  it('Register custom easing functions', () => {
+    function interpolateNumber(t: number, values: number[], decimal = 3) {
+      // nth index
+      const n = values.length - 1;
+
+      // The current index given t
+      const i = limit(Math.floor(t * n), 0, n - 1);
+
+      const start = values[i];
+      const end = values[i + 1];
+      const progress = (t - i / n) * n;
+
+      return toFixed(scale(progress, start, end), decimal);
+    }
+
+    function interpolatePixels(t: number, values: number[], decimal = 3) {
+      const result = interpolateNumber(t, values, decimal);
+      return `${result}px`;
+    }
+
+    registerEasingFunction("linear", (t) => t);
+    registerEasingFunctions({
+      quad: (t) => Math.pow(t, 2),
+      cubic: (t) => Math.pow(t, 3),
+    });
+
+    let [keyframes] = SpringEasing(
+      [0, 250],
+      {
+        easing: "linear",
+        numPoints: 100,
+        decimal: 2
+      },
+      toAnimationFrames(interpolatePixels)
+    );
+
+    expect(keyframes).toEqual([
+      '0px', '2.53px', '5.05px', '7.58px', '10.1px', '12.63px',
+      '15.15px', '17.68px', '20.2px', '22.73px', '25.25px', '27.78px',
+      '30.3px', '32.83px', '35.35px', '37.88px', '40.4px', '42.93px',
+      '45.45px', '47.98px', '50.51px', '53.03px', '55.56px', '58.08px',
+      '60.61px', '63.13px', '65.66px', '68.18px', '70.71px', '73.23px',
+      '75.76px', '78.28px', '80.81px', '83.33px', '85.86px', '88.38px',
+      '90.91px', '93.43px', '95.96px', '98.48px', '101.01px', '103.54px',
+      '106.06px', '108.59px', '111.11px', '113.64px', '116.16px', '118.69px',
+      '121.21px', '123.74px', '126.26px', '128.79px', '131.31px', '133.84px',
+      '136.36px', '138.89px', '141.41px', '143.94px', '146.46px', '148.99px',
+      '151.52px', '154.04px', '156.57px', '159.09px', '161.62px', '164.14px',
+      '166.67px', '169.19px', '171.72px', '174.24px', '176.77px', '179.29px',
+      '181.82px', '184.34px', '186.87px', '189.39px', '191.92px', '194.44px',
+      '196.97px', '199.49px', '202.02px', '204.55px', '207.07px', '209.6px',
+      '212.12px', '214.65px', '217.17px', '219.7px', '222.22px', '224.75px',
+      '227.27px', '229.8px', '232.32px', '234.85px', '237.37px', '239.9px',
+      '242.42px', '244.95px', '247.47px', '250px'
+    ])
+
+    let [keyframes2] = SpringEasing(
+      [0, 250],
+      {
+        easing: "quad",
+        numPoints: 100,
+        decimal: 2
+      },
+      toAnimationFrames(interpolatePixels)
+    );
+    expect(keyframes2).toEqual([
+      '0px', '0.03px', '0.1px', '0.23px', '0.41px', '0.64px',
+      '0.92px', '1.25px', '1.63px', '2.07px', '2.55px', '3.09px',
+      '3.67px', '4.31px', '5px', '5.74px', '6.53px', '7.37px',
+      '8.26px', '9.21px', '10.2px', '11.25px', '12.35px', '13.49px',
+      '14.69px', '15.94px', '17.24px', '18.6px', '20px', '21.45px',
+      '22.96px', '24.51px', '26.12px', '27.78px', '29.49px', '31.25px',
+      '33.06px', '34.92px', '36.83px', '38.8px', '40.81px', '42.88px',
+      '45px', '47.16px', '49.38px', '51.65px', '53.97px', '56.35px',
+      '58.77px', '61.24px', '63.77px', '66.35px', '68.97px', '71.65px',
+      '74.38px', '77.16px', '79.99px', '82.87px', '85.81px', '88.79px',
+      '91.83px', '94.91px', '98.05px', '101.24px', '104.48px', '107.77px',
+      '111.11px', '114.5px', '117.95px', '121.44px', '124.99px', '128.58px',
+      '132.23px', '135.93px', '139.68px', '143.48px', '147.33px', '151.23px',
+      '155.19px', '159.19px', '163.25px', '167.36px', '171.51px', '175.72px',
+      '179.98px', '184.29px', '188.65px', '193.07px', '197.53px', '202.05px',
+      '206.61px', '211.23px', '215.9px', '220.62px', '225.39px', '230.21px',
+      '235.08px', '240px', '244.98px', '250px'
+    ])
+
+    let [keyframes3] = SpringEasing(
+      [0, 250],
+      {
+        easing: "quad",
+        numPoints: 100,
+        decimal: 2
+      },
+      toAnimationFrames(interpolatePixels)
+    );
+    expect(keyframes3).toEqual([
+      '0px', '0.03px', '0.1px', '0.23px', '0.41px', '0.64px',
+      '0.92px', '1.25px', '1.63px', '2.07px', '2.55px', '3.09px',
+      '3.67px', '4.31px', '5px', '5.74px', '6.53px', '7.37px',
+      '8.26px', '9.21px', '10.2px', '11.25px', '12.35px', '13.49px',
+      '14.69px', '15.94px', '17.24px', '18.6px', '20px', '21.45px',
+      '22.96px', '24.51px', '26.12px', '27.78px', '29.49px', '31.25px',
+      '33.06px', '34.92px', '36.83px', '38.8px', '40.81px', '42.88px',
+      '45px', '47.16px', '49.38px', '51.65px', '53.97px', '56.35px',
+      '58.77px', '61.24px', '63.77px', '66.35px', '68.97px', '71.65px',
+      '74.38px', '77.16px', '79.99px', '82.87px', '85.81px', '88.79px',
+      '91.83px', '94.91px', '98.05px', '101.24px', '104.48px', '107.77px',
+      '111.11px', '114.5px', '117.95px', '121.44px', '124.99px', '128.58px',
+      '132.23px', '135.93px', '139.68px', '143.48px', '147.33px', '151.23px',
+      '155.19px', '159.19px', '163.25px', '167.36px', '171.51px', '175.72px',
+      '179.98px', '184.29px', '188.65px', '193.07px', '197.53px', '202.05px',
+      '206.61px', '211.23px', '215.9px', '220.62px', '225.39px', '230.21px',
+      '235.08px', '240px', '244.98px', '250px'
+    ])
   })
 })
