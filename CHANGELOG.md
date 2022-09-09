@@ -1,3 +1,13 @@
+# [2.0.0](https://github.com/okikio/spring-easing/compare/v1.2.0...v2.0.0) (2022-09-09)
+
+
+* feat!: add `toAnimationFrames` function ([517d07e](https://github.com/okikio/spring-easing/commit/517d07efd9c7a519591f59203beae6083291db2d)), closes [#4](https://github.com/okikio/spring-easing/issues/4)
+
+
+### BREAKING CHANGES
+
+* new interpolation function syntax will break the current custom interpolation functions
+
 # [1.2.0](https://github.com/okikio/spring-easing/compare/v1.1.1...v1.2.0) (2022-09-05)
 
 
