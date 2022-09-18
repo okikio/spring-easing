@@ -4,7 +4,7 @@
  * @source Source code of `isNumberLike`
  */
 export function isNumberLike(num: string | number) {
-  let value = parseFloat(num as string);
+  const value = parseFloat(num as string);
   return typeof value == "number" && !Number.isNaN(value);
 }
 
