@@ -1,3 +1,10 @@
+# [2.1.0](https://github.com/okikio/spring-easing/compare/v2.0.0...v2.1.0) (2022-09-18)
+
+
+### Features
+
+* re-add instant interpolation functions ([9c52a1b](https://github.com/okikio/spring-easing/commit/9c52a1bbb0dbb1625cd8bfea46cc583d33eba59b))
+
 # [2.0.0](https://github.com/okikio/spring-easing/compare/v1.2.0...v2.0.0) (2022-09-09)
 
 
