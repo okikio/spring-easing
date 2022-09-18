@@ -141,6 +141,10 @@ img[src^="https://bundlejs.com/"] {
     border: 1px solid rgb(20 20 20 / 0.25);
 }
 
+.container {
+  max-width: 1200px;
+}
+
 header.tsd-page-toolbar {
   border-bottom: 1px solid var(--color-panel-divider);
 }

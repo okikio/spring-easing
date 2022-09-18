@@ -152,39 +152,106 @@ export declare const SpringOutInFrame: TypeFrameFunction;
  * 0 as our start number and 100 as our end number, so, basic interpolation would interpolate between 0 to 100.
 
  * If we use a `t` of 0.5, the interpolated value between 0 to 100, is 50.
- * {@link interpolateNumber} takes it further, by allowing you to interpolate with more than 2 values,
+ * {@link instantNumber} takes it further, by allowing you to interpolate with more than 2 values,
  * it allows for multiple values.
  * E.g. Given an Array of values [0, 100, 0], and a `t` of 0.5, the interpolated value would become 100.
 
  * Based on d3.interpolateBasis [https://github.com/d3/d3-interpolate#interpolateBasis],
  * check out the link above for more detail.
  *
+ * @param t A number between 0 to 1
+ * @param values Array of numbers to interpolate between
+ * @param decimal How many decimals should the interpolated value have
+ * @return Interpolated number at instant `t`
+ *
+ * @source Source code of `instantNumber`
+*/
+export declare function instantNumber(t: number, values: number[], decimal?: number): number;
+/**
+ * Buliding on-top of {@link instantNumber}, `interpolateNumber` interpolates between numbers, but unlike {@link instantNumber}
+ * `interpolateNumber` uses an Array of `t` instances to generate an array of interpolated values
+ *
+ * @param arr_t Array of numbers (between 0 to 1) which each represent an instant of the interpolation
+ * @param values Array of numbers to interpolate between
+ * @param decimal How many decimals should the interpolated value have
+ * @return Array of interpolated numbers at different instances
+ *
  * @source Source code of `interpolateNumber`
 */
-export declare function interpolateNumber(frames: number[], values: number[], decimal?: number): number[];
+export declare function interpolateNumber(arr_t: number[], values: number[], decimal?: number): number[];
 /**
- * Given an Array of values, find a value using `t` (`t` goes from 0 to 1), by
+ * Given an Array of values, find a value using `t` (which goes from 0 to 1), by
  * using `t` to estimate the index of said value in the array of `values`
 
- * This is meant for interploating strings that aren't number-like
+ * This is meant for interplolating strings that aren't number-like
 
- * @source Source code of `interpolateUsingIndex`
+ * @param t A number between 0 to 1
+ * @param values Array of numbers to interpolate between
+ * @return Interpolated numbers at different instances
+
+ * @source Source code of `instantSequence`
 */
-export declare function interpolateUsingIndex(frames: number[], values: (string | number)[]): (string | number)[];
+export declare function instantSequence<T>(t: number, values: T[]): T;
+/**
+ * Given an Array of items, find an item using `t` (which goes from 0 to 1), by
+ * using `t` to estimate the index of said value in the array of `values`,
+ * then expand that to encompass multiple `t`'s in an Array,
+ * which returns Array items which each follow the interpolated index value
+
+ * This is meant for interplolating strings that aren't number-like
+
+ * @param arr_t Array of numbers (between 0 to 1) which each represent an instant of the interpolation
+ * @param values Array of items to choose from
+ * @return Array of Interpolated input Array items at different instances
+
+ * @source Source code of `interpolateSequence`
+*/
+export declare function interpolateSequence<T>(arr_t: number[], values: T[]): T[];
+/**
+ * Alias of {@link instantSequence}
+ * @deprecated please use {@link instantSequence}, it's the same functionality but different name
+ */
+export declare const instantUsingIndex: typeof instantSequence;
+/**
+ * Alias of {@link interpolateSequence}
+ * @deprecated please use {@link interpolateSequence}, it's the same functionality but different name
+ */
+export declare const interpolateUsingIndex: typeof interpolateSequence;
+/**
+ * Functions the same way {@link instantNumber} works.
+ * Convert strings to numbers, and then interpolates the numbers,
+ * at the end if there are units on the first value in the `values` array,
+ * it will use that unit for the interpolated result.
+ * Make sure to read {@link instantNumber}.
+ *
+ * @source Source code of `instantString`
+*/
+export declare function instantString(t: number, values: (string | number)[], decimal?: number): string;
 /**
  * Functions the same way {@link interpolateNumber} works.
  * Convert strings to numbers, and then interpolates the numbers,
  * at the end if there are units on the first value in the `values` array,
  * it will use that unit for the interpolated result.
  * Make sure to read {@link interpolateNumber}.
+ *
+ * @source Source code of `interpolateString`
 */
-export declare function interpolateString(frames: number[], values: (string | number)[], decimal?: number): string[];
+export declare function interpolateString(arr_t: number[], values: (string | number)[], decimal?: number): string[];
 /**
- * Interpolates all types of values including number, string, color, and complex values.
- * Complex values are values like "10px solid red", that border, and other CSS Properties use.
- * Make sure to read {@link interpolateNumber}, and {@link interpolateString}.
+ * Interpolates all types of values including number, and string values.
+ * Make sure to read {@link instantNumber}, {@link instantString} and {@link instantSequence}.
+ *
+ * @source Source code of `instantComplex`
 */
-export declare function interpolateComplex(frames: number[], values: (string | number)[], decimal?: number): (string | number)[];
+export declare function instantComplex<T>(t: number, values: T[], decimal?: number): string | number | T;
+/**
+ * Interpolates all types of values including number, string, etc... values.
+ * Make sure to read {@link interpolateNumber}, {@link interpolateString} and {@link interpolateSequence},
+ * as depending on the values given
+ *
+ * @source Source code of `interpolateComplex`
+*/
+export declare function interpolateComplex<T>(arr_t: number[], values: T[], decimal?: number): number[] | string[] | T[];
 /**
  * The array frame function format for easings,
  * @example
@@ -375,5 +442,5 @@ export declare function GenerateSpringFrames(options?: TypeEasingOptions): [numb
  * ]
  * ```
  */
-export declare function SpringEasing(values: (string | number)[], options?: TypeEasingOptions | TypeEasingOptions["easing"], customInterpolate?: TypeInterpolationFunction): [(string | number | any)[], number];
+export declare function SpringEasing<T>(values: T[], options?: TypeEasingOptions | TypeEasingOptions["easing"], customInterpolate?: TypeInterpolationFunction): readonly [any[], number];
 export default SpringEasing;
