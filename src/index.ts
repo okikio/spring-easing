@@ -242,20 +242,50 @@ export const SpringOutInFrame = EaseOutIn(SpringFrame);
  * 0 as our start number and 100 as our end number, so, basic interpolation would interpolate between 0 to 100.
 
  * If we use a `t` of 0.5, the interpolated value between 0 to 100, is 50.
- * {@link interpolateNumber} takes it further, by allowing you to interpolate with more than 2 values,
+ * {@link instantNumber} takes it further, by allowing you to interpolate with more than 2 values,
  * it allows for multiple values.
  * E.g. Given an Array of values [0, 100, 0], and a `t` of 0.5, the interpolated value would become 100.
 
  * Based on d3.interpolateBasis [https://github.com/d3/d3-interpolate#interpolateBasis],
  * check out the link above for more detail.
+ * 
+ * @param t A number between 0 to 1
+ * @param values Array of numbers to interpolate between
+ * @param decimal How many decimals should the interpolated value have
+ * @return Interpolated number at instant `t`
  *
- * @source Source code of `interpolateNumber`
+ * @source Source code of `instantNumber`
 */
-export function interpolateNumber(frames: number[], values: number[], decimal = 3) {
+export function instantNumber(t: number, values: number[], decimal = 3) {
   // nth index
   const n = values.length - 1;
 
-  return frames.map(t => {
+  // The current index given t
+  const i = limit(Math.floor(t * n), 0, n - 1);
+
+  const start = values[i];
+  const end = values[i + 1];
+  const progress = (t - i / n) * n;
+
+  return toFixed(scale(progress, start, end), decimal);
+}
+
+/**
+ * Buliding on-top of {@link instantNumber}, `interpolateNumber` interpolates between numbers, but unlike {@link instantNumber} 
+ * `interpolateNumber` uses an Array of `t` instances to generate an array of interpolated values
+ * 
+ * @param arr_t Array of numbers (between 0 to 1) which each represent an instant of the interpolation  
+ * @param values Array of numbers to interpolate between
+ * @param decimal How many decimals should the interpolated value have
+ * @return Array of interpolated numbers at different instances
+ *
+ * @source Source code of `interpolateNumber`
+*/
+export function interpolateNumber(arr_t: number[], values: number[], decimal = 3) {
+  // nth index
+  const n = values.length - 1;
+
+  return arr_t.map(t => {
     // The current index given t
     const i = limit(Math.floor(t * n), 0, n - 1);
 
@@ -268,21 +298,54 @@ export function interpolateNumber(frames: number[], values: number[], decimal = 
 }
 
 /** 
- * Given an Array of values, find a value using `t` (`t` goes from 0 to 1), by
+ * Given an Array of values, find a value using `t` (which goes from 0 to 1), by
  * using `t` to estimate the index of said value in the array of `values` 
 
- * This is meant for interploating strings that aren't number-like
+ * This is meant for interplolating strings that aren't number-like
 
- * @source Source code of `interpolateUsingIndex`
+ * @param t A number between 0 to 1
+ * @param values Array of numbers to interpolate between
+ * @return Interpolated numbers at different instances
+
+ * @source Source code of `instantSequence`
 */
-export function interpolateUsingIndex(
-  frames: number[],
-  values: (string | number)[]
+export function instantSequence<T>(
+  t: number,
+  values: T[]
 ) {
   // nth index
   const n = values.length - 1;
 
-  return frames.map(t => {
+  // limit `t`, to a min of 0 and a max of 1
+  t = limit(t, 0, 1);
+
+  // The current index given t
+  const i = Math.round(t * n);
+  return values[i];
+}
+
+/** 
+ * Given an Array of items, find an item using `t` (which goes from 0 to 1), by
+ * using `t` to estimate the index of said value in the array of `values`, 
+ * then expand that to encompass multiple `t`'s in an Array, 
+ * which returns Array items which each follow the interpolated index value
+
+ * This is meant for interplolating strings that aren't number-like
+
+ * @param arr_t Array of numbers (between 0 to 1) which each represent an instant of the interpolation  
+ * @param values Array of items to choose from
+ * @return Array of Interpolated input Array items at different instances
+
+ * @source Source code of `interpolateSequence`
+*/
+export function interpolateSequence<T>(
+  arr_t: number[],
+  values: T[]
+) {
+  // nth index
+  const n = values.length - 1;
+
+  return arr_t.map(t => {
     // limit `t`, to a min of 0 and a max of 1
     t = limit(t, 0, 1);
 
@@ -292,15 +355,56 @@ export function interpolateUsingIndex(
   });
 }
 
+/**
+ * Alias of {@link instantSequence}
+ * @deprecated please use {@link instantSequence}, it's the same functionality but different name
+ */
+export const instantUsingIndex = instantSequence;
+
+/**
+ * Alias of {@link interpolateSequence}
+ * @deprecated please use {@link interpolateSequence}, it's the same functionality but different name
+ */
+export const interpolateUsingIndex = interpolateSequence;
+
+/** 
+ * Functions the same way {@link instantNumber} works.
+ * Convert strings to numbers, and then interpolates the numbers,
+ * at the end if there are units on the first value in the `values` array,
+ * it will use that unit for the interpolated result.
+ * Make sure to read {@link instantNumber}.
+ * 
+ * @source Source code of `instantString`
+*/
+export function instantString(
+  t: number,
+  values: (string | number)[],
+  decimal = 3
+) {
+  let units = "";
+
+  // If the first value looks like a number with a unit
+  if (isNumberLike(values[0])) units = getUnit(values[0]);
+  return (
+    instantNumber(
+      t,
+      values.map((v) => (typeof v == "number" ? v : parseFloat(v))),
+      decimal
+    ) + units
+  );
+}
+
 /** 
  * Functions the same way {@link interpolateNumber} works.
  * Convert strings to numbers, and then interpolates the numbers,
  * at the end if there are units on the first value in the `values` array,
  * it will use that unit for the interpolated result.
  * Make sure to read {@link interpolateNumber}.
+ * 
+ * @source Source code of `interpolateString`
 */
 export function interpolateString(
-  frames: number[],
+  arr_t: number[],
   values: (string | number)[],
   decimal = 3
 ) {
@@ -310,7 +414,7 @@ export function interpolateString(
   if (isNumberLike(values[0])) units = getUnit(values[0]);
   return (
     interpolateNumber(
-      frames,
+      arr_t,
       values.map((v) => (typeof v == "number" ? v : parseFloat(v))),
       decimal
     ).map(value => value + units)
@@ -318,26 +422,52 @@ export function interpolateString(
 }
 
 /**
- * Interpolates all types of values including number, string, color, and complex values. 
- * Complex values are values like "10px solid red", that border, and other CSS Properties use.
- * Make sure to read {@link interpolateNumber}, and {@link interpolateString}.
+ * Interpolates all types of values including number, and string values. 
+ * Make sure to read {@link instantNumber}, {@link instantString} and {@link instantSequence}.
+ * 
+ * @source Source code of `instantComplex`
 */
-export function interpolateComplex(
-  frames: number[],
-  values: (string | number)[],
+export function instantComplex<T>(
+  t: number,
+  values: T[],
   decimal = 3
 ) {
   // Interpolate numbers
   const isNumber = values.every((v) => typeof v == "number");
-  if (isNumber) return interpolateNumber(frames, values as number[], decimal);
+  if (isNumber) return instantNumber(t, values as number[], decimal);
 
   // Interpolate strings with numbers, e.g. "5px"
   const isLikeNumber = values.every((v) => isNumberLike(v as string));
   if (isLikeNumber)
-    return interpolateString(frames, values as (number | string)[], decimal);
+    return instantString(t, values as (number | string)[], decimal);
 
-  // Interpolate pure strings, e.g. "inherit", "solid", etc...
-  return interpolateUsingIndex(frames, values as string[]);
+  // Interpolate pure strings and/or other type of values, e.g. "inherit", "solid", etc...
+  return instantSequence<T>(t, values);
+}
+
+/**
+ * Interpolates all types of values including number, string, etc... values. 
+ * Make sure to read {@link interpolateNumber}, {@link interpolateString} and {@link interpolateSequence}, 
+ * as depending on the values given 
+ * 
+ * @source Source code of `interpolateComplex`
+*/
+export function interpolateComplex<T>(
+  arr_t: number[],
+  values: T[],
+  decimal = 3
+) {
+  // Interpolate numbers
+  const isNumber = values.every((v) => typeof v == "number");
+  if (isNumber) return interpolateNumber(arr_t, values as number[], decimal);
+
+  // Interpolate strings with numbers, e.g. "5px"
+  const isLikeNumber = values.every((v) => isNumberLike(v as string));
+  if (isLikeNumber)
+    return interpolateString(arr_t, values as (number | string)[], decimal);
+
+  // Interpolate pure strings and/or other type of values, e.g. "inherit", "solid", etc...
+  return interpolateSequence<T>(arr_t, values);
 }
 
 /**
@@ -621,18 +751,18 @@ export function GenerateSpringFrames(options: TypeEasingOptions = {}): [number[]
  * ]
  * ```
  */
-export function SpringEasing(
-  values: (string | number)[],
+export function SpringEasing<T>(
+  values: T[],
   options: TypeEasingOptions | TypeEasingOptions["easing"] = {},
   customInterpolate: TypeInterpolationFunction = interpolateComplex
-): [(string | number | any)[], number] {
+) {
   const optionsObj = EasingOptions(options);
   const [frames, duration] = GenerateSpringFrames(optionsObj);
 
   return [
     customInterpolate(frames, values, optionsObj.decimal),
     duration
-  ];
+  ] as const;
 }
 
 export default SpringEasing;
