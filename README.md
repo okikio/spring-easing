@@ -148,6 +148,18 @@ A couple sites/projects that use `spring-easing`:
 <details open>
 <summary><strong><em>What's New...</em></strong></summary>
 
+> **`NEW`** _(deprecated) `interpolateUsingIndex` is now an alias of `interpolateSequence`, it still keeps the same functionality._
+> The recommendation is to use `interpolateSequence` instead of `interpolateUsingIndex`, but you can still keep using `interpolateUsingIndex`, but beware it can be removed in future versions.
+
+> **`NEW`** _Re-introduced instantaneous interpolation functions._
+> e.g.
+>
+> ```ts
+> import { instantNumber, instantString, instantSequence, instanceComplex } from "spring-easing";
+> ```
+> These functions represent the interpolated value at a specific instance in time, where time is represented by `t` with a range of `0` to `1`.
+> You can use these functions as building blocks to create your own custom interpolation functions.
+
 > **`BREAKING CHANGE`** _Interpolation functions use a new syntax._
 > 
 > _In older versions of `spring-easing` interpolation functions used to follow a syntax called the instantaneous interpolation function `(t, values, decimal) => string | number | any`, the new syntax is called interpolation function `(frames, values, decimal) => string[] | number[] | any[]`._
