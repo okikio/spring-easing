@@ -1,4 +1,4 @@
-@import url("https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;700&amp;display=swap");
+/* @import url("https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;700&amp;display=swap"); */
 
 @font-face {
   font-family: "FluentSystemIcons-Regular";
@@ -143,6 +143,17 @@ img[src^="https://bundlejs.com/"] {
 
 .container {
   max-width: 1200px;
+}
+
+.container.tsd-generator {
+  max-width: 100%;
+}
+
+.container.tsd-generator p {
+  line-height: 28px;
+  max-width: 1200px;
+  width: 100%;
+  margin: auto;
 }
 
 header.tsd-page-toolbar {

@@ -36,6 +36,10 @@ export function load(app: Application) {
 
         return (
             <>
+                <link rel="preconnect" href="https://fonts.googleapis.com" />
+                <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+                <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;700&amp;display=swap" rel="stylesheet" />
+
                 <meta name="keyword" content={keywords.join(", ")} />
                 <meta name="color-scheme" content="dark light" />
                 <link rel="shortcut icon" href="/media/favicon.ico" />

@@ -51,7 +51,17 @@ function load(app) {
     const keywords = ctx.options.getValue("keywords");
     const id = ctx.options.getValue("umami-id");
     const src = ctx.options.getValue("umami-src");
-    return /* @__PURE__ */ import_typedoc.JSX.createElement(import_typedoc.JSX.Fragment, null, /* @__PURE__ */ import_typedoc.JSX.createElement("meta", {
+    return /* @__PURE__ */ import_typedoc.JSX.createElement(import_typedoc.JSX.Fragment, null, /* @__PURE__ */ import_typedoc.JSX.createElement("link", {
+      rel: "preconnect",
+      href: "https://fonts.googleapis.com"
+    }), /* @__PURE__ */ import_typedoc.JSX.createElement("link", {
+      rel: "preconnect",
+      href: "https://fonts.gstatic.com",
+      crossorigin: true
+    }), /* @__PURE__ */ import_typedoc.JSX.createElement("link", {
+      href: "https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;700&display=swap",
+      rel: "stylesheet"
+    }), /* @__PURE__ */ import_typedoc.JSX.createElement("meta", {
       name: "keyword",
       content: keywords.join(", ")
     }), /* @__PURE__ */ import_typedoc.JSX.createElement("meta", {
