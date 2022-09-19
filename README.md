@@ -239,6 +239,7 @@ A couple sites/projects that use `spring-easing`:
 > );
 > ```
 > 
+>
 > </strike>
 
 > **`NEW`** _Easily register new easing functions._
