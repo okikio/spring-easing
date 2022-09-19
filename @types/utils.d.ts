@@ -36,11 +36,7 @@ export declare function getUnit(str: string | number): string;
 /**
  * The type for interpolation functions which at an instant in the animation, generate the corresponding interpolated frame
  */
-export declare type TypeInstantaneousInterpolationFunction = (t: number, values: any[], decimal?: number) => string | number | any;
-/**
- * The type for interpolation functions which use an array of frames to generate the corresponding interpolated resulting frames
- */
-export declare type TypeInterpolationFunction = (frames: number[], values: any[], decimal?: number) => (string | number | any)[];
+export declare type TypeInterpolationFunction = (t: number, values: any[], decimal?: number) => string | number | any;
 /**
  * Converts old interpolation syntax (the instantaneous interpolation function, e.g. `(t, values, decimal) => { ... }`)
  * to complete animation frames
@@ -74,5 +70,6 @@ export declare type TypeInterpolationFunction = (frames: number[], values: any[]
  *   toAnimationFrames(interpolatePixels)
  * );
  * ```
+ * @ignore
  */
-export declare function toAnimationFrames(customInterpolate: TypeInstantaneousInterpolationFunction): TypeInterpolationFunction;
+export declare function toAnimationFrames(customInterpolate: TypeInterpolationFunction): (frames: any, values: any, decimal: any) => any;
