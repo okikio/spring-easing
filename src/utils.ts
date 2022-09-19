@@ -53,12 +53,7 @@ export function getUnit(str: string | number) {
 /**
  * The type for interpolation functions which at an instant in the animation, generate the corresponding interpolated frame
  */
-export type TypeInstantaneousInterpolationFunction = (t: number, values: any[], decimal?: number) => string | number | any;
-
-/**
- * The type for interpolation functions which use an array of frames to generate the corresponding interpolated resulting frames
- */
-export type TypeInterpolationFunction = (frames: number[], values: any[], decimal?: number) => (string | number | any)[];
+export type TypeInterpolationFunction = (t: number, values: any[], decimal?: number) => string | number | any;
 
 /**
  * Converts old interpolation syntax (the instantaneous interpolation function, e.g. `(t, values, decimal) => { ... }`) 
@@ -93,8 +88,9 @@ export type TypeInterpolationFunction = (frames: number[], values: any[], decima
  *   toAnimationFrames(interpolatePixels)
  * );
  * ```
+ * @ignore
  */
-export function toAnimationFrames(customInterpolate: TypeInstantaneousInterpolationFunction): TypeInterpolationFunction {
+export function toAnimationFrames(customInterpolate: TypeInterpolationFunction) {
   return function (frames, values, decimal) {
     return frames.map(t => customInterpolate(t, values, decimal));
   }

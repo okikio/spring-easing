@@ -128,15 +128,12 @@ export function transpose<T>(...args: (T | T[])[]) {
  * while the alpha color gets rounded to a specific decimal place_
  * Make sure to read {@link interpolateNumber}.
 */
-export function interpolateColor(frames: number[], values: string[], decimal = 3) {
-  // Remove undefined color arrays
-  const rgbColors = transpose(...values.map((v) => rgba(v)))
-    .filter((colors) => Array.isArray(colors));
+export function interpolateColor(t: number, values: string[], decimal = 3) {
+  const color = transpose(...values.map((v) => rgba(v)))
+    .map((colors: number[], i) => {
+      const result = interpolateNumber(t, colors);
+      return i < 3 ? Math.round(result) : toFixed(result, decimal);
+    });
 
-  return transpose(
-    ...rgbColors.map((colors, i) => {
-      return interpolateNumber(frames, colors as number[])
-        .map(result => i < 3 ? Math.round(result) : toFixed(result, decimal));
-    })
-  ).map(color => `rgba(${color.join()})`);
+  return `rgba(${color.join()})`;
 }

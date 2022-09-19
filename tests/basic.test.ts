@@ -1,7 +1,7 @@
 
 import { describe, expect, it } from 'vitest';
 import { interpolateColor } from "./utils/interpolate-color";
-import { toAnimationFrames, toFixed, scale, limit } from "../src/utils";
+import {  toFixed, scale, limit } from "../src/utils";
 import { SpringEasing, SpringFrame, SpringOutFrame, SpringInOutFrame, SpringOutInFrame, registerEasingFunction, registerEasingFunctions } from "../src/index";
 
 describe("SpringFrame", () => {
@@ -369,7 +369,7 @@ describe("SpringFrame", () => {
         numPoints: 100,
         decimal: 2
       },
-      toAnimationFrames(interpolatePixels)
+      interpolatePixels
     );
 
     expect(keyframes).toEqual([
@@ -429,7 +429,7 @@ describe("SpringFrame", () => {
         numPoints: 100,
         decimal: 2
       },
-      toAnimationFrames(interpolatePixels)
+      interpolatePixels
     );
 
     expect(keyframes).toEqual([
@@ -459,7 +459,7 @@ describe("SpringFrame", () => {
         numPoints: 100,
         decimal: 2
       },
-      toAnimationFrames(interpolatePixels)
+      interpolatePixels
     );
     expect(keyframes2).toEqual([
       '0px', '0.03px', '0.1px', '0.23px', '0.41px', '0.64px',
@@ -488,7 +488,7 @@ describe("SpringFrame", () => {
         numPoints: 100,
         decimal: 2
       },
-      toAnimationFrames(interpolatePixels)
+      interpolatePixels
     );
     expect(keyframes3).toEqual([
       '0px', '0.03px', '0.1px', '0.23px', '0.41px', '0.64px',

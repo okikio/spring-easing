@@ -148,10 +148,22 @@ A couple sites/projects that use `spring-easing`:
 <details open>
 <summary><strong><em>What's New...</em></strong></summary>
 
+> **`REVERT`** _The new interpolation syntax has been reverted and removed; `instantNumber`, etc... functions have been renamed to `interpolateNumber`, etc..._
+> 
+
+> **`NEW`** _Re-introduced instantaneous interpolation functions._
+> e.g.
+>
+> ```ts
+> import { interpolateNumber, interpolateString, interpolateSequence, interpolateComplex } from "spring-easing";
+> ```
+> These functions represent the interpolated value at a specific instance in time, where time is represented by `t` with a range of `0` to `1`.
+> You can use these functions as building blocks to create your own custom interpolation functions.
+
 > **`NEW`** _(deprecated) `interpolateUsingIndex` is now an alias of `interpolateSequence`, it still keeps the same functionality._
 > The recommendation is to use `interpolateSequence` instead of `interpolateUsingIndex`, but you can still keep using `interpolateUsingIndex`, but beware it can be removed in future versions.
 
-> **`NEW`** _Re-introduced instantaneous interpolation functions._
+> <strike> **`NEW`** _Re-introduced instantaneous interpolation functions._
 > e.g.
 >
 > ```ts
@@ -159,8 +171,10 @@ A couple sites/projects that use `spring-easing`:
 > ```
 > These functions represent the interpolated value at a specific instance in time, where time is represented by `t` with a range of `0` to `1`.
 > You can use these functions as building blocks to create your own custom interpolation functions.
+> 
+> </strike> 
 
-> **`BREAKING CHANGE`** _Interpolation functions use a new syntax._
+> <strike> **`BREAKING CHANGE`** _Interpolation functions use a new syntax._
 > 
 > _In older versions of `spring-easing` interpolation functions used to follow a syntax called the instantaneous interpolation function `(t, values, decimal) => string | number | any`, the new syntax is called interpolation function `(frames, values, decimal) => string[] | number[] | any[]`._
 > 
@@ -190,8 +204,10 @@ A couple sites/projects that use `spring-easing`:
 > 
 > SpringEasing([0, 250], `spring`, interpolateNumber)
 > ```
+>
+> </strike> 
 
-> **`NEW`** _There is a new `toAnimationFrames` function that be used on instantaneous interpolation functions, to transform them into complete animation interpolation functions._
+> <strike> **`NEW`** _There is a new `toAnimationFrames` function that be used on instantaneous interpolation functions, to transform them into complete animation interpolation functions._ 
 > e.g.
 >
 > ```ts
@@ -221,37 +237,32 @@ A couple sites/projects that use `spring-easing`:
 >   'spring', 
 >   toAnimationFrames(interpolatePixels)
 > );
+> ```
+> 
+> </strike>
 
 > **`NEW`** _Easily register new easing functions._
 > e.g.
 >
 > ```ts
-> import { SpringEasing, register, toAnimationFrames, toFixed, scale, limit } from "spring-easing";
+> import { SpringEasing, registerEasingFunction } from "spring-easing";
 > 
-> function interpolateNumber(t: number, values: number[], decimal = 3) {
->   // nth index
->   const n = values.length - 1;
-> 
->   // The current index given t
->   const i = limit(Math.floor(t * n), 0, n - 1);
-> 
->   const start = values[i];
->   const end = values[i + 1];
->   const progress = (t - i / n) * n;
-> 
->   return toFixed(scale(progress, start, end), decimal);
-> }
-> 
-> function interpolatePixels(t: number, values: number[], decimal = 3) { 
->   const result = interpolateNumber(t, values, decimal);
->   return `${result}px`;
-> }
+> registerEasingFunction("linear", (t) => t);
+> registerEasingFunctions({
+>   quad: (t) => Math.pow(t, 2),
+>   cubic: (t) => Math.pow(t, 3),
+> });
 > 
 > SpringEasing(
 >   [0, 250], 
->   'spring', 
->   toAnimationFrames(interpolatePixels)
+>   'linear'
 > );
+> 
+> SpringEasing(
+>   [0, 250], 
+>   'quad'
+> );
+> ```
 
 > **`NEW`** _SpringEasing now support interpolating between strings. It treats the units of the first value as the units for the rest of the values to interpolate between._
 > e.g.
@@ -268,18 +279,16 @@ A couple sites/projects that use `spring-easing`:
 > e.g.
 >
 > ```ts
-> import { interpolateNumber } from "spring-easing";
+> import { interpolateNumber, toFixed, scale, limit } from "spring-easing";
 > // ...
-> export function interpolateColor(frames, values, decimal = 3) {
->   const rgbColors = transpose(...values.map((v) => rgba(v)))
->     .filter((colors) => Array.isArray(colors));
+> export function interpolateColor(t: number, values: string[], decimal = 3) {
+>   const color = transpose(...values.map((v) => rgba(v)))
+>     .map((colors: number[], i) => {
+>       const result = interpolateNumber(t, colors);
+>       return i < 3 ? Math.round(result) : toFixed(result, decimal);
+>     });
 > 
->   return transpose(
->     ...rgbColors.map((colors, i) => {
->       return interpolateNumber(frames, colors as number[])
->         .map(result => i < 3 ? Math.round(result) : toFixed(result, decimal));
->     })
->   ).map(color => `rgba(${color.join()})`);
+>   return `rgba(${color.join()})`;
 > }
 >
 > SpringEasing(["red", "green", "#4f4"], "spring", interpolateColor);
