@@ -270,6 +270,6 @@ export interface IGenericInterpolationFn<T extends unknown[], TReturn extends un
   (arr_t: number[], values: T, decimal?: number): TReturn;
 }
 
-SpringEasing<(number | string)[]>([21231,234,23423,"123123"], "spring", interpolateNumber)
+SpringEasing([21231,234,23423], "spring", interpolateNumber)
 
 export default SpringEasing;
