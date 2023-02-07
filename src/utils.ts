@@ -3,9 +3,9 @@
  *
  * @source Source code of `isNumberLike`
  */
-export function isNumberLike(num: string | number) {
-  const value = parseFloat(num as string);
-  return typeof value == "number" && !Number.isNaN(value);
+export function isNumberLike<T>(input: T) {
+  const value = parseFloat(input as string);
+  return typeof value === "number" && !Number.isNaN(value);
 }
 
 /**
@@ -45,15 +45,15 @@ export function toFixed(value: number, decimal: number) {
  * 
  * @source Source code of `getUnit`
  */
-export function getUnit(str: string | number) {
-  const num = parseFloat(str as string);
-  return (str.toString()).replace(num.toString(), "");
-}
+export function getUnit(input: string | number) {
+  if (typeof input === 'number') return [input, ""] as const;
 
-/**
- * The type for interpolation functions which at an instant in the animation, generate the corresponding interpolated frame
- */
-export type TypeInterpolationFunction = (t: number, values: any[], decimal?: number) => string | number | any;
+  const [value, unit] = input.match(/(-?[\d.]+)([a-z%]*)/);
+  return [
+    parseFloat(value),
+    unit
+  ] as const;
+}
 
 /**
  * Converts old interpolation syntax (the instantaneous interpolation function, e.g. `(t, values, decimal) => { ... }`) 
