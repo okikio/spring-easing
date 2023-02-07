@@ -10,8 +10,8 @@ export * from "../index";
 /**
  * The type for interpolation functions which at an instant in the animation, generate the corresponding interpolated frame
  */
-export interface IGenericInterpolationFn<T, TReturn = T> {
-  (arr_t: number[], values: T[], decimal?: number): TReturn[];
+export interface IGenericInterpolationFn<T extends unknown[], TReturn extends unknown[] = T> {
+  (arr_t: number[], values: T, decimal?: number): TReturn;
 }
 
 /**
@@ -249,18 +249,16 @@ export function interpolateComplex<T>(
  * ]
  * ```
  */
-export function SpringEasing<T = number, TReturn = number>(
-  values: T[],
+export function SpringEasing<T extends unknown[] = number[], TReturn extends unknown[] = T>(
+  values: T,
   options: TypeEasingOptions | TypeEasingOptions["easing"] = {},
-  customInterpolate?: IGenericInterpolationFn<T, TReturn>
+  customInterpolate?: (arr_t: number[], values: T, decimal?: number) => TReturn
 ) {
   const optionsObj = EasingOptions(options);
   const [frames, duration] = GenerateSpringFrames(optionsObj);
 
   return [
-    customInterpolate ? 
-      interpolateNumber(frames, values, optionsObj.decimal) : 
-      customInterpolate(frames, values, optionsObj.decimal),
+    customInterpolate?.(frames, values, optionsObj.decimal),
     duration
   ] as const;
 }
@@ -268,10 +266,10 @@ export function SpringEasing<T = number, TReturn = number>(
 /**
  * The type for interpolation functions which at an instant in the animation, generate the corresponding interpolated frame
  */
-export interface IGenericInterpolationFn<T, TReturn = T> {
-  (arr_t: number[], values: T[], decimal?: number): TReturn[];
+export interface IGenericInterpolationFn<T extends unknown[], TReturn extends unknown[] = T> {
+  (arr_t: number[], values: T, decimal?: number): TReturn;
 }
 
-SpringEasing([21231,234,23423,"123123"], "spring", interpolateNumber)
+SpringEasing<(number | string)[]>([21231,234,23423,"123123"], "spring", interpolateNumber)
 
 export default SpringEasing;

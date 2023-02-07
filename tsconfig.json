@@ -12,11 +12,13 @@
     "resolveJsonModule": true,
     "isolatedModules": true,
     "esModuleInterop": true,
-    "skipLibCheck": true
+    "skipLibCheck": true,
+    "strict": true
   },
   "include": [
-    "src"
-, "tests/utils/color-parse.ts"  ],
+    "src", 
+    "tests/utils/color-parse.ts"  
+  ],
   "exclude": [
     "node_modules"
   ]
