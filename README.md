@@ -148,6 +148,10 @@ A couple sites/projects that use `spring-easing`:
 <details open>
 <summary><strong><em>What's New...</em></strong></summary>
 
+> **`NEW`** _Optimized perf. of spring generation w/ help from [@jakearchibald](https://twitter.com/jaffathecake)_
+
+> **`NEW`** _`mass`, `stiffness`, `damping`, and `velocity` now have a smaller minimum limit of `0.0001` instead of `0.1`_
+
 > **`REVERT`** _The new interpolation syntax has been reverted and removed; `instantNumber`, etc... functions have been renamed to `interpolateNumber`, etc..._
 > 
 
