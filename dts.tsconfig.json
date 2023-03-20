@@ -3,8 +3,8 @@
   "compilerOptions": {
     "outDir": "./lib",
     "declaration": true,
-    "emitDeclarationOnly": true,
-    "declarationDir": "./@types"
+    "declarationMap": true,
+    "emitDeclarationOnly": true
   },
   "include": [
     "./src/**/*"
@@ -12,7 +12,6 @@
   "exclude": [
     "node_modules",
     "./tests/**/*",
-    "./@types/**/*",
     "./lib/**/*"
   ]
 }
