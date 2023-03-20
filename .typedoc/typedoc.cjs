@@ -26,13 +26,17 @@ function load(app) {
     name: "umami-id",
     help: "The id you receive from umami analytics.",
     type: import_typedoc.ParameterType.String,
+    // The default
     defaultValue: ""
+    // The default
   });
   app.options.addDeclaration({
     name: "umami-src",
     help: "The website source for umami analytics.",
     type: import_typedoc.ParameterType.String,
+    // The default
     defaultValue: "/media/measure.js"
+    // The default
   });
   app.options.addDeclaration({
     name: "keywords",
@@ -51,64 +55,48 @@ function load(app) {
     const keywords = ctx.options.getValue("keywords");
     const id = ctx.options.getValue("umami-id");
     const src = ctx.options.getValue("umami-src");
-    return /* @__PURE__ */ import_typedoc.JSX.createElement(import_typedoc.JSX.Fragment, null, /* @__PURE__ */ import_typedoc.JSX.createElement("link", {
-      rel: "preconnect",
-      href: "https://fonts.googleapis.com"
-    }), /* @__PURE__ */ import_typedoc.JSX.createElement("link", {
-      rel: "preconnect",
-      href: "https://fonts.gstatic.com",
-      crossorigin: true
-    }), /* @__PURE__ */ import_typedoc.JSX.createElement("link", {
-      href: "https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;700&display=swap",
-      rel: "stylesheet"
-    }), /* @__PURE__ */ import_typedoc.JSX.createElement("meta", {
-      name: "keyword",
-      content: keywords.join(", ")
-    }), /* @__PURE__ */ import_typedoc.JSX.createElement("meta", {
-      name: "color-scheme",
-      content: "dark light"
-    }), /* @__PURE__ */ import_typedoc.JSX.createElement("link", {
-      rel: "shortcut icon",
-      href: "/media/favicon.ico"
-    }), /* @__PURE__ */ import_typedoc.JSX.createElement("link", {
-      rel: "icon",
-      type: "image/svg+xml",
-      href: "/media/assets/favicon.svg"
-    }), /* @__PURE__ */ import_typedoc.JSX.createElement("meta", {
-      name: "web-author",
-      content: "Okiki Ojo"
-    }), /* @__PURE__ */ import_typedoc.JSX.createElement("meta", {
-      name: "robots",
-      content: "index, follow"
-    }), /* @__PURE__ */ import_typedoc.JSX.createElement("meta", {
-      name: "twitter:url",
-      content: "https://spring-easing.okikio.dev/"
-    }), /* @__PURE__ */ import_typedoc.JSX.createElement("meta", {
-      name: "twitter:site",
-      content: "@okikio_dev"
-    }), /* @__PURE__ */ import_typedoc.JSX.createElement("meta", {
-      name: "twitter:creator",
-      content: "@okikio_dev"
-    }), /* @__PURE__ */ import_typedoc.JSX.createElement("link", {
-      href: "https://twitter.com/okikio_dev",
-      rel: "me"
-    }), /* @__PURE__ */ import_typedoc.JSX.createElement("link", {
-      rel: "webmention",
-      href: "https://webmention.io/spring-easing.okikio.dev/webmention"
-    }), /* @__PURE__ */ import_typedoc.JSX.createElement("link", {
-      rel: "pingback",
-      href: "https://webmention.io/spring-easing.okikio.dev/xmlrpc"
-    }), /* @__PURE__ */ import_typedoc.JSX.createElement("link", {
-      rel: "pingback",
-      href: "https://webmention.io/webmention?forward=https://spring-easing.okikio.dev/endpoint"
-    }), ctx.options.isSet("umami-id") && /* @__PURE__ */ import_typedoc.JSX.createElement("script", {
-      async: true,
-      defer: true,
-      type: "module",
-      "data-host-url": "https://bundlejs.com",
-      "data-domains": "spring-easing.okikio.dev,okikio.dev",
-      "data-website-id": id,
-      src
-    }));
+    return /* @__PURE__ */ import_typedoc.JSX.createElement(import_typedoc.JSX.Fragment, null, /* @__PURE__ */ import_typedoc.JSX.createElement("link", { rel: "preconnect", href: "https://fonts.googleapis.com" }), /* @__PURE__ */ import_typedoc.JSX.createElement("link", { rel: "preconnect", href: "https://fonts.gstatic.com", crossorigin: true }), /* @__PURE__ */ import_typedoc.JSX.createElement(
+      "link",
+      {
+        href: "https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;700&display=swap",
+        rel: "stylesheet"
+      }
+    ), /* @__PURE__ */ import_typedoc.JSX.createElement("meta", { name: "keyword", content: keywords.join(", ") }), /* @__PURE__ */ import_typedoc.JSX.createElement("meta", { name: "color-scheme", content: "dark light" }), /* @__PURE__ */ import_typedoc.JSX.createElement("link", { rel: "shortcut icon", href: "/media/favicon.ico" }), /* @__PURE__ */ import_typedoc.JSX.createElement(
+      "link",
+      {
+        rel: "icon",
+        type: "image/svg+xml",
+        href: "/media/assets/favicon.svg"
+      }
+    ), /* @__PURE__ */ import_typedoc.JSX.createElement("meta", { name: "web-author", content: "Okiki Ojo" }), /* @__PURE__ */ import_typedoc.JSX.createElement("meta", { name: "robots", content: "index, follow" }), /* @__PURE__ */ import_typedoc.JSX.createElement("meta", { name: "twitter:url", content: "https://spring-easing.okikio.dev/" }), /* @__PURE__ */ import_typedoc.JSX.createElement("meta", { name: "twitter:site", content: "@okikio_dev" }), /* @__PURE__ */ import_typedoc.JSX.createElement("meta", { name: "twitter:creator", content: "@okikio_dev" }), /* @__PURE__ */ import_typedoc.JSX.createElement("link", { href: "https://twitter.com/okikio_dev", rel: "me" }), /* @__PURE__ */ import_typedoc.JSX.createElement(
+      "link",
+      {
+        rel: "webmention",
+        href: "https://webmention.io/spring-easing.okikio.dev/webmention"
+      }
+    ), /* @__PURE__ */ import_typedoc.JSX.createElement(
+      "link",
+      {
+        rel: "pingback",
+        href: "https://webmention.io/spring-easing.okikio.dev/xmlrpc"
+      }
+    ), /* @__PURE__ */ import_typedoc.JSX.createElement(
+      "link",
+      {
+        rel: "pingback",
+        href: "https://webmention.io/webmention?forward=https://spring-easing.okikio.dev/endpoint"
+      }
+    ), ctx.options.isSet("umami-id") && /* @__PURE__ */ import_typedoc.JSX.createElement(
+      "script",
+      {
+        async: true,
+        defer: true,
+        type: "module",
+        "data-host-url": "https://bundlejs.com",
+        "data-domains": "spring-easing.okikio.dev,okikio.dev",
+        "data-website-id": id,
+        src
+      }
+    ));
   });
 }

@@ -48,7 +48,6 @@ jobs:
         if: ${{ github.ref == 'refs/heads/main' }}
         run: |
           git add --force docs/
-          git add --force @types/
           git add --force lib/
 
       - name: Commit files
