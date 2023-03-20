@@ -28,22 +28,7 @@ export type TypeFrameFunction = (
   duration?: number,
 ) => number;
 
-/**
- * Generates a single frame of the spring easing at a specific time between (0 to 1) with the spring parameters given [mass, stiffness, damping, velocity]
- *
- * @param t time value between 0 & 1
- * @param spring-parameters
- *  - mass = mass of object
- *  - stiffness = stiffness of spring
- *  - damping = amount to dampen spring motion
- *  - velocity = initial velocity of spring
- * @param duration (optional) the maximum duration (in milliseconds) required for a spring (with its specified spring parameters) to reach a resting position. It's used to ensure the progress of all spring frames put together are smooth
- * @returns a single frame of the spring easing at the time specified
- *
- * _**Note**: Be very careful of only setting some of the spring parameters, it can cause errors if you are not careful_
- *
- * Based on [animejs](https://github.com/juliangarnier/anime/blob/3ebfd913a04f7dc59cc3d52e38275272a5a12ae6/src/index.js#L76)
- *
+/*!
  * Spring solver inspired by Webkit Copyright © 2016 Apple Inc. All rights reserved. https://webkit.org/demos/spring/spring.js
  *
  * Redistribution and use in source and binary forms, with or without
@@ -66,34 +51,47 @@ export type TypeFrameFunction = (
  * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
  * THE POSSIBILITY OF SUCH DAMAGE.
+*/
+/**
+ * Generates a single frame of the spring easing at a specific time between (0 to 1) with the spring parameters given [mass, stiffness, damping, velocity]
+ *
+ * @param t time value between 0 & 1
+ * @param spring-parameters (limit of 0.0001 to 1)
+ *  - mass = mass of object
+ *  - stiffness = stiffness of spring
+ *  - damping = amount to dampen spring motion
+ *  - velocity = initial velocity of spring
+ * @param duration (optional) the maximum duration (in milliseconds) required for a spring (with its specified spring parameters) to reach a resting position. It's used to ensure the progress of all spring frames put together are smooth
+ * @returns a single frame of the spring easing at the time specified
+ *
+ * _**Note**: Be very careful of only setting some of the spring parameters, it can cause errors if you are not careful_
+ *
+ * Based on [animejs](https://github.com/juliangarnier/anime/blob/3ebfd913a04f7dc59cc3d52e38275272a5a12ae6/src/index.js#L76)
  */
 export const SpringFrame: TypeFrameFunction = (
   t,
   [mass = 1, stiffness = 100, damping = 10, velocity = 0] = [],
   duration,
 ) => {
-  if (t === 0 || t === 1) return t;
-
-  mass = limit(mass, 0.1, 1000);
-  stiffness = limit(stiffness, 0.1, 1000);
-  damping = limit(damping, 0.1, 1000);
-  velocity = limit(velocity, 0.1, 1000);
+  mass = limit(mass, 0.0001, 1000);
+  stiffness = limit(stiffness, 0.0001, 1000);
+  damping = limit(damping, 0.0001, 1000);
+  velocity = limit(velocity, 0.0001, 1000);
 
   const w0 = Math.sqrt(stiffness / mass);
   const zeta = damping / (2 * Math.sqrt(stiffness * mass));
   const wd = zeta < 1 ? w0 * Math.sqrt(1 - zeta * zeta) : 0;
-  const a = 1;
   const b = zeta < 1 ? (zeta * w0 + -velocity) / wd : -velocity + w0;
 
-  let progress = duration ? (duration * t) / 1000 : t;
+  let position = duration ? (duration * t) / 1000 : t;
   if (zeta < 1) {
-    progress = Math.exp(-progress * zeta * w0)
-      * (a * Math.cos(wd * progress) + b * Math.sin(wd * progress));
+    position = Math.exp(-position * zeta * w0)
+      * ( Math.cos(wd * position) + b * Math.sin(wd * position));
   } else {
-    progress = (a + b * progress) * Math.exp(-progress * w0);
+    position = (1 + b * position) * Math.exp(-position * w0);
   }
 
-  return 1 - progress;
+  return 1 - position;
 }
 
 /**
@@ -101,7 +99,7 @@ export const SpringFrame: TypeFrameFunction = (
  */
 export const EasingDurationCache: Map<
   string,
-  number
+  [number, number]
 > = new Map();
 
 /**
@@ -120,11 +118,15 @@ export const INFINITE_LOOP_LIMIT = 100_000;
  *  - stiffness = stiffness of spring
  *  - damping = amount to dampen spring motion
  *  - velocity = initial velocity of spring
- * @return (optional) optimal duration for spring easings
+ * @return [
+ *  `duration` = optimal duration for spring easings, 
+ *  `numPoints` = optimal num. of points to represent the spring easing
+ * ]
  *
  * _**Note**: Be very careful of only setting some of the spring parameters, it can cause errors if you are not careful_
  *
  * Based on a function of the same name in [animejs](https://github.com/juliangarnier/anime/blob/3ebfd913a04f7dc59cc3d52e38275272a5a12ae6/src/index.js#L100)
+ * Thanks [@jakearchibald](https://gist.github.com/jakearchibald/9718d1b81fe62d1c9655de65df1a55a4) for the help optimizing this
  */
 export function getSpringDuration([mass, stiffness, damping, velocity]: number[] = []) {
   let params = [mass, stiffness, damping, velocity];
@@ -132,25 +134,48 @@ export function getSpringDuration([mass, stiffness, damping, velocity]: number[]
   if (EasingDurationCache.has(easing)) 
     return EasingDurationCache.get(easing);
 
-  const frame = 1 / 6;
-  let elapsed = 0;
-  let rest = 0;
-  let count = 0;
+  const step = 1 / 6;
+  let time = 0;
 
-  // Add a loop limit, to avoid situations with infinite loops
-  while (++count < INFINITE_LOOP_LIMIT) {
-    elapsed += frame;
-    if (SpringFrame(elapsed, params, null) === 1) {
-      rest++;
-      if (rest >= 16) break;
-    } else {
-      rest = 0;
+  // The ideal num of pts. required to create a smooth spring-easing
+  let numPoints = 0;
+
+  /** 
+   * Add a loop limit, to avoid situations with infinite loops 
+   * though infinite loops shouldn't occur it's theoretically possible
+   * 
+   * The goal is to cap the amount of bouncing for spring-easing 
+   * to human percivable levels, while determining the ideal 
+   * duration of the spring
+  */
+  while (++numPoints < INFINITE_LOOP_LIMIT) {
+    if (Math.abs(1 - SpringFrame(time, params)) < 0.001) {
+
+      let restStart = time;
+      let restSteps = 1;
+
+      while (++numPoints < INFINITE_LOOP_LIMIT) {
+        time += step;
+
+        if (Math.abs(1 - SpringFrame(time, params)) >= 0.001) break;
+        restSteps++;
+
+        // Stop the animation once human eyes can no longer percieve the motion
+        // it's the same reason `restStart` is used instead of time
+        if (restSteps === 16) {
+          const duration = restStart * 1000;
+          EasingDurationCache.set(easing, [duration, numPoints]);
+          return [duration, numPoints]; 
+        }
+      }
     }
+
+    time += step;
   }
 
-  const duration = elapsed * frame * 1000;
-  EasingDurationCache.set(easing, duration);
-  return duration;
+  const duration = time * 1000;
+  EasingDurationCache.set(easing, [duration, numPoints]);
+  return [duration, numPoints];
 }
 
 /**
@@ -464,7 +489,7 @@ export function EasingOptions(
   const isEasing = typeof options == "string" || (Array.isArray(options) && typeof options[0] == "function");
   let {
     easing = [SpringFrame, 1, 100, 10, 0],
-    numPoints = 100,
+    numPoints = 38,
     decimal = 3,
   } = (isEasing ? { easing: options } : options) as TypeEasingOptions;
 
@@ -535,24 +560,25 @@ export function GenerateSpringFrames(options: TypeEasingOptions = {}): [number[]
   }
 
   let [frameFunction, ...params] = easing as TypeArrayFrameFunctionFormat;
-  const key = `${params},${numPoints}`;
+  const [idealDuration, idealNumPoints = 38] = getSpringDuration(params);
+  if (!numPoints) numPoints = idealNumPoints;
 
+  const key = `${params},${numPoints}`;
   if (FramePtsCache.has(key)) {
     let tempObj = FramePtsCache.get(key);
     if (tempObj.has(frameFunction))
       return tempObj.get(frameFunction);
   }
 
-  const pts: number[] = [];
-  const duration = getSpringDuration(params);
+  const points: number[] = [];
   for (let i = 0; i < numPoints; i++) {
-    pts[i] = frameFunction(i / (numPoints - 1), params, duration);
+    points[i] = frameFunction(i / (numPoints - 1), params, idealDuration);
   }
 
   const tempObj = FramePtsCache.has(key) ? FramePtsCache.get(key) : new WeakMap();
-  tempObj.set(frameFunction, [pts, duration]);
+  tempObj.set(frameFunction, [points, idealDuration]);
   FramePtsCache.set(key, tempObj);
-  return [pts, duration];
+  return [points, idealDuration];
 }
 
 /**
