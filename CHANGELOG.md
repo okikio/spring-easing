@@ -1,3 +1,20 @@
+## [2.1.1](https://github.com/okikio/spring-easing/compare/v2.1.0...v2.1.1) (2023-03-20)
+
+
+### Bug Fixes
+
+* ... ([5429f07](https://github.com/okikio/spring-easing/commit/5429f07d0d0a14a31af287b8e6bd1479249183f1))
+
+
+### Performance Improvements
+
+* optimize perf. w/ help from [@jakearchibald](https://github.com/jakearchibald) ([1f3fc56](https://github.com/okikio/spring-easing/commit/1f3fc56ee45e8d8f9dd39c7f2fa01673c0794750))
+
+
+### Reverts
+
+* back to old interpolation syntax, as the new batch syntax causes confusion ([502bbd0](https://github.com/okikio/spring-easing/commit/502bbd0b3caa4110664a89d8163ad968253c6290))
+
 # [2.1.0](https://github.com/okikio/spring-easing/compare/v2.0.0...v2.1.0) (2022-09-18)
 
 
