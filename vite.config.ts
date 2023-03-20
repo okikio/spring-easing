@@ -6,9 +6,7 @@ import dts from 'vite-plugin-dts';
 
 export default defineConfig({
   plugins: [
-    dts({
-      outputDir: "@types"
-    })
+    dts()
   ],
   build: {
     outDir: "lib",
