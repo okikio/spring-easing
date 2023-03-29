@@ -1,3 +1,10 @@
+## [2.1.2](https://github.com/okikio/spring-easing/compare/v2.1.1...v2.1.2) (2023-03-29)
+
+
+### Bug Fixes
+
+* skypack issues ([5f239d3](https://github.com/okikio/spring-easing/commit/5f239d34b3ada9d44d0db394192ab6b2cf925a17))
+
 ## [2.1.1](https://github.com/okikio/spring-easing/compare/v2.1.0...v2.1.1) (2023-03-20)
 
 
