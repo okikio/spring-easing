@@ -10,6 +10,7 @@ export default defineConfig({
   ],
   build: {
     outDir: "lib",
+    minify: false,
     lib: {
       entry: "src/index.ts",
       name,
