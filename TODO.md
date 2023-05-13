@@ -1,7 +1,7 @@
 # Todo
 
-- [ ] Maintain the project
-- [ ] Create better documentation
-- [ ] Research browser compatibility
-- [ ] Create better tests
-- [ ] Enhance build tool support
+- [x] Maintain the project
+- [x] Create better documentation
+- [x] Research browser compatibility
+- [x] Create better tests
+- [x] Enhance build tool support
