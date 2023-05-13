@@ -92,7 +92,10 @@
     "motion-one",
     "@okikio/animate",
     "Web-Animation-API",
-    "WAAPI"
+    "WAAPI",
+    "linear-easing",
+    "css-spring-easing",
+    "custom-easing"
   ],
   "author": {
     "name": "Okiki Ojo",
