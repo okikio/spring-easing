@@ -17,7 +17,8 @@
     "declaration": true,
     "declarationMap": true,
     "jsxFactory": "JSX.createElement",
-    "jsxFragmentFactory": "JSX.Fragment"
+    "jsxFragmentFactory": "JSX.Fragment",
+    "allowImportingTsExtensions": true
   },
   "include": [
     "src", 
