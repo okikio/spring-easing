@@ -164,9 +164,60 @@ header.tsd-page-toolbar {
   border-radius: 0.5rem;
 }
 
+.tsd-breadcrumb {
+  padding-block-start: 0.5rem;
+}
+
 .tsd-typography p, .tsd-typography ul, .tsd-typography ol {
   line-height: 1.85em;
   font-weight: 300;
+}
+.tsd-navigation {
+  padding-inline-end: 0.25rem;
+}
+
+.tsd-accordion-details {
+  padding-inline-start: 1.35rem;
+}
+
+@media (min-width: 769px) {
+  .col-sidebar {
+    --mask-image: linear-gradient(0deg, transparent 0%, white 5%, white 50%, white 95%, transparent 100%);
+    mask-image: var(--mask-image);
+    -webkit-mask-image: var(--mask-image);
+    padding-block: 1.5rem;
+  }
+}
+
+@media (min-width: 1200px) {
+  .container-main {
+    grid-template-columns: minmax(0, 1.25fr) minmax(0, 2.5fr) minmax(0, 15rem);
+  }
+
+  .site-menu {
+    --mask-image: linear-gradient(0deg, transparent 0%, white 5%, white 50%, white 95%, transparent 100%);
+    mask-image: var(--mask-image);
+    -webkit-mask-image: var(--mask-image);
+    padding-block: 1.5rem;
+  }
+}
+
+.tsd-accordion-details ul {
+  padding-left: 1rem;
+}
+
+.tsd-accordion-details > ul {
+  padding-left: 0;
+}
+
+:is(.tsd-page-navigation, .tsd-navigation) svg {
+  vertical-align: middle;
+}
+
+.tsd-navigation a.current, .tsd-page-navigation a.current {
+  border-radius: 0.45rem;
+  padding-block: 0.3rem;
+  padding-inline: 0.3rem;
 }
 
 .col-menu {
