@@ -2,6 +2,8 @@
 
 [![Open Bundle](https://bundlejs.com/badge-light.svg)](https://bundlejs.com/?q=spring-easing&bundle "Check the total bundle size of spring-easing with whichever animation library you choose.")
 
+<!-- ![](https://deno.bundlejs.com/badge?q=spring-easing) -->
+
 [NPM](https://www.npmjs.com/package/spring-easing) <span style="padding-inline: 1rem">|</span> [GitHub](https://github.com/okikio/spring-easing#readme) <span style="padding-inline: 1rem">|</span> [Docs](https://spring-easing.okikio.dev) <span style="padding-inline: 1rem">|</span> [Licence](./LICENSE)
 
 Quick and easy spring animations. Works with other animation libraries ([gsap](https://greensock.com/), [animejs](https://animejs.com/), [@okikio/animate](http://npmjs.com/@okikio/animate), [motion one](https://motion.dev/), [framer motion](https://www.framer.com/docs/animation/), etc...) or the [Web Animation API (WAAPI)](https://developer.mozilla.org/en-US/docs/Web/API/Web_Animations_API/Using_the_Web_Animations_API), you can learn more in the [Usage](#use-with-animation-libraries) section.
@@ -22,16 +24,17 @@ You can create animation's like this with `spring-easing`,
 > _Check out the spring easing variants on [Codepen](https://codepen.io/okikio/pen/MWEMEgJ)._
 
 > _**Attention**: This entire library is a lightweight version of the [`CustomEasing`](https://native.okikio.dev/animate/api/custom-easing/) implemented in [`@okikio/animate`](https://native.okikio.dev/animate), which supports only string and number interpolation. If you'd like the complete `CustomEasing` with color interpolation, complex value interpolation, and more, go through the source code as a [Github Gist](https://gist.github.com/okikio/bed53ed621cb7f60e9a8b1ef92897471#file-custom-easing-ts), which is licensed under the MIT license._
-> <br>
 
 ## Installation
+
+### Node
 
 ```bash
 npm install spring-easing
 ```
 
 <details>
-    <summary>Others</summary>
+  <summary>Others</summary>
 
 ```bash
 yarn add spring-easing
@@ -44,7 +47,12 @@ pnpm install spring-easing
 ```
 
 </details>
-<br>
+
+### Deno
+
+```ts
+import { SpringEasing } from "https://deno.land/x/spring_easing/mod.ts";
+```
 
 ## Usage
 
@@ -67,13 +75,17 @@ You can also use it directly through a script tag:
 You can also use it via a CDN, e.g.
 
 ```ts
-import SpringEasing from "https://cdn.skypack.dev/spring-easing";
+import { SpringEasing } from "https://esm.run/spring-easing";
 // or
-import SpringEasing from "https://cdn.jsdelivr.net/npm/spring-easing";
+import { SpringEasing } from "https://esm.sh/spring-easing";
+// or
+import { SpringEasing } from "https://unpkg.com/spring-easing";
+// or
+import { SpringEasing } from "https://cdn.skypack.dev/spring-easing";
+// or
+import { SpringEasing } from "https://deno.bundlejs.com/file?q=spring-easing";
 // or any number of other CDN's
 ```
-
-<br>
 
 ### Use with Animation Libraries
 
@@ -133,20 +145,124 @@ anime({
 
 > Check out this demo on [Codepen](https://codepen.io/okikio/pen/MWEdzNg)
 
-<br>
-
 ## Showcase
 
 A couple sites/projects that use `spring-easing`:
 
 - Your site/project here...
-  
-<br>
 
 ## API
 
 <details open>
 <summary><strong><em>What's New...</em></strong></summary>
+
+> **`NEW`** CSS Spring Easing & support for the `linear()` easing function
+> 
+> ### CSSSpringEasing
+> 
+> Generates a string that represents a set of values used with the linear-easing function to replicate spring animations, 
+> you can check out the linear-easing playground here https://linear-easing-generator.netlify.app/ 
+> Or check out a demo on Codepen https://codepen.io/okikio/pen/vYVaEXM
+> 
+> CSS Spring Easing has 4 properties they are `easing` (all spring frame functions are supported), `numPoints` (the size of the Array the frmae function should create), `decimal` (the number of decimal places of the values within said Array) and `quality` (how detailed/smooth the spring easing should be)..
+> 
+> | Properties  | Default Value           |
+> | ----------- | ----------------------- |
+> | `easing`    | `spring(1, 100, 10, 0)` |
+> | `numPoints` | `50`                    |
+> | `decimal`   | `3`                     |
+> | `quality`   | `0.85`                  |
+> 
+> `CSSSpringEasing` is meant to be used with the `linear-easing()` function to replicate spring animations. 
+> It is based on the work done by [Jake Archibald](https://github.com/jakearchibald) in his [Linear Easing Generator](https://github.com/jakearchibald/linear-easing-generator).
+> 
+> > **Note**: This feature will only work on versions of browsers from ~a month ago (`Chrome & Edge 113`, and `Firefox 112`) except for `Safari` which doesn't support it yet.
+> 
+> ```ts
+> import { CSSSpringEasing } from "spring-easing";
+>  
+> let [easing, duration] = CSSSpringEasing({
+>   easing: "spring-out-in(1, 100, 10, 0)",
+> 
+>   // You can change the size of Array for the SpringEasing function to generate
+>   numPoints: 200,
+> 
+>   // The number of decimal places to round, final values in the generated Array
+>   // This option doesn't exist on {@link GenerateSpringFrames}
+>   decimal: 5,
+> 
+>   // How detailed/smooth the spring easing should be 
+>   // 0 means not smooth at all (shorter easing string)
+>   // 1 means as smooth as possible (this means the resulting easing will be a longer string)
+>   quality: 0.85
+> });
+> 
+> document.querySelector("div").animate({
+>   translate: ["0px", "250px"],
+>   rotate: ["0turn", "1turn", "0turn", "0.5turn"],
+> }, {
+>   easing: `linear(${easing})`,
+> 
+>   // The optimal duration for this specific spring
+>   duration
+> })
+> ```
+> 
+> > **Note**: You can also use custom easings with `CSSSpringEasing` e.g.
+> ```ts
+> import { CSSSpringEasing, limit, registerEasingFunctions } from "spring-easing";
+> 
+> registerEasingFunctions({
+>   bounce: t => {
+>     let pow2: number, b = 4;
+>     while (t < ((pow2 = Math.pow(2, --b)) - 1) / 11) { }
+>     return 1 / Math.pow(4, 3 - b) - 7.5625 * Math.pow((pow2 * 3 - 2) / 22 - t, 2);
+>   },
+>   elastic: (t, params: number[] = []) => {
+>     let [amplitude = 1, period = 0.5] = params;
+>     const a = limit(amplitude, 1, 10);
+>     const p = limit(period, 0.1, 2);
+>     if (t === 0 || t === 1) return t;
+>     return (-a *
+>       Math.pow(2, 10 * (t - 1)) *
+>       Math.sin(
+>         ((t - 1 - (p / (Math.PI * 2)) * Math.asin(1 / a)) * (Math.PI * 2)) / p
+>       )
+>     );
+>   }
+> });
+> 
+> CSSSpringEasing("bounce") // ["0, 0.013, 0.015, 0.006 8.1%, 0.046 13.5%, 0.06, 0.062, 0.054, 0.034, 0.003 27%, 0.122, 0.206 37.8%, 0.232, 0.246, 0.25, 0.242, 0.224, 0.194, 0.153 56.8%, 0.039 62.2%, 0.066 64.9%, 0.448 73%, 0.646, 0.801 83.8%, 0.862 86.5%, 0.95 91.9%, 0.978, 0.994, 1", ...]
+> CSSSpringEasing("elastic(1, 0.5)") // ["0, -0.005 32.4%, 0.006 40.5%, 0.034 51.4%, 0.033 56.8%, 0.022, 0.003, -0.026 64.9%, -0.185 75.7%, -0.204, -0.195, -0.146, -0.05, 0.1 89.2%, 1", ...]
+> ```
+> 
+> ### getOptimizedPoints
+> This function generates an optimized set of points to be used with the `linear-easing()` function 
+> using the Ramer-Douglas-Peucker algorithm and rounds the x and y values of the resulting points.
+> 
+> ```ts
+> import { getOptimizedPoints } from "spring-easing";
+> 
+> const points = [[0, 0], [0.1, 0.2], [0.5, 1], [0.9, 0.2], [1, 0]];
+> const round = 2;
+> const simplify = 0.1;
+> 
+> console.log(getOptimizedPoints(points, simplify, round)); //= [[0, 0], [0.5, 1], [1, 0]]
+> ```
+> 
+> ### getLinearSyntax
+> This function converts a given set of points into an array of strings in a this format `["value percent%", ...]` e.g. `["0", "0.25 13.8%", "0.6 45.6%", "0.1", "0.4 60%", ...]`. 
+> It's used to generate the syntax for the `linear-easing` function.
+> 
+> ```ts
+> import { getLinearSyntax } from "spring-easing";
+> 
+> const points = [[0, 0], [0.1, 0.2], [0.5, 1], [0.9, 0.2], [1, 0]];
+> const round = 2;
+> 
+> console.log(getLinearSyntax(points, round)); //= [ '0', '0.2 10%', '1', '0.2 90%', '0' ]
+> ```
+
 
 > **`NEW`** _Optimized perf. of spring generation w/ help from [@jakearchibald](https://twitter.com/jaffathecake)_
 
@@ -349,6 +465,9 @@ For a full understanding of what is happening in the library out the [API site](
 
 Native support for `spring-easing` is great as it doesn't use any browser specific or nodejs specific API's, you should be good to use `spring-easing` in any environment.
 
+> Note: `CSSSpringEasing` is meant for browsers which have support for the `linear()` easing function, 
+> which as of right now is `Chrome & Edge 113` + `Firefox 112`, Safari doesn't support it yet.
+
 ## Contributing
 
 I encourage you to use [pnpm](https://pnpm.io/configuring) to contribute to this repo, but you can also use [yarn](https://classic.yarnpkg.com/lang/en/) or [npm](https://npmjs.com) if you prefer.
@@ -381,4 +500,7 @@ npm run typedoc && npm run preview
 
 ## Licence
 
-See the [LICENSE](./LICENSE) file for license rights and limitations (MIT).
+See the [LICENSE](./LICENSE) file for license rights and limitations (MIT). 
+
+The `CSSSpringEasing`, `getOptimizedPoints` and `getLinearSyntax` function are based of the work done by [Jake Archibald](https://github.com/jakearchibald/linear-easing-generator) in his [Linear Easing Generator](https://linear-easing-generator.netlify.app/) 
+and are thus licensed under the [Apache License 2.0](https://github.com/jakearchibald/linear-easing-generator/blob/main/LICENSE).
