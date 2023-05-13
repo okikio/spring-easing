@@ -1,3 +1,10 @@
+# [2.2.0](https://github.com/okikio/spring-easing/compare/v2.1.2...v2.2.0) (2023-05-13)
+
+
+### Features
+
+* add css spring easing and linear easing function support ([ac761fe](https://github.com/okikio/spring-easing/commit/ac761fe20c0878f3ba1966f93f816f039ff08a62))
+
 ## [2.1.2](https://github.com/okikio/spring-easing/compare/v2.1.1...v2.1.2) (2023-03-29)
 
 
