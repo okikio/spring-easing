@@ -1,3 +1,10 @@
+# [2.3.0](https://github.com/okikio/spring-easing/compare/v2.2.0...v2.3.0) (2023-05-14)
+
+
+### Features
+
+* add BatchSpringEasing & it's interpolation functions ([f14b603](https://github.com/okikio/spring-easing/commit/f14b603a7ced20c719c3c52d040b3d55e80aa0ea))
+
 # [2.2.0](https://github.com/okikio/spring-easing/compare/v2.1.2...v2.2.0) (2023-05-13)
 
 
