@@ -1,7 +1,7 @@
-import type { TypeInterpolationFunction } from "./utils.js";
-export * from "./utils.js";
-export * from "./optimize.js";
-export * from "./css-linear-easing.js";
+export * from "./utils.ts";
+export * from "./batch.ts";
+export * from "./optimize.ts";
+export * from "./css-linear-easing.ts";
 /**
  * The format to use when defining custom frame functions
  * An example of a frame function is {@link SpringFrame}
@@ -20,6 +20,10 @@ export * from "./css-linear-easing.js";
  * _**Note**: Be very careful of only setting some of the spring parameters, it can cause errors if you are not careful_
  */
 export type TypeFrameFunction = (t: number, [mass, stiffness, damping, velocity]?: number[], duration?: number) => number;
+/**
+ * The type for interpolation functions which at an instant in the animation, generate the corresponding interpolated frame
+ */
+export type TypeInterpolationFunction = (t: number, values: any[], decimal?: number) => string | number | any;
 /*!
  * Spring solver inspired by Webkit Copyright © 2016 Apple Inc. All rights reserved. https://webkit.org/demos/spring/spring.js
  *

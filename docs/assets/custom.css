@@ -180,25 +180,41 @@ header.tsd-page-toolbar {
   padding-inline-start: 1.35rem;
 }
 
+.tsd-accordion-details > ul > li > ul {
+  padding-left: 0;
+}
+
+.container-main {
+  --mask-image: linear-gradient(0deg, transparent 0%, white 2%, white 50%, white 98%, transparent 100%);
+}
+
 @media (min-width: 769px) {
+  .container-main {
+    grid-template-columns: minmax(0, 15rem) minmax(0, 2.5fr);
+  }
+
   .col-sidebar {
-    --mask-image: linear-gradient(0deg, transparent 0%, white 5%, white 50%, white 95%, transparent 100%);
+    border-right: 1px solid var(--color-panel-divider);
     mask-image: var(--mask-image);
     -webkit-mask-image: var(--mask-image);
-    padding-block: 1.5rem;
+    padding-block: 1rem;
   }
 }
 
 @media (min-width: 1200px) {
   .container-main {
-    grid-template-columns: minmax(0, 1.25fr) minmax(0, 2.5fr) minmax(0, 15rem);
+    grid-template-columns: minmax(0, 1.15fr) minmax(0, 2.5fr) minmax(0, 15.5rem);
+  }
+
+  .page-menu {
+    border-left: 1px solid var(--color-panel-divider);
   }
 
   .site-menu {
-    --mask-image: linear-gradient(0deg, transparent 0%, white 5%, white 50%, white 95%, transparent 100%);
+    border-right: 1px solid var(--color-panel-divider);
     mask-image: var(--mask-image);
     -webkit-mask-image: var(--mask-image);
-    padding-block: 1.5rem;
+    padding-block: 1rem;
   }
 }
 
