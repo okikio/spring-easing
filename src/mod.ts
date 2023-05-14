@@ -1,11 +1,11 @@
 // Adapted from https://github.com/okikio/native/blob/726b26bc3f7a84d2750aa2ffc13572a2a4de905c/packages/animate/src/custom-easing.ts, which is licensed under the MIT license.
 // If the above file is removed or modified, you can access the original state in the following GitHub Gist: https://gist.github.com/okikio/bed53ed621cb7f60e9a8b1ef92897471
-import { getUnit, isNumberLike, limit, scale, toFixed } from "./utils.js"; 
-import type { TypeInterpolationFunction } from "./utils.js";
+import { getUnit, isNumberLike, limit, scale, toFixed } from "./utils.ts"; 
 
-export * from "./utils.js";
-export * from "./optimize.js";
-export * from "./css-linear-easing.js";
+export * from "./utils.ts";
+export * from "./batch.ts";
+export * from "./optimize.ts";
+export * from "./css-linear-easing.ts";
 
 /**
  * The format to use when defining custom frame functions
@@ -29,6 +29,11 @@ export type TypeFrameFunction = (
   [mass, stiffness, damping, velocity]?: number[],
   duration?: number,
 ) => number;
+
+/**
+ * The type for interpolation functions which at an instant in the animation, generate the corresponding interpolated frame
+ */
+export type TypeInterpolationFunction = (t: number, values: any[], decimal?: number) => string | number | any;
 
 /*!
  * Spring solver inspired by Webkit Copyright © 2016 Apple Inc. All rights reserved. https://webkit.org/demos/spring/spring.js
@@ -134,7 +139,7 @@ export function getSpringDuration([mass, stiffness, damping, velocity]: number[]
   let params = [mass, stiffness, damping, velocity];
   let easing = `${params}`;
   if (EasingDurationCache.has(easing)) 
-    return EasingDurationCache.get(easing);
+    return EasingDurationCache.get(easing)!;
 
   const step = 1 / 6;
   let time = 0;
@@ -500,7 +505,7 @@ export function EasingOptions<T extends TypeEasingOptions>(
     const frameFunction = EasingFunctions[
       easing.replace(/(\(|\s).+/, "") // Remove the function brackets and parameters
         .toLowerCase()
-        .trim()
+      .trim() as keyof typeof EasingFunctions
     ];
 
     const params = parseEasingParameters(easing);
@@ -569,9 +574,9 @@ export function GenerateSpringFrames(options: TypeEasingOptions = {}): [number[]
 
   const key = `${params},${numPoints}`;
   if (FramePtsCache.has(key)) {
-    let tempObj = FramePtsCache.get(key);
+    let tempObj = FramePtsCache.get(key)!;
     if (tempObj.has(frameFunction))
-      return tempObj.get(frameFunction);
+      return tempObj.get(frameFunction)!;
   }
 
   const points: number[] = [];
@@ -579,7 +584,7 @@ export function GenerateSpringFrames(options: TypeEasingOptions = {}): [number[]
     points[i] = frameFunction(i / (numPoints - 1), params, idealDuration);
   }
 
-  const tempObj = FramePtsCache.has(key) ? FramePtsCache.get(key) : new WeakMap();
+  const tempObj = FramePtsCache.has(key) ? FramePtsCache.get(key)! : new WeakMap();
   tempObj.set(frameFunction, [points, idealDuration]);
   FramePtsCache.set(key, tempObj);
   return [points, idealDuration];

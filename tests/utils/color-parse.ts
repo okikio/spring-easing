@@ -1,3 +1,4 @@
+// @ts-nocheck
 /** 
  * Based on (color-parse)[https://github.com/colorjs/color-parse] by [colorjs](https://github.com/colorjs) under an MIT License
  */

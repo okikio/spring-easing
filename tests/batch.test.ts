@@ -2,11 +2,11 @@
 import { describe, expect, it } from 'vitest';
 import { interpolateColor } from "./utils/interpolate-color";
 import { toFixed, scale, limit } from "../src/utils";
-import { SpringEasing, SpringFrame, SpringOutFrame, SpringInOutFrame, SpringOutInFrame, registerEasingFunction, registerEasingFunctions } from "../src/index";
+import { BatchSpringEasing, toAnimationFrames, SpringFrame, SpringOutFrame, SpringInOutFrame, SpringOutInFrame, registerEasingFunction, registerEasingFunctions } from "../src/index";
 
-describe("SpringEasing", () => {
+describe("BatchSpringEasing", () => {
   it('With 2 simple values [0, 25]', () => {
-    expect(SpringEasing([0, 25]))
+    expect(BatchSpringEasing([0, 25]))
       .toEqual([
         [
           0, 1.43, 4.969, 9.598, 14.488,
@@ -24,7 +24,7 @@ describe("SpringEasing", () => {
   })
 
   it('Easing using Array Frame Format (only the frame function is specified) [SpringOutFrame]', () => {
-    let [frames, duration] = SpringEasing([0, 25], [SpringOutFrame]);
+    let [frames, duration] = BatchSpringEasing([0, 25], [SpringOutFrame]);
     expect([frames, duration])
       .toEqual([
         [
@@ -44,7 +44,7 @@ describe("SpringEasing", () => {
   // Even though I'd prefer if people didn't only set some of the spring parameters
   // I predict people will, so, `spring-easing` will warn about doing things like this
   it('Easing using string format (partially filled spring parameters) `spring-out(1, 100)`', () => {
-    let [frames, duration] = SpringEasing([0, 25], `spring-out(1, 100)`);
+    let [frames, duration] = BatchSpringEasing([0, 25], `spring-out(1, 100)`);
     expect([frames, duration])
       .toEqual([
         [
@@ -64,7 +64,7 @@ describe("SpringEasing", () => {
   // Even though I'd prefer if people didn't only set some of the spring parameters
   // I predict people will, so, `spring-easing` will warn about doing things like this
   it('Easing using string format (completely filled spring parameters) `spring-out(1, 100, 10, 0)`', () => {
-    let [frames, duration] = SpringEasing([0, 25], `spring-out(1, 100, 10, 0)`);
+    let [frames, duration] = BatchSpringEasing([0, 25], `spring-out(1, 100, 10, 0)`);
     expect([frames, duration])
       .toEqual([
         [
@@ -97,12 +97,12 @@ describe("SpringEasing", () => {
     ];
 
     // Partial
-    let partial = SpringEasing([0, 25], [SpringInOutFrame, 1, 100]);
+    let partial = BatchSpringEasing([0, 25], [SpringInOutFrame, 1, 100]);
     expect(partial)
       .toEqual(solution);
 
     // Complete
-    let complete = SpringEasing([0, 25], [SpringInOutFrame, 1, 100, 10, 0]);
+    let complete = BatchSpringEasing([0, 25], [SpringInOutFrame, 1, 100, 10, 0]);
     expect(complete)
       .toEqual(solution);
   })
@@ -139,22 +139,22 @@ describe("SpringEasing", () => {
     ];
 
     // Minimums for Spring Parameter
-    let minimum = SpringEasing([0, 25], [SpringInOutFrame, -5000, -5000, -5000, -5000]);
+    let minimum = BatchSpringEasing([0, 25], [SpringInOutFrame, -5000, -5000, -5000, -5000]);
     expect(minimum)
       .toEqual(solutionMin);
 
     // Maximums for Spring Parameter
-    let maximum = SpringEasing([0, 25], [SpringInOutFrame, 5000, 5000, 5000, 5000]);
+    let maximum = BatchSpringEasing([0, 25], [SpringInOutFrame, 5000, 5000, 5000, 5000]);
     expect(maximum)
       .toEqual(solutionMax);
 
     // Minimums for Spring Parameter (string format)
-    let minimumStr = SpringEasing([0, 25], `spring-in-out(-5000, -5000, -5000, -5000)`);
+    let minimumStr = BatchSpringEasing([0, 25], `spring-in-out(-5000, -5000, -5000, -5000)`);
     expect(minimumStr)
       .toEqual(solutionMin);
 
     // Maximums for Spring Parameter (string format)
-    let maximumStr = SpringEasing([0, 25], `spring-in-out(5000, 5000, 5000, 5000)`);
+    let maximumStr = BatchSpringEasing([0, 25], `spring-in-out(5000, 5000, 5000, 5000)`);
     expect(maximumStr)
       .toEqual(solutionMax);
   })
@@ -287,7 +287,7 @@ describe("SpringEasing", () => {
     ];
 
     // Minimums for Spring Parameter
-    let minimum = SpringEasing([0, 25], {
+    let minimum = BatchSpringEasing([0, 25], {
       easing: [SpringInOutFrame, -5000, -5000, -5000, -5000],
       numPoints: 500,
       decimal: 7
@@ -296,7 +296,7 @@ describe("SpringEasing", () => {
       .toEqual(solutionMin);
 
     // Maximums for Spring Parameter
-    let maximum = SpringEasing([0, 25], {
+    let maximum = BatchSpringEasing([0, 25], {
       easing: `spring-in-out(5000, 5000, 5000, 5000)`,
       numPoints: 50,
       decimal: 2
@@ -306,7 +306,7 @@ describe("SpringEasing", () => {
   })
 
   it('All frames function', () => {
-    let easeIn = SpringEasing([0, 25], {
+    let easeIn = BatchSpringEasing([0, 25], {
       easing: [SpringFrame, 1, 100, 10, 0],
       numPoints: 50,
       decimal: 2
@@ -327,7 +327,7 @@ describe("SpringEasing", () => {
         1333.3333333333333
       ]);
 
-    let easeOut = SpringEasing([0, 25], {
+    let easeOut = BatchSpringEasing([0, 25], {
       easing: [SpringOutFrame, 1, 100, 10, 0],
       numPoints: 50,
       decimal: 2
@@ -348,7 +348,7 @@ describe("SpringEasing", () => {
         1333.3333333333333
       ]);
 
-    let easeInOut = SpringEasing([0, 25], {
+    let easeInOut = BatchSpringEasing([0, 25], {
       easing: [SpringInOutFrame, 1, 100, 10, 0],
       numPoints: 50,
       decimal: 2
@@ -369,7 +369,7 @@ describe("SpringEasing", () => {
         1333.3333333333333
       ]);
 
-    let easeOutIn = SpringEasing([0, 25], {
+    let easeOutIn = BatchSpringEasing([0, 25], {
       easing: [SpringOutInFrame, 1, 100, 10, 0],
       numPoints: 50,
       decimal: 2
@@ -393,20 +393,20 @@ describe("SpringEasing", () => {
 
   it('String interpolation & Custom interpolation functions', () => {
     // string interpolation
-    let [keyframes] = SpringEasing(["0turn", 5, "50deg", "700", 0], {
+    let [keyframes] = BatchSpringEasing(["0turn", 5, "50deg", "700", 0], {
       easing: "spring",
       numPoints: 100,
       decimal: 2
     });
     expect(keyframes.every(str => /turn$/.test(str as string))).toEqual(true)
 
-    let [keyframes2] = SpringEasing(["red", "blue", "#4f4", "rgb(0, 0, 0)"], {
+    let [keyframes2] = BatchSpringEasing(["red", "blue", "#4f4", "rgb(0, 0, 0)"], {
       // Enforce a linear easing frame function
       // Not really necessary but it show what you can do if you really need other kinds of easings 
       easing: [(t) => t],
       numPoints: 8,
       decimal: 2
-    }, interpolateColor);
+    }, toAnimationFrames(interpolateColor));
     expect(keyframes2)
       .toEqual([
         'rgba(255,0,0,1)',
@@ -440,14 +440,14 @@ describe("SpringEasing", () => {
       return `${result}px`;
     }
 
-    let [keyframes] = SpringEasing(
+    let [keyframes] = BatchSpringEasing(
       [0, 250],
       {
         easing: "spring",
         numPoints: 100,
         decimal: 2
       },
-      interpolatePixels
+      toAnimationFrames(interpolatePixels)
     );
 
     expect(keyframes).toEqual([
@@ -500,14 +500,14 @@ describe("SpringEasing", () => {
       cubic: (t) => Math.pow(t, 3),
     });
 
-    let [keyframes] = SpringEasing(
+    let [keyframes] = BatchSpringEasing(
       [0, 250],
       {
         easing: "linear",
         numPoints: 100,
         decimal: 2
       },
-      interpolatePixels
+      toAnimationFrames(interpolatePixels)
     );
 
     expect(keyframes).toEqual([
@@ -530,14 +530,14 @@ describe("SpringEasing", () => {
       '242.42px', '244.95px', '247.47px', '250px'
     ])
 
-    let [keyframes2] = SpringEasing(
+    let [keyframes2] = BatchSpringEasing(
       [0, 250],
       {
         easing: "quad",
         numPoints: 100,
         decimal: 2
       },
-      interpolatePixels
+      toAnimationFrames(interpolatePixels)
     );
     expect(keyframes2).toEqual([
       '0px', '0.03px', '0.1px', '0.23px', '0.41px', '0.64px',
@@ -559,14 +559,14 @@ describe("SpringEasing", () => {
       '235.08px', '240px', '244.98px', '250px'
     ])
 
-    let [keyframes3] = SpringEasing(
+    let [keyframes3] = BatchSpringEasing(
       [0, 250],
       {
         easing: "quad",
         numPoints: 100,
         decimal: 2
       },
-      interpolatePixels
+      toAnimationFrames(interpolatePixels)
     );
     expect(keyframes3).toEqual([
       '0px', '0.03px', '0.1px', '0.23px', '0.41px', '0.64px',
