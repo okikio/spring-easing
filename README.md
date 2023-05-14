@@ -21,6 +21,13 @@ You can create animation's like this with `spring-easing`,
 <img src="media/assets/spring-easing-demo-video.gif" width="1920" loading="lazy" alt="A demo of the various spring-easings available" align="center" style="border-radius: 1rem; 
     aspect-ratio: auto 1920 / 899;" />
 
+
+<!-- https://github.com/okikio/spring-easing/assets/17222836/3813945f-b301-4399-8383-bbab227c3f68
+
+<video controls autoplay align="center" style="border-radius: 1rem; aspect-ratio: auto 1920 / 899;">
+  <source src="media/assets/spring-easing-demo-video.mp4" type="video/mp4">
+</video> -->
+
 > _Check out the spring easing variants on [Codepen](https://codepen.io/okikio/pen/MWEMEgJ)._
 
 > _**Attention**: This entire library is a lightweight version of the [`CustomEasing`](https://native.okikio.dev/animate/api/custom-easing/) implemented in [`@okikio/animate`](https://native.okikio.dev/animate), which supports only string and number interpolation. If you'd like the complete `CustomEasing` with color interpolation, complex value interpolation, and more, go through the source code as a [Github Gist](https://gist.github.com/okikio/bed53ed621cb7f60e9a8b1ef92897471#file-custom-easing-ts), which is licensed under the MIT license._
@@ -263,6 +270,70 @@ A couple sites/projects that use `spring-easing`:
 > console.log(getLinearSyntax(points, round)); //= [ '0', '0.2 10%', '1', '0.2 90%', '0' ]
 > ```
 
+> **`RE-INSTATED`** _Added batch version of `SpringEasing` and the Interpolation functions which use a new syntax._
+> 
+> _The other version of `spring-easing` interpolation functions  follow this syntax `(t, values, decimal) => string | number | any`, batch interpolation function use this new syntax `(arr_t, values, decimal) => string[] | number[] | any[]`._
+> 
+> _The key difference between both syntaxes are the parameters each function takes and the return value of each function._
+> 
+> _The older syntax returned instantaneous frame values at a specific t-value, but the new syntax returns all the frames that make the entire animation, allowing for performance optimizations that couldn't be done before._
+> 
+> _For the most part this shouldn't leave too much of an effect, but for those high-perf. applications this new batch synatax should prove useful._
+> e.g.
+>
+> ```ts
+> function batchInterpolateNumber(arr_t: number[], values: number[], decimal = 3) {
+>   // nth index
+>   const n = values.length - 1;
+> 
+>   return arr_t.map(t => {
+>     // The current index given t
+>     const i = limit(Math.floor(t * n), 0, n - 1);
+> 
+>     const start = values[i];
+>     const end = values[i + 1];
+>     const progress = (t - i / n) * n;
+> 
+>     return toFixed(scale(progress, start, end), decimal);
+>   });
+> }
+> 
+> BatchSpringEasing([0, 250], `spring`, batchInterpolateNumber)
+> ```
+>
+
+> **`RE-INSTATED`** _There is a new `toAnimationFrames` function that converts interpolation functions written in this style `(t, values, decimal) => { ... }` to work in `BatchSpringEasing`._ 
+> e.g.
+>
+> ```ts
+> import { BatchSpringEasing, toAnimationFrames, toFixed, scale, limit } from "spring-easing";
+> 
+> function interpolateNumber(t: number, values: number[], decimal = 3) {
+>   // nth index
+>   const n = values.length - 1;
+> 
+>   // The current index given t
+>   const i = limit(Math.floor(t * n), 0, n - 1);
+> 
+>   const start = values[i];
+>   const end = values[i + 1];
+>   const progress = (t - i / n) * n;
+> 
+>   return toFixed(scale(progress, start, end), decimal);
+> }
+> 
+> function interpolatePixels(t: number, values: number[], decimal = 3) { 
+>   const result = interpolateNumber(t, values, decimal);
+>   return `${result}px`;
+> }
+> 
+> BatchSpringEasing(
+>   [0, 250], 
+>   'spring', 
+>   toAnimationFrames(interpolatePixels)
+> );
+> ```
+> 
 
 > **`NEW`** _Optimized perf. of spring generation w/ help from [@jakearchibald](https://twitter.com/jaffathecake)_
 
@@ -451,11 +522,11 @@ Each parameter comes with these defaults
 | damping   | `10`          |
 | velocity  | `0`           |
 
-To understand what each of the parameters of `SpringEasing` mean and how they work I suggest looking through the [SpringEasing API Documentation](https://spring-easing.okikio.dev/modules.html#SpringEasing)
+To understand what each of the parameters of `SpringEasing` mean and how they work I suggest looking through the [SpringEasing API Documentation](https://spring-easing.okikio.dev/functions/springeasing)
 
-> _**Note:** the return value of the `SpringEasing` function is actually `[Array of keyframes , duration]`, in that order._
+> _**Note:** the return value of the `SpringEasing` function is actually `[Array of keyframes, duration]`, in that order._
 
-For a full understanding of what is happening in the library out the [API site](https://spring-easing.okikio.dev/modules.html) for detailed API documentation.
+For a full understanding of what is happening in the library, pleace check out the [API site](https://spring-easing.okikio.dev/modules) for detailed API documentation.
 
 ## Browser Support
 
