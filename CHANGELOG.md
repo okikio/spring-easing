@@ -1,3 +1,11 @@
+## [2.3.1](https://github.com/okikio/spring-easing/compare/v2.3.0...v2.3.1) (2023-05-14)
+
+
+### Bug Fixes
+
+* deno not showing docs ([6d260c4](https://github.com/okikio/spring-easing/commit/6d260c4b298e49829d2026eb00a1ffc6ce8ca541))
+* git syslink issue with src/README.md [skip ci] ([42df16d](https://github.com/okikio/spring-easing/commit/42df16d8881d914d9403c6a38938a289f932aff9))
+
 # [2.3.0](https://github.com/okikio/spring-easing/compare/v2.2.0...v2.3.0) (2023-05-14)
 
 
