@@ -1,0 +1,52 @@
+# spec: https://semantic-release.gitbook.io/semantic-release/usage/configuration
+
+branches: ['main']
+plugins:
+  # Determine the type of release by analyzing commits.
+  # ie: Major, Minor or Patch
+  - - "@semantic-release/commit-analyzer"
+    - preset: conventionalcommits
+      releaseRules:
+        - { breaking: true, release: major }
+        - { revert: true, release: patch }
+        - { type: feat, release: minor }
+        - { type: fix, release: patch }
+        - { type: perf, release: patch }
+        - { type: docs, release: patch }
+        - { type: refactor, release: patch }
+        - { type: style, release: patch }
+        - { type: build, release: patch }
+        - { type: ci, release: patch }
+        - { type: test, release: patch }
+        - { type: update, release: patch }
+
+  # Generate CHANGELOG.md
+  - - "@semantic-release/release-notes-generator"
+    - preset: conventionalcommits
+      presetConfig:
+        # spec: https://github.com/conventional-changelog/conventional-changelog-config-spec/tree/master/versions/2.1.0
+        types:
+          - { type: feat, section: "Features" }
+          - { type: fix, section: "Bug Fixes" }
+          - { type: chore, section: "Misc" }
+          - { type: docs, section: "Misc" }
+          - { type: style, section: "Improvements" }
+          - { type: refactor, section: "Improvements" }
+          - { type: perf, section: "Improvements" }
+          - { type: test, section: "Automation" }
+          - { type: ci, section: "Automation" }
+          - { type: build, section: "Automation" }
+          - { type: update, section: "Automation" }
+          
+  - "@semantic-release/changelog"
+
+  # Commit CHANGELOG.md back to repo
+  - - "@semantic-release/git"
+    - assets: ["CHANGELOG.md", "lib/**", "src/**"]
+      message: "chore(release): update changelog ${nextRelease.version} [skip ci]\n\n${nextRelease.notes}"
+
+  # Create new github release
+  - "@semantic-release/github"
+
+  # Create new npm release
+  - "@semantic-release/npm"

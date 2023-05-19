@@ -1,6 +1,6 @@
 {
   "name": "spring-easing",
-  "version": "2.3.0",
+  "version": "2.3.1",
   "type": "module",
   "sideEffects": false,
   "description": "Quick and easy spring animations. Works with other animation libraries (animejs, framer motion, motion one, @okikio/animate, etc...) or the Web Animation API (WAAPI).",
@@ -45,26 +45,6 @@
     "pre-release": "pnpm test:run && pnpm build && pnpm typedoc",
     "semantic-release": "semantic-release"
   },
-  "release": {
-    "branches": [
-      "main"
-    ],
-    "plugins": [
-      "@semantic-release/commit-analyzer",
-      "@semantic-release/release-notes-generator",
-      "@semantic-release/changelog",
-      [
-        "@semantic-release/github",
-        {
-          "assets": [
-            "lib/**"
-          ]
-        }
-      ],
-      "@semantic-release/git",
-      "@semantic-release/npm"
-    ]
-  },
   "changelog": {
     "repo": "spring-easing",
     "labels": {
@@ -95,7 +75,7 @@
     "framer-motion",
     "motion-one",
     "@okikio/animate",
-    "web-animation-aPI",
+    "web-animation-api",
     "waapi",
     "linear-easing",
     "css-spring-easing",
