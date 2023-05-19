@@ -91,8 +91,8 @@
     "framer-motion",
     "motion-one",
     "@okikio/animate",
-    "Web-Animation-API",
-    "WAAPI",
+    "web-animation-aPI",
+    "waapi",
     "linear-easing",
     "css-spring-easing",
     "custom-easing"
