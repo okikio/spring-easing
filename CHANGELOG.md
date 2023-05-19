@@ -1,3 +1,16 @@
+## [2.3.3](https://github.com/okikio/spring-easing/compare/v2.3.2...v2.3.3) (2023-05-19)
+
+
+### Bug Fixes
+
+* **docs:** fix spring-easing deno link ([2d6b527](https://github.com/okikio/spring-easing/commit/2d6b52780bec5d822bf8e4d24f64bcc046ac5fa8))
+
+
+### Misc
+
+* **gh-bot:** :rocket: build types, api & library files ([fe1cdce](https://github.com/okikio/spring-easing/commit/fe1cdce920bdbd91827f94fc9bbe0db9e180beac))
+* **gh-bot:** :rocket: release ([9904633](https://github.com/okikio/spring-easing/commit/99046331759a8b69f4e710523d0047b7289dfd50))
+
 ## [2.3.2](https://github.com/okikio/spring-easing/compare/v2.3.1...v2.3.2) (2023-05-19)
 
 
