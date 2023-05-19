@@ -112,14 +112,14 @@
     "@commitlint/config-conventional": "^17.6.3",
     "@semantic-release/changelog": "^6.0.3",
     "@semantic-release/git": "^10.0.1",
-    "@types/node": "^20.1.4",
+    "@types/node": "^20.2.1",
     "@types/web": "^0.0.99",
     "esbuild": "^0.17.19",
     "esno": "^0.16.3",
     "fast-glob": "^3.2.12",
     "hastscript": "^7.2.0",
     "husky": "^8.0.3",
-    "pnpm": "^8.5.0",
+    "pnpm": "^8.5.1",
     "rehype-accessible-emojis": "^0.3.2",
     "rehype-external-links": "^2.1.0",
     "rehype-parse": "^8.0.4",
@@ -133,8 +133,8 @@
     "typedoc-plugin-mdn-links": "^3.0.3",
     "typescript": "^5.0.4",
     "unified": "^10.1.2",
-    "vite": "^4.3.5",
+    "vite": "^4.3.8",
     "vite-plugin-dts": "^2.3.0",
-    "vitest": "^0.31.0"
+    "vitest": "^0.31.1"
   }
 }
