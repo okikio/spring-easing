@@ -1,3 +1,22 @@
+## [2.3.2](https://github.com/okikio/spring-easing/compare/v2.3.1...v2.3.2) (2023-05-19)
+
+
+### Bug Fixes
+
+* publish changes ([32395a4](https://github.com/okikio/spring-easing/commit/32395a462f48d359304344087a37c391b30b03ed))
+
+
+### Misc
+
+* add links to deno [skip ci] ([e92c170](https://github.com/okikio/spring-easing/commit/e92c170f6ba099a51e6485f8175d2582af0fe393))
+* fix broken links & add CSSSpringEasing to demo [skip ci] ([02eb310](https://github.com/okikio/spring-easing/commit/02eb3105a22133df7b1a1dc422313fc28669f13b))
+* fix format issues in package.json ([bcd3581](https://github.com/okikio/spring-easing/commit/bcd35817ea0219f2acdbb8bf4f6bf526c3d627b4))
+* **gh-bot:** :rocket: build types, api & library files ([d252bec](https://github.com/okikio/spring-easing/commit/d252bec9790117c151e7043aa02889f06d577610))
+* **gh-bot:** :rocket: build types, api & library files ([9e4713f](https://github.com/okikio/spring-easing/commit/9e4713fe6169b48bb8dacacba01194e2eb367e62))
+* **gh-bot:** :rocket: release ([0af56b5](https://github.com/okikio/spring-easing/commit/0af56b5948e3f850d3b4e0b9832501e47b101482))
+* npm keywords should be lowercase ([b053491](https://github.com/okikio/spring-easing/commit/b05349132d769a96920ed326a6c5f3d4cff01b8d))
+* update deps ([0d31b4f](https://github.com/okikio/spring-easing/commit/0d31b4fc3b333e15bb5588669f21adcb84e5f334))
+
 ## [2.3.1](https://github.com/okikio/spring-easing/compare/v2.3.0...v2.3.1) (2023-05-14)
 
 
