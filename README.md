@@ -4,7 +4,7 @@
 
 <!-- ![](https://deno.bundlejs.com/badge?q=spring-easing) -->
 
-[NPM](https://www.npmjs.com/package/spring-easing) <span style="padding-inline: 1rem">|</span> [Deno](https://deno.land/x/codepoint_iterator) <span style="padding-inline: 1rem">|</span> [GitHub](https://github.com/okikio/spring-easing#readme) <span style="padding-inline: 1rem">|</span> [Docs](https://spring-easing.okikio.dev) <span style="padding-inline: 1rem">|</span> [License](#license)
+[NPM](https://www.npmjs.com/package/spring-easing) <span style="padding-inline: 1rem">|</span> [Deno](https://deno.land/x/spring_easing) <span style="padding-inline: 1rem">|</span> [GitHub](https://github.com/okikio/spring-easing#readme) <span style="padding-inline: 1rem">|</span> [Docs](https://spring-easing.okikio.dev) <span style="padding-inline: 1rem">|</span> [License](#license)
 
 Quick and easy spring animations. Works with other animation libraries ([gsap](https://greensock.com/), [animejs](https://animejs.com/), [@okikio/animate](http://npmjs.com/@okikio/animate), [motion one](https://motion.dev/), [framer motion](https://www.framer.com/docs/animation/), etc...) or the [Web Animation API (WAAPI)](https://developer.mozilla.org/en-US/docs/Web/API/Web_Animations_API/Using_the_Web_Animations_API), you can learn more in the [Usage](#use-with-animation-libraries) section.
 
