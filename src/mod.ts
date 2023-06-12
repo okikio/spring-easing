@@ -1,10 +1,22 @@
 // Adapted from https://github.com/okikio/native/blob/726b26bc3f7a84d2750aa2ffc13572a2a4de905c/packages/animate/src/custom-easing.ts, which is licensed under the MIT license.
 // If the above file is removed or modified, you can access the original state in the following GitHub Gist: https://gist.github.com/okikio/bed53ed621cb7f60e9a8b1ef92897471
-import { getUnit, isNumberLike, limit, scale, toFixed } from "./utils.ts"; 
+import type { TypeSimpleFrameFunction } from "./simple.ts";
+import { 
+  SimpleSpringFrame, 
+  SimpleSpringInFrame, 
+  SimpleSpringInOutFrame, 
+  SimpleSpringOutFrame, 
+  SimpleSpringOutInFrame,
+} from "./simple.ts";
 
+import { interpolateComplex } from "./interpolate.ts";
+import { limit } from "./utils.ts"; 
+
+export * from "./simple.ts";
 export * from "./utils.ts";
 export * from "./batch.ts";
 export * from "./optimize.ts";
+export * from "./interpolate.ts";
 export * from "./css-linear-easing.ts";
 
 /**
@@ -268,130 +280,13 @@ export const SpringInOutFrame = EaseInOut(SpringFrame);
 export const SpringOutInFrame = EaseOutIn(SpringFrame);
 
 /**
- * Given an Array of numbers, estimate the resulting number, at a `t` value between 0 to 1
-
- * Basic interpolation works by scaling `t` from 0 - 1, to some start number and end number, in this case lets use
- * 0 as our start number and 100 as our end number, so, basic interpolation would interpolate between 0 to 100.
-
- * If we use a `t` of 0.5, the interpolated value between 0 to 100, is 50.
- * {@link interpolateNumber} takes it further, by allowing you to interpolate with more than 2 values,
- * it allows for multiple values.
- * E.g. Given an Array of values [0, 100, 0], and a `t` of 0.5, the interpolated value would become 100.
-
- * Based on d3.interpolateBasis [https://github.com/d3/d3-interpolate#interpolateBasis],
- * check out the link above for more detail.
- * 
- * @param t A number between 0 to 1
- * @param values Array of numbers to interpolate between
- * @param decimal How many decimals should the interpolated value have
- * @return Interpolated number at instant `t`
- *
- * @source Source code of `interpolateNumber`
-*/
-export function interpolateNumber(t: number, values: number[], decimal = 3) {
-  // nth index
-  const n = values.length - 1;
-
-  // The current index given t
-  const i = limit(Math.floor(t * n), 0, n - 1);
-
-  const start = values[i];
-  const end = values[i + 1];
-  const progress = (t - i / n) * n;
-
-  return toFixed(scale(progress, start, end), decimal);
-}
-
-/** 
- * Given an Array of values, find a value using `t` (which goes from 0 to 1), by
- * using `t` to estimate the index of said value in the array of `values` 
-
- * This is meant for interplolating strings that aren't number-like
-
- * @param t A number between 0 to 1
- * @param values Array of numbers to interpolate between
- * @return Interpolated numbers at different instances
-
- * @source Source code of `interpolateSequence`
-*/
-export function interpolateSequence<T>(
-  t: number,
-  values: T[]
-) {
-  // nth index
-  const n = values.length - 1;
-
-  // limit `t`, to a min of 0 and a max of 1
-  t = limit(t, 0, 1);
-
-  // The current index given t
-  const i = Math.round(t * n);
-  return values[i];
-}
-
-/**
- * Alias of {@link interpolateSequence}
- * @deprecated please use {@link interpolateSequence}, it's the same functionality but different name
- */
-export const interpolateUsingIndex = interpolateSequence;
-
-/** 
- * Functions the same way {@link interpolateNumber} works.
- * Convert strings to numbers, and then interpolates the numbers,
- * at the end if there are units on the first value in the `values` array,
- * it will use that unit for the interpolated result.
- * Make sure to read {@link interpolateNumber}.
- * 
- * @source Source code of `interpolateString`
-*/
-export function interpolateString(
-  t: number,
-  values: (string | number)[],
-  decimal = 3
-) {
-  let units = "";
-
-  // If the first value looks like a number with a unit
-  if (isNumberLike(values[0])) units = getUnit(values[0]);
-  return (
-    interpolateNumber(
-      t,
-      values.map((v) => (typeof v === "number" ? v : parseFloat(v))),
-      decimal
-    ) + units
-  );
-}
-
-/**
- * Interpolates all types of values including number, and string values. 
- * Make sure to read {@link interpolateNumber}, {@link interpolateString} and {@link interpolateSequence}.
- * 
- * @source Source code of `interpolateComplex`
-*/
-export function interpolateComplex<T>(
-  t: number,
-  values: T[],
-  decimal = 3
-) {
-  // Interpolate numbers
-  const isNumber = values.every((v) => typeof v === "number");
-  if (isNumber) return interpolateNumber(t, values as number[], decimal);
-
-  // Interpolate strings with numbers, e.g. "5px"
-  const isLikeNumber = values.every((v) => isNumberLike(v as string));
-  if (isLikeNumber)
-    return interpolateString(t, values as (number | string)[], decimal);
-
-  // Interpolate pure strings and/or other type of values, e.g. "inherit", "solid", etc...
-  return interpolateSequence<T>(t, values);
-}
-
-/**
  * The array frame function format for easings,
  * @example
  * `[SpringFrame, mass, stiffness, damping, velocity]`
+ * @example
+ * `[SimpleSpringFrame, bounce, velocity]`
  */
-export type TypeArrayFrameFunctionFormat = [TypeFrameFunction, ...number[]];
+export type TypeArrayFrameFunctionFormat = [TypeFrameFunction | TypeSimpleFrameFunction, ...number[]];
 
 /**
  * The list of spring easing functions
@@ -402,6 +297,12 @@ export let EasingFunctions = {
   "spring-out": SpringOutFrame,
   "spring-in-out": SpringInOutFrame,
   "spring-out-in": SpringOutInFrame,
+
+  "simple-spring": SimpleSpringFrame,
+  "simple-spring-in": SimpleSpringInFrame,
+  "simple-spring-out": SimpleSpringOutFrame,
+  "simple-spring-in-out": SimpleSpringInOutFrame,
+  "simple-spring-out-in": SimpleSpringOutInFrame,
 };
 
 export let EasingFunctionKeys = Object.keys(EasingFunctions);
@@ -409,7 +310,7 @@ export let EasingFunctionKeys = Object.keys(EasingFunctions);
 /**
  * Allows you to register new easing functions
  */
-export function registerEasingFunction<T extends string>(key: T, fn?: TypeFrameFunction) {
+export function registerEasingFunction<T extends string>(key: T, fn?: TypeFrameFunction | TypeSimpleFrameFunction) {
   EasingFunctions = { ...EasingFunctions, [key]: fn };
   EasingFunctionKeys = Object.keys(EasingFunctions);
 }
@@ -417,7 +318,7 @@ export function registerEasingFunction<T extends string>(key: T, fn?: TypeFrameF
 /**
  * Allows you to register multiple new easing functions
  */
-export function registerEasingFunctions<T extends Record<string, TypeFrameFunction>>(obj: T) {
+export function registerEasingFunctions<T extends Record<string, TypeFrameFunction | TypeSimpleFrameFunction>>(obj: T) {
   EasingFunctions = { ...EasingFunctions, ...obj };
   EasingFunctionKeys = Object.keys(EasingFunctions);
 }
@@ -431,6 +332,13 @@ export function registerEasingFunctions<T extends Record<string, TypeFrameFuncti
  * * `"spring-in-out(mass, stiffness, damping, velocity)"`
  * * `"spring-out-in(mass, stiffness, damping, velocity)"`
  * `[SpringFrame, mass, stiffness, damping, velocity]`
+ * @example
+ * * `"simple-spring(mbounce, velocity)"`
+ * * `"simple-spring-in(mbounce, velocity)"`
+ * * `"simple-spring-out(bounce, velocity)"`
+ * * `"simple-spring-in-out(bounce, velocity)"`
+ * * `"simple-spring-out-in(bounce, velocity)"`
+ * `[SimpleSpringFrame, bounce, velocity]`
  */
 export type TypeEasings = `${keyof typeof EasingFunctions}` | `${keyof typeof EasingFunctions}(${string})` | (string & {}) | TypeArrayFrameFunctionFormat;
 
@@ -447,9 +355,11 @@ export type TypeEasingOptions = {
   /**
    * By default, Spring Easing support easings in the form,
    *
-   * | constant   | accelerate         | decelerate     | accelerate-decelerate | decelerate-accelerate |
-   * | :--------- | :----------------- | :------------- | :-------------------- | :-------------------- |
-   * |            | spring / spring-in | spring-out     | spring-in-out         | spring-out-in         |
+   * | constant | accelerate                       | decelerate        | accelerate-decelerate | decelerate-accelerate |
+   * | :------- | :------------------------------- | :---------------- | :-------------------- | :-------------------- |
+   * |          | spring / spring-in               | spring-out        | spring-in-out         | spring-out-in         |
+   * |          | simple-spring / simple-spring-in | simple-spring-out | simple-spring-in-out  | simple-spring-out-in  |
+
    *
    * All **Spring** easing's can be configured using theses parameters,
    *
@@ -463,6 +373,18 @@ export type TypeEasingOptions = {
    * | mass      | `1`           |
    * | stiffness | `100`         |
    * | damping   | `10`          |
+   * | velocity  | `0`           |
+   * 
+   * or
+   * 
+   * `"simple-spring-*(bounce, velocity)"` or
+   * `[SimpleSpringOutFrame, bounce, velocity]`
+   *
+   * Each parameter comes with these defaults
+   *
+   * | Parameter | Default Value |
+   * | --------- | ------------- |
+   * | bounce    | `0.15`        |
    * | velocity  | `0`           |
    */
   easing?: TypeEasings;

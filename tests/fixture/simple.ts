@@ -1,12 +1,12 @@
-import { SpringFrame, SpringInFrame, SpringOutFrame, SpringInOutFrame, SpringOutInFrame } from "../../src/mod";
-import { SpringEasing, CSSSpringEasing, limit, registerEasingFunctions } from "../../src/mod";
+import { SimpleSpringFrame, SimpleSpringInFrame, SimpleSpringOutFrame, SimpleSpringInOutFrame, SimpleSpringOutInFrame } from "../../src/mod";
+import { SimpleSpringEasing, CSSSimpleSpringEasing, limit, registerEasingFunctions } from "../../src/mod";
 
 const frameFunctions = [
-  ["SpringFrame", SpringFrame], 
-  ["SpringInFrame", SpringInFrame], 
-  ["SpringOutFrame", SpringOutFrame], 
-  ["SpringInOutFrame", SpringInOutFrame], 
-  ["SpringOutInFrame", SpringOutInFrame]
+  ["SimpleSpringFrame", SimpleSpringFrame], 
+  ["SimpleSpringInFrame", SimpleSpringInFrame], 
+  ["SimpleSpringOutFrame", SimpleSpringOutFrame], 
+  ["SimpleSpringInOutFrame", SimpleSpringInOutFrame], 
+  ["SimpleSpringOutInFrame", SimpleSpringOutInFrame]
 ] as const;
 
 const div = document.createElement("div");
@@ -30,8 +30,8 @@ frameFunctions.forEach(([_, frameFn], i) => {
     el
   })
 
-  let [translateX, duration] = SpringEasing([25, 250], {
-    easing: [frameFn, 1, 100, 7, 4],
+  let [translateX, duration] = SimpleSpringEasing([25, 250], {
+    easing: [frameFn, 1, 4],
     decimal: 3
   });
 
@@ -48,8 +48,8 @@ frameFunctions.forEach(([_, frameFn], i) => {
 frameFunctions.forEach(([_, frameFn], i) => {
   const el: HTMLElement = document.querySelector(`.linear-easing-${i + 1}`)!;
 
-  let [easing, duration] = CSSSpringEasing({
-    easing: [frameFn, 1, 100, 7, 4],
+  let [easing, duration] = CSSSimpleSpringEasing({
+    easing: [frameFn, 1, 4],
     decimal: 3
   });
 
@@ -89,8 +89,8 @@ registerEasingFunctions({
   }
 });
 
-CSSSpringEasing("bounce") // 
-CSSSpringEasing("elastic(1, 0.5)") // 
+CSSSimpleSpringEasing("bounce") // 
+CSSSimpleSpringEasing("elastic(1, 0.5)") // 
 
 const customFrameFunctions = [
   ['Bounce', 'bounce'],
@@ -117,7 +117,7 @@ customFrameFunctions.forEach(([_, frameFn], i) => {
     el
   })
 
-  let [translateX] = SpringEasing([25, 250], {
+  let [translateX] = SimpleSpringEasing([25, 250], {
     easing: frameFn,
     decimal: 3
   });
@@ -135,7 +135,7 @@ customFrameFunctions.forEach(([_, frameFn], i) => {
 customFrameFunctions.forEach(([_, frameFn], i) => {
   const el: HTMLElement = document.querySelector(`.linear-custom-easing${i + 1}`)!;
 
-  let [easing] = CSSSpringEasing({
+  let [easing] = CSSSimpleSpringEasing({
     easing: frameFn,
     decimal: 3
   });

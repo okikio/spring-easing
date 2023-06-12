@@ -1,4 +1,4 @@
-import { EasingOptions, GenerateSpringFrames } from "./mod.ts";
+import { EasingOptions, SimpleEasingOptions, GenerateSimpleSpringFrames, GenerateSpringFrames } from "./mod.ts";
 import { getOptimizedPoints } from "./optimize.ts";
 import { limit, scale } from "./utils.ts";
 
@@ -151,12 +151,13 @@ export function getLinearSyntax(
 /**
  * CSS Spring Easing has 4 properties they are `easing` (all spring frame functions are supported), `numPoints` (the size of the Array the frmae function should create), `decimal` (the number of decimal places of the values within said Array) and `quality` (how detailed/smooth the spring easing should be).
  *
- * | Properties  | Default Value           |
- * | ----------- | ----------------------- |
- * | `easing`    | `spring(1, 100, 10, 0)` |
- * | `numPoints` | `50`                    |
- * | `decimal`   | `3`                     |
- * | `quality`   | `0.85`                  |
+ * | Properties  | Default Value                                       |
+ * | ----------- | --------------------------------------------------- |
+ * | `easing`    | `spring(1, 100, 10, 0)` or `simple-spring(0.15, 0)` |
+ * | `numPoints` | `50`                                                |
+ * | `decimal`   | `3`                                                 |
+ * | `quality`   | `0.85`                                              |
+ * 
  */
 export type TypeCSSEasingOptions = {
   /**
@@ -283,7 +284,137 @@ export function CSSSpringEasing(
   const len = frames.length;
   const pts = frames.map((x, i) => [i / (len - 1), x]) as [x: number, y: number][];
   const optimizedPoints = getOptimizedPoints(pts, simplify, optionsObj.decimal);
-  
+
+  return [
+    getLinearSyntax(optimizedPoints, optionsObj.decimal).join(", "),
+    duration
+  ] as const;
+}
+
+/**
+ * Generates a string that represents a set of values used with the linear-easing function to replicate spring animations, 
+ * you can check out the linear-easing playground here https://linear-easing-generator.netlify.app/ 
+ * Or check out a demo on Codepen https://codepen.io/okikio/pen/vYVaEXM
+ * 
+ * CSS Spring Easing has 4 properties they are `easing` (all spring frame functions are supported), `numPoints` (the size of the Array the frmae function should create), `decimal` (the number of decimal places of the values within said Array) and `quality` (how detailed/smooth the spring easing should be)..
+ *
+ * | Properties  | Default Value                                       |
+ * | ----------- | --------------------------------------------------- |
+ * | `easing`    | `spring(1, 100, 10, 0)` or `simple-spring(0.15, 0)` |
+ * | `numPoints` | `50`                                                |
+ * | `decimal`   | `3`                                                 |
+ * | `quality`   | `0.85`                                              |
+ *
+ * By default, CSS Spring Easing support easings in the form,
+ *
+ * | constant | accelerate                       | decelerate        | accelerate-decelerate | decelerate-accelerate |
+ * | :------- | :------------------------------- | :---------------- | :-------------------- | :-------------------- |
+ * |          | spring / spring-in               | spring-out        | spring-in-out         | spring-out-in         |
+ * |          | simple-spring / simple-spring-in | simple-spring-out | simple-spring-in-out  | simple-spring-out-in  |
+ *
+ * All **Spring** easing's can be configured using theses parameters,
+ *
+ * `spring-*(mass, stiffness, damping, velocity)`
+ *
+ * Each parameter comes with these defaults
+ *
+ * | Parameter | Default Value |
+ * | --------- | ------------- |
+ * | mass      | `1`           |
+ * | stiffness | `100`         |
+ * | damping   | `10`          |
+ * | velocity  | `0`           |
+ * 
+ * or
+ *
+ * | Parameter | Default Value |
+ * | --------- | ------------- |
+ * | bounce    | `0.15`        |
+ * | velocity  | `0`           |
+ *
+ *  e.g.
+ *  ```ts
+ *  import { CSSSimpleSpringEasing } from "spring-easing";
+ *
+ *  // Note: this is the return value of {@link CSSSimpleSpringEasing}, you don't need the object to get this format
+ *  let [easing, duration] = CSSSimpleSpringEasing({
+ *    easing: "simple-spring-out-in(0.15, 0)",
+ *
+ *    // You can change the size of Array for the SimpleSpringEasing function to generate
+ *    numPoints: 200,
+ *
+ *    // The number of decimal places to round, final values in the generated Array
+ *      // This option doesn't exist on {@link GenerateSimpleSpringFrames}
+ *    decimal: 5,
+ * 
+ *    // How detailed/smooth the spring easing should be 
+ *    // 0 means not smooth at all (shorter easing string)
+ *    // 1 means as smooth as possible (this means the resulting easing will be a longer string)
+ *    quality: 0.85
+ *  });
+ *
+ *  document.querySelector("div").animate({
+ *    translate: ["0px", "250px"],
+ *    rotate: ["0turn", "1turn", "0turn", "0.5turn"],
+ * }, {
+ *    easing: `linear(${easing})`,
+ *
+ *    // The optimal duration for this specific spring
+ *    duration
+ *  })
+ *  ```
+ * 
+ * > **Note**: You can also use custom easings if you so wish e.g.
+ * ```ts
+ * import { CSSSimpleSpringEasing, limit, registerEasingFunctions } from "spring-easing";
+ * 
+ * registerEasingFunctions({
+ *   bounce: t => {
+ *     let pow2: number, b = 4;
+ *     while (t < ((pow2 = Math.pow(2, --b)) - 1) / 11) { }
+ *     return 1 / Math.pow(4, 3 - b) - 7.5625 * Math.pow((pow2 * 3 - 2) / 22 - t, 2);
+ *   },
+ *   elastic: (t, params: number[] = []) => {
+ *     let [amplitude = 1, period = 0.5] = params;
+ *     const a = limit(amplitude, 1, 10);
+ *     const p = limit(period, 0.1, 2);
+ *     if (t === 0 || t === 1) return t;
+ *     return -a *
+ *         Math.pow(2, 10 * (t - 1)) *
+ *         Math.sin(
+ *             ((t - 1 - (p / (Math.PI * 2)) * Math.asin(1 / a)) * (Math.PI * 2)) / p
+ *         );
+ *   }
+ * });
+ * 
+ * CSSSimpleSpringEasing("bounce") // ["0, 0.013, 0.015, 0.006 8.1%, 0.046 13.5%, 0.06, 0.062, 0.054, 0.034, 0.003 27%, 0.122, 0.206 37.8%, 0.232, 0.246, 0.25, 0.242, 0.224, 0.194, 0.153 56.8%, 0.039 62.2%, 0.066 64.9%, 0.448 73%, 0.646, 0.801 83.8%, 0.862 86.5%, 0.95 91.9%, 0.978, 0.994, 1", ...]
+ * CSSSimpleSpringEasing("elastic(1, 0.5)") // ["0, -0.005 32.4%, 0.006 40.5%, 0.034 51.4%, 0.033 56.8%, 0.022, 0.003, -0.026 64.9%, -0.185 75.7%, -0.204, -0.195, -0.146, -0.05, 0.1 89.2%, 1", ...]
+ * ```
+ * 
+ * @param options Accepts {@link TypeCSSEasingOptions EasingOptions} or {@link TypeCSSEasingOptions["easing"] array frame functions}
+ * @return 
+ * ```ts
+ * // A string with the values that represent said spring animation using the linear-easing function
+ * // Total duration (in milliseconds) required to create a smooth spring animation
+ * [
+ *   "0, 0.583 5.4%, 0.669, 0.601, 0.502, 0.451, 0.457 18.9%, 0.512 24.3%, 0.516 27%, ...0.417 94.6%, 1", 
+ *   3500 
+ * ]
+ * ```
+ */
+export function CSSSimpleSpringEasing(
+  options: TypeCSSEasingOptions | TypeCSSEasingOptions["easing"] = {}
+) {
+  const optionsObj = SimpleEasingOptions(options);
+  const [frames, duration] = GenerateSimpleSpringFrames(optionsObj);
+
+  const quality = limit((optionsObj.quality ?? 0.85), 0, 1);
+  const simplify = scale(1 - quality, 0, 0.025);
+
+  const len = frames.length;
+  const pts = frames.map((x, i) => [i / (len - 1), x]) as [x: number, y: number][];
+  const optimizedPoints = getOptimizedPoints(pts, simplify, optionsObj.decimal);
+
   return [
     getLinearSyntax(optimizedPoints, optionsObj.decimal).join(", "),
     duration
