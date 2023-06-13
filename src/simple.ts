@@ -5,92 +5,73 @@ import type {
 } from "./mod.ts";
 
 import { 
-  FramePtsCache,
   EaseInOut, 
   EaseOut, 
   EaseOutIn, 
   EasingFunctions, 
-  interpolateComplex, 
-  parseEasingParameters 
+  SpringFrame,
 } from "./mod.ts";
 
-import { INFINITE_LOOP_LIMIT, EasingDurationCache, SpringFrame } from "./mod.ts";
+import {
+  FramePtsCache,
+  interpolateComplex,
+  parseEasingParameters,
+} from "./mod.ts";
+
+import { INFINITE_LOOP_LIMIT, EasingDurationCache } from "./mod.ts";
 
 /**
  * The format to use when defining simple custom frame functions
  * An example of a frame function is {@link SimpleSpringFrame}
  *
+ * _**Note**: Be very careful of only setting some of the spring parameters, it can cause errors if you are not careful_
+ *
  * @source Source code of `TypeFrameFunction`
  *
  * @param t time value between 0 & 1
  * @param spring-parameters
- *  - bounce = number between -1 & 1 representing bounciness of the spring
+ *  - dampingRatio = This is a dimensionless measure of damping in the system. It is the ratio of the damping coefficient in the system to the critical damping coefficient. It defines how oscillations in the system decay after a disturbance:
+ *    - dampingRatio < 1: the system is underdamped, it oscillates and slowly returns to equilibrium.
+ *    - dampingRatio = 1: the system is critically damped, it returns to equilibrium as quickly as possible without oscillating.
+ *    - dampingRatio > 1: the system is overdamped, it returns to equilibrium without oscillating but slower than the critically damped case.
+ *  - response = - This is the time taken for the system to cover a significant portion of the total distance to the new state (without taking into account any oscillation that may happen). Essentially, it controls the speed of the animation.
  *  - velocity = initial velocity of spring
- * @param duration (optional) the maximum duration (in milliseconds) required for a spring (with its specified spring parameters) to reach a resting position. It's used to ensure the progress of all spring frames put together are smooth
+ *  - mass = mass of object
+ * 
  * @returns a single frame of the frame function at the time specified
- *
- * _**Note**: Be very careful of only setting some of the spring parameters, it can cause errors if you are not careful_
  */
 export type TypeSimpleFrameFunction = (
   t: number,
-  [bounce, velocity]?: number[],
-  duration?: number,
+  [dampingRatio, response, velocity, mass]?: number[],
+  _?: number
 ) => number;
 
 /**
- 
-mass = 1
-
-stiffness = (2π ÷ duration)^2
-
-damping = 1 - 4π × bounce ÷ duration, bounce ≥ 0
-          4π ÷ (duration + 4π × bounce), bounce < 0
-
- */
-/**
- * Generates a single frame of the spring easing at a specific time between (0 to 1) with the spring parameters given [bounce, velocity]
+ * Spring easing function.
  *
- * @param t time value between 0 & 1
- * @param spring-parameters (limit of -1 to 1)
- *  - bounce = number between -1 & 1 representing bounciness of the spring
+ * @param t - The current time (or position) of the animation, from 0 to 1.
+ * @param spring-parameters
+ *  - dampingRatio = This is a dimensionless measure of damping in the system. It is the ratio of the damping coefficient in the system to the critical damping coefficient. It defines how oscillations in the system decay after a disturbance:
+ *    - dampingRatio < 1: the system is underdamped, it oscillates and slowly returns to equilibrium.
+ *    - dampingRatio = 1: the system is critically damped, it returns to equilibrium as quickly as possible without oscillating.
+ *    - dampingRatio > 1: the system is overdamped, it returns to equilibrium without oscillating but slower than the critically damped case.
+ *  - response = - This is the time taken for the system to cover a significant portion of the total distance to the new state (without taking into account any oscillation that may happen). Essentially, it controls the speed of the animation.
  *  - velocity = initial velocity of spring
- * @param duration (optional) the maximum duration (in milliseconds) required for a spring (with its specified spring parameters) to reach a resting position. It's used to ensure the progress of all spring frames put together are smooth
- * @returns a single frame of the spring easing at the time specified
+ *  - mass = mass of object
  *
- * _**Note**: Be very careful of only setting some of the spring parameters, it can cause errors if you are not careful_
- *
- * Based on [animejs](https://github.com/juliangarnier/anime/blob/3ebfd913a04f7dc59cc3d52e38275272a5a12ae6/src/index.js#L76)
+ * @returns The eased value.
  */
 export const SimpleSpringFrame: TypeSimpleFrameFunction = (
   t,
-  [bounce = 0.15, velocity = 0] = [],
-  duration,
-) => {
-  const durationMs = duration // (duration / 1000);// duration ? (duration * t) / 1000 : t;
+  [dampingRatio = 0.5, response = 0.1, velocity = 0, mass = 1] = [],
+) => {  
+  // Calculate stiffness from response
+  const stiffness = 1 / Math.pow(response, 2) * mass;
 
-  // const w0 = Math.sqrt(stiffness / mass);
-  // const zeta = damping / (2 * Math.sqrt(stiffness * mass));
-  // const wd = zeta < 1 ? w0 * Math.sqrt(1 - zeta * zeta) : 0;
-  // const b = zeta < 1 ? (zeta * w0 + -velocity) / wd : -velocity + w0;
+  // Calculate damping from dampingRatio and stiffness
+  const damping = dampingRatio * 2 * Math.sqrt(stiffness * mass);
 
-  // let position = duration ? (duration * t) / 1000 : t;
-  // if (zeta < 1) {
-  //   position = Math.exp(-position * zeta * w0)
-  //     * (Math.cos(wd * position) + b * Math.sin(wd * position));
-  // } else {
-  //   position = (1 + b * position) * Math.exp(-position * w0);
-  // }
-  // if (bounce ≥ 0) 1 - 4π × bounce ÷ duration = 10
-  // if (bounce < 0) 4π ÷ (duration + 4π × bounce)
-  // 
-
-  const mass = 1;
-  const stiffness = Math.pow((Math.PI * 2) / durationMs, 2);
-  const damping = bounce >= 0 ? 
-    1 - ((4 * Math.PI) * bounce / durationMs) :
-    (4 * Math.PI) / (durationMs + (4 * Math.PI) * bounce);
-
-  return SpringFrame(t, [mass, stiffness, damping, velocity], durationMs);
+  return SpringFrame(t, [mass, stiffness, damping, velocity]); // , response * 1000
 }
 
 /**
@@ -98,8 +79,14 @@ export const SimpleSpringFrame: TypeSimpleFrameFunction = (
  * This functions returns the optimal duration to create a smooth springy animation based on physics
 
  * @param spring-parameters
- *  - bounce = number between -1 & 1 representing bounciness of the spring
+ *  - dampingRatio = This is a dimensionless measure of damping in the system. It is the ratio of the damping coefficient in the system to the critical damping coefficient. It defines how oscillations in the system decay after a disturbance:
+ *    - dampingRatio < 1: the system is underdamped, it oscillates and slowly returns to equilibrium.
+ *    - dampingRatio = 1: the system is critically damped, it returns to equilibrium as quickly as possible without oscillating.
+ *    - dampingRatio > 1: the system is overdamped, it returns to equilibrium without oscillating but slower than the critically damped case.
+ *  - response = - This is the time taken for the system to cover a significant portion of the total distance to the new state (without taking into account any oscillation that may happen). Essentially, it controls the speed of the animation.
  *  - velocity = initial velocity of spring
+ *  - mass = mass of object
+ * 
  * @return [
  *  `duration` = optimal duration for spring easings, 
  *  `numPoints` = optimal num. of points to represent the spring easing
@@ -110,9 +97,15 @@ export const SimpleSpringFrame: TypeSimpleFrameFunction = (
  * Based on a function of the same name in [animejs](https://github.com/juliangarnier/anime/blob/3ebfd913a04f7dc59cc3d52e38275272a5a12ae6/src/index.js#L100)
  * Thanks [@jakearchibald](https://gist.github.com/jakearchibald/9718d1b81fe62d1c9655de65df1a55a4) for the help optimizing this
  */
-export function getSimpleSpringDuration([bounce, velocity]: number[] = []) {
-  let params = [bounce, velocity];
-  let easing = `simple-spring-${params}`;
+export function getSimpleSpringDuration([dampingRatio = 0.5, response = 0.1, velocity = 0, mass = 1]: number[] = []): number[] {
+  // Calculate stiffness from response
+  const stiffness = 1 / Math.pow(response, 2) * mass;
+
+  // Calculate damping from dampingRatio and stiffness
+  const damping = dampingRatio * 2 * Math.sqrt(stiffness * mass);
+
+  let params = [mass, stiffness, damping, velocity];
+  let easing = `${params}`;
   if (EasingDurationCache.has(easing))
     return EasingDurationCache.get(easing)!;
 
@@ -131,7 +124,7 @@ export function getSimpleSpringDuration([bounce, velocity]: number[] = []) {
    * duration of the spring
   */
   while (++numPoints < INFINITE_LOOP_LIMIT) {
-    if (Math.abs(1 - SimpleSpringFrame(time, params)) < 0.001) {
+    if (Math.abs(1 - SpringFrame(time, params)) < 0.001) {
 
       let restStart = time;
       let restSteps = 1;
@@ -139,7 +132,7 @@ export function getSimpleSpringDuration([bounce, velocity]: number[] = []) {
       while (++numPoints < INFINITE_LOOP_LIMIT) {
         time += step;
 
-        if (Math.abs(1 - SimpleSpringFrame(time, params)) >= 0.001) break;
+        if (Math.abs(1 - SpringFrame(time, params)) >= 0.001) break;
         restSteps++;
 
         // Stop the animation once human eyes can no longer percieve the motion
@@ -203,8 +196,8 @@ export function SimpleEasingOptions<T extends TypeEasingOptions>(
 ) {
   const isEasing = typeof options === "string" || (Array.isArray(options) && typeof options[0] === "function");
   let {
-    easing = [SimpleSpringFrame, 0.15, 0],
-    numPoints = 38,
+    easing = [SimpleSpringFrame, 0.5, 0.1, 0, 1],
+    numPoints,
     decimal = 3,
     ...rest
   } = (isEasing ? { easing: options } : options) as T;
@@ -230,7 +223,7 @@ export function SimpleEasingOptions<T extends TypeEasingOptions>(
  * e.g.
  * ```ts
  * GenerateSimpleSpringFrames({
- *  easing: [SimpleSpringOutInFrame, 0.15, 0],
+ *  easing: [SimpleSpringOutInFrame, 0.5, 0.1, 0, 1],
  *  numPoints: 100
  * })
  * ```
@@ -241,7 +234,7 @@ export function SimpleEasingOptions<T extends TypeEasingOptions>(
  * 
  * Based on https://github.com/w3c/csswg-drafts/issues/229#issuecomment-861415901
  */
-export function GenerateSimpleSpringFrames(options: TypeEasingOptions = {}): [number[], number] {
+export function GenerateSimpleSpringFrames(options: TypeEasingOptions = {}) {
   let {
     easing,
     numPoints,
@@ -270,7 +263,7 @@ export function GenerateSimpleSpringFrames(options: TypeEasingOptions = {}): [nu
       return tempObj.get(frameFunction)!;
   }
 
-  const points: number[] = [];
+  const points: number[] = new Array(numPoints);
   for (let i = 0; i < numPoints; i++) {
     points[i] = frameFunction(i / (numPoints - 1), params, idealDuration);
   }
@@ -278,7 +271,7 @@ export function GenerateSimpleSpringFrames(options: TypeEasingOptions = {}): [nu
   const tempObj = FramePtsCache.has(key) ? FramePtsCache.get(key)! : new WeakMap();
   tempObj.set(frameFunction, [points, idealDuration]);
   FramePtsCache.set(key, tempObj);
-  return [points, idealDuration];
+  return [points, idealDuration] as const;
 }
 
 /**
@@ -286,32 +279,33 @@ export function GenerateSimpleSpringFrames(options: TypeEasingOptions = {}): [nu
  * To use this properly make sure to set the easing animation option to "linear".
  * Check out a demo of SpringEasing at <https://codepen.io/okikio/pen/MWEdzNg>
  *
- * SpringEasing has 3 properties they are `easing` (all the easings from {@link EasingFunctions} are supported on top of frame functions like SpringFrame, SpringFrameOut, etc..), `numPoints` (the size of the Array the frame function should create), and `decimal` (the number of decimal places of the values within said Array).
+ * SimpleSpringEasing has 3 properties they are `easing` (all the easings from {@link EasingFunctions} are supported on top of frame functions like SpringFrame, SpringFrameOut, etc..), `numPoints` (the size of the Array the frame function should create), and `decimal` (the number of decimal places of the values within said Array).
  *
- * | Properties  | Default Value           |
- * | ----------- | ----------------------- |
- * | `easing`    | `spring(1, 100, 10, 0)` |
- * | `numPoints` | `50`                    |
- * | `decimal`   | `3`                     |
+ * | Properties  | Default Value                                              |
+ * | ----------- | ---------------------------------------------------------- |
+ * | `easing`    | `simple-spring(0.5, 0.1, 0, 1)`                            |
+ * | `numPoints` | `50`                                                       |
+ * | `decimal`   | `3`                                                        |
  *
  * By default, Spring Easing support easings in the form,
  *
- * | constant   | accelerate         | decelerate     | accelerate-decelerate | decelerate-accelerate |
- * | :--------- | :----------------- | :------------- | :-------------------- | :-------------------- |      
- * |            | spring / spring-in | spring-out     | spring-in-out         | spring-out-in         |
+ * | constant | accelerate                       | decelerate        | accelerate-decelerate | decelerate-accelerate |
+ * | :------- | :------------------------------- | :---------------- | :-------------------- | :-------------------- |
+ * |          | simple-spring / simple-spring-in | simple-spring-out | simple-spring-in-out  | simple-spring-out-in  |
  *
  * All **Spring** easing's can be configured using theses parameters,
  *
- * `spring-*(mass, stiffness, damping, velocity)`
+ * `"simple-spring-*(dampingRatio, response, velocity, mass)"` or
+ * `[SimpleSpringOutFrame, dampingRatio, response, velocity, mass]`
  *
  * Each parameter comes with these defaults
  *
- * | Parameter | Default Value |
- * | --------- | ------------- |
- * | mass      | `1`           |
- * | stiffness | `100`         |
- * | damping   | `10`          |
- * | velocity  | `0`           |
+ * | Parameter.      | Default Value |
+ * | --------------- | ------------- |
+ * | dampingRatio    | `0.5`         |
+ * | response        | `0.1`         |
+ * | velocity        | `0`           |
+ * | mass            | `1`           |
  *
  *  e.g.
  *  ```ts
@@ -320,9 +314,9 @@ export function GenerateSimpleSpringFrames(options: TypeEasingOptions = {}): [nu
  *
  *  // Note: this is the return value of {@link SimpleSpringEasing} and {@link SimpleGenerateSpringFrames}, you don't need the object to get this format
  *  let [translateX, duration] = SimpleSpringEasing([0, 250], {
- *    easing: "simple-spring-out-in(1, 100, 10, 0)",
+ *    easing: "simple-spring-out-in(0.5, 0.1, 0, 1)",
  *
- *    // You can change the size of Array for the SpringEasing function to generate
+ *    // You can change the size of Array for the SimpleSpringEasing function to generate
  *    numPoints: 200,
  *
  *    // The number of decimal places to round, final values in the generated Array
@@ -337,7 +331,7 @@ export function GenerateSimpleSpringFrames(options: TypeEasingOptions = {}): [nu
  *    translateX,
  *
  *    // You can set the easing without an object
- *    rotate: SimpleSpringEasing(["0turn", 1, 0, 0.5], [SimpleSpringOutFrame, 0.15, 0])[0],
+ *    rotate: SimpleSpringEasing(["0turn", 1, 0, 0.5], [SimpleSpringOutFrame, 0.5, 0.1, 0, 1])[0],
  *
  *    // TIP... Use linear easing for the proper effect
  *    easing: "linear",

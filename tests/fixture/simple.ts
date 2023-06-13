@@ -1,8 +1,21 @@
-import { SimpleSpringFrame, SimpleSpringInFrame, SimpleSpringOutFrame, SimpleSpringInOutFrame, SimpleSpringOutInFrame } from "../../src/mod";
-import { SimpleSpringEasing, CSSSimpleSpringEasing, limit, registerEasingFunctions } from "../../src/mod";
+import { 
+  SimpleSpringFrame, 
+  SimpleSpringInFrame, 
+  SimpleSpringOutFrame, 
+  SimpleSpringInOutFrame,
+  SimpleSpringOutInFrame, 
+} from "../../src/mod";
+
+import { 
+  SimpleSpringEasing, 
+  CSSSimpleSpringEasing, 
+  registerEasingFunctions,
+  limit, 
+ } from "../../src/mod";
 
 const frameFunctions = [
-  ["SimpleSpringFrame", SimpleSpringFrame], 
+  ["SimpleSpringFrame", SimpleSpringFrame],
+  ["SimpleSpringInFrame", SimpleSpringInFrame], 
   ["SimpleSpringInFrame", SimpleSpringInFrame], 
   ["SimpleSpringOutFrame", SimpleSpringOutFrame], 
   ["SimpleSpringInOutFrame", SimpleSpringInOutFrame], 
@@ -31,7 +44,7 @@ frameFunctions.forEach(([_, frameFn], i) => {
   })
 
   let [translateX, duration] = SimpleSpringEasing([25, 250], {
-    easing: [frameFn, 1, 4],
+    easing: [frameFn, 0.35, 0.1],
     decimal: 3
   });
 
@@ -49,7 +62,7 @@ frameFunctions.forEach(([_, frameFn], i) => {
   const el: HTMLElement = document.querySelector(`.linear-easing-${i + 1}`)!;
 
   let [easing, duration] = CSSSimpleSpringEasing({
-    easing: [frameFn, 1, 4],
+    easing: [frameFn, 0.35, 0.1],
     decimal: 3
   });
 

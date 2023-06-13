@@ -1,13 +1,6 @@
 // Adapted from https://github.com/okikio/native/blob/726b26bc3f7a84d2750aa2ffc13572a2a4de905c/packages/animate/src/custom-easing.ts, which is licensed under the MIT license.
 // If the above file is removed or modified, you can access the original state in the following GitHub Gist: https://gist.github.com/okikio/bed53ed621cb7f60e9a8b1ef92897471
 import type { TypeSimpleFrameFunction } from "./simple.ts";
-import { 
-  SimpleSpringFrame, 
-  SimpleSpringInFrame, 
-  SimpleSpringInOutFrame, 
-  SimpleSpringOutFrame, 
-  SimpleSpringOutInFrame,
-} from "./simple.ts";
 
 import { interpolateComplex } from "./interpolate.ts";
 import { limit } from "./utils.ts"; 
@@ -284,7 +277,7 @@ export const SpringOutInFrame = EaseOutIn(SpringFrame);
  * @example
  * `[SpringFrame, mass, stiffness, damping, velocity]`
  * @example
- * `[SimpleSpringFrame, bounce, velocity]`
+ * `[SimpleSpringFrame, dampingRatio, response, velocity, mass]`
  */
 export type TypeArrayFrameFunctionFormat = [TypeFrameFunction | TypeSimpleFrameFunction, ...number[]];
 
@@ -297,12 +290,6 @@ export let EasingFunctions = {
   "spring-out": SpringOutFrame,
   "spring-in-out": SpringInOutFrame,
   "spring-out-in": SpringOutInFrame,
-
-  "simple-spring": SimpleSpringFrame,
-  "simple-spring-in": SimpleSpringInFrame,
-  "simple-spring-out": SimpleSpringOutFrame,
-  "simple-spring-in-out": SimpleSpringInOutFrame,
-  "simple-spring-out-in": SimpleSpringOutInFrame,
 };
 
 export let EasingFunctionKeys = Object.keys(EasingFunctions);
@@ -333,23 +320,23 @@ export function registerEasingFunctions<T extends Record<string, TypeFrameFuncti
  * * `"spring-out-in(mass, stiffness, damping, velocity)"`
  * `[SpringFrame, mass, stiffness, damping, velocity]`
  * @example
- * * `"simple-spring(mbounce, velocity)"`
- * * `"simple-spring-in(mbounce, velocity)"`
- * * `"simple-spring-out(bounce, velocity)"`
- * * `"simple-spring-in-out(bounce, velocity)"`
- * * `"simple-spring-out-in(bounce, velocity)"`
- * `[SimpleSpringFrame, bounce, velocity]`
+ * * `"simple-spring(dampingRatio, response, velocity, mass)"`
+ * * `"simple-spring-in(dampingRatio, response, velocity, mass)"`
+ * * `"simple-spring-out(dampingRatio, response, velocity, mass)"`
+ * * `"simple-spring-in-out(dampingRatio, response, velocity, mass)"`
+ * * `"simple-spring-out-in(dampingRatio, response, velocity, mass)"`
+ * `[SimpleSpringFrame, dampingRatio, response, velocity, mass]`
  */
 export type TypeEasings = `${keyof typeof EasingFunctions}` | `${keyof typeof EasingFunctions}(${string})` | (string & {}) | TypeArrayFrameFunctionFormat;
 
 /**
  * Spring Easing has 3 properties they are `easing` (all spring frame functions are supported), `numPoints` (the size of the Array the frmae function should create), and `decimal` (the number of decimal places of the values within said Array).
  *
- * | Properties  | Default Value           |
- * | ----------- | ----------------------- |
- * | `easing`    | `spring(1, 100, 10, 0)` |
- * | `numPoints` | `50`                    |
- * | `decimal`   | `3`                     |
+ * | Properties  | Default Value                                              |
+ * | ----------- | ---------------------------------------------------------- |
+ * | `easing`    | `spring(1, 100, 10, 0)` or `simple-spring(0.5, 0.1, 0, 1)` |
+ * | `numPoints` | `50`                                                       |
+ * | `decimal`   | `3`                                                        |
  */
 export type TypeEasingOptions = {
   /**
@@ -377,15 +364,17 @@ export type TypeEasingOptions = {
    * 
    * or
    * 
-   * `"simple-spring-*(bounce, velocity)"` or
-   * `[SimpleSpringOutFrame, bounce, velocity]`
+   * `"simple-spring-*(dampingRatio, response, velocity, mass)"` or
+   * `[SimpleSpringOutFrame, dampingRatio, response, velocity, mass]`
    *
    * Each parameter comes with these defaults
    *
-   * | Parameter | Default Value |
-   * | --------- | ------------- |
-   * | bounce    | `0.15`        |
-   * | velocity  | `0`           |
+   * | Parameter.      | Default Value |
+   * | --------------- | ------------- |
+   * | dampingRatio    | `0.5`         |
+   * | response        | `0.1`         |
+   * | velocity        | `0`           |
+   * | mass            | `1`           |
    */
   easing?: TypeEasings;
   numPoints?: number;
@@ -418,7 +407,7 @@ export function EasingOptions<T extends TypeEasingOptions>(
   const isEasing = typeof options === "string" || (Array.isArray(options) && typeof options[0] === "function");
   let {
     easing = [SpringFrame, 1, 100, 10, 0],
-    numPoints = 38,
+    numPoints,
     decimal = 3,
     ...rest
   } = (isEasing ? { easing: options } : options) as T;
@@ -449,8 +438,8 @@ export const FramePtsCache = new Map<string, WeakMap<Function, [number[], number
  * e.g.
  * ```ts
  * GenerateSpringFrames({
- *     easing: [SpringOutInFrame, 1, 100, 10, 0],
- *     numPoints: 100
+ *   easing: [SpringOutInFrame, 1, 100, 10, 0],
+ *   numPoints: 100
  * })
  * ```
  *
@@ -472,18 +461,6 @@ export function GenerateSpringFrames(options: TypeEasingOptions = {}): [number[]
         "[spring-easing] A frame function is required as the first element in the easing array, e.g. [SpringFrame, ...]",
       );
     }
-
-    // Be careful of only setting some of the spring parameters
-    // Due to custom easing support this leads to confusing warnings
-    // if (easing.length > 1 && easing.length < 5)
-    //   console.warn(`[spring-easing] Be careful of only setting some of the spring parameters, you've only set ${5 - easing.length} spring parameter(s). The easing works best in the format: \n* "spring-out(mass, stiffness, damping, velocity)" or \n* [SpringOutFrame, mass, stiffness, damping, velocity].`);
-
-    // if (easing.length > 5) {
-    //   console.warn(
-    //     `[spring-easing] You entered ${5 - easing.length
-    //     } more spring parameter(s) than necessary. The easing needs to be in the format: \n* "spring-out(mass, stiffness, damping, velocity)" or \n* [SpringOutFrame, mass, stiffness, damping, velocity].`,
-    //   );
-    // }
   } else {
     throw new Error(
       `[spring-easing] The easing needs to be in the format:  \n* "spring-out(mass, stiffness, damping, velocity)" or \n* [SpringOutFrame, mass, stiffness, damping, velocity], the easing recieved is "${easing}", [spring-easing] doesn't really know what to do with that.`,
@@ -551,14 +528,14 @@ export function GenerateSpringFrames(options: TypeEasingOptions = {}): [number[]
  *
  *  // Note: this is the return value of {@link SpringEasing} and {@link GenerateSpringFrames}, you don't need the object to get this format
  *  let [translateX, duration] = SpringEasing([0, 250], {
- *      easing: "spring-out-in(1, 100, 10, 0)",
+ *    easing: "spring-out-in(1, 100, 10, 0)",
  *
- *      // You can change the size of Array for the SpringEasing function to generate
- *      numPoints: 200,
+ *    // You can change the size of Array for the SpringEasing function to generate
+ *    numPoints: 200,
  *
- *      // The number of decimal places to round, final values in the generated Array
- *      // This option doesn't exist on {@link GenerateSpringFrames}
- *      decimal: 5,
+ *    // The number of decimal places to round, final values in the generated Array
+ *    // This option doesn't exist on {@link GenerateSpringFrames}
+ *    decimal: 5,
  *  });
  *
  *  anime({
