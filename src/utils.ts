@@ -1,3 +1,5 @@
+import { SpringFrame, TypeFrameFunction } from "./mod";
+
 /** 
  * If a value can be converted to a valid number, then it's most likely a number 
  *
@@ -50,3 +52,27 @@ export function getUnit(str: string | number) {
   return (str.toString()).replace(num.toString(), "");
 }
 
+/**
+ * Spring easing function.
+ *
+ * @param t - The current time (or position) of the animation, from 0 to 1.
+ * @param spring-parameters
+ *  - dampingRatio = This is a dimensionless measure of damping in the system. It is the ratio of the damping coefficient in the system to the critical damping coefficient. It defines how oscillations in the system decay after a disturbance:
+ *    - dampingRatio < 1: the system is underdamped, it oscillates and slowly returns to equilibrium.
+ *    - dampingRatio = 1: the system is critically damped, it returns to equilibrium as quickly as possible without oscillating.
+ *    - dampingRatio > 1: the system is overdamped, it returns to equilibrium without oscillating but slower than the critically damped case.
+ *  - response = - This is the time taken for the system to cover a significant portion of the total distance to the new state (without taking into account any oscillation that may happen). Essentially, it controls the speed of the animation.
+ *  - velocity = initial velocity of spring
+ *  - mass = mass of object
+ *
+ * @returns The eased value.
+ */
+export function fromNaturalParams([dampingRatio = 0.5, response = 0.1, velocity = 0, mass = 1]: number[] = []) {
+  // Calculate `stiffness` from `response`
+  const stiffness = 1 / Math.pow(response, 2) * mass;
+
+  // Calculate `damping` from `dampingRatio` and `stiffness`
+  const damping = dampingRatio * 2 * Math.sqrt(stiffness * mass);
+
+  return [mass, stiffness, damping, velocity];
+}

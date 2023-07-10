@@ -1,11 +1,8 @@
 // Adapted from https://github.com/okikio/native/blob/726b26bc3f7a84d2750aa2ffc13572a2a4de905c/packages/animate/src/custom-easing.ts, which is licensed under the MIT license.
 // If the above file is removed or modified, you can access the original state in the following GitHub Gist: https://gist.github.com/okikio/bed53ed621cb7f60e9a8b1ef92897471
-import type { TypeSimpleFrameFunction } from "./simple.ts";
-
 import { interpolateComplex } from "./interpolate.ts";
-import { limit } from "./utils.ts"; 
+import { fromNaturalParams, limit } from "./utils.ts"; 
 
-export * from "./simple.ts";
 export * from "./utils.ts";
 export * from "./batch.ts";
 export * from "./optimize.ts";
@@ -109,10 +106,7 @@ export const SpringFrame: TypeFrameFunction = (
 /**
  * Cache the durations at set easing parameters
  */
-export const EasingDurationCache: Map<
-  string,
-  [number, number]
-> = new Map();
+export const EasingDurationCache = new WeakMap<Function, Map<string, [number, number]>>();
 
 /**
  * The threshold for an infinite loop
@@ -140,12 +134,15 @@ export const INFINITE_LOOP_LIMIT = 100_000;
  * Based on a function of the same name in [animejs](https://github.com/juliangarnier/anime/blob/3ebfd913a04f7dc59cc3d52e38275272a5a12ae6/src/index.js#L100)
  * Thanks [@jakearchibald](https://gist.github.com/jakearchibald/9718d1b81fe62d1c9655de65df1a55a4) for the help optimizing this
  */
-export function getSpringDuration([mass, stiffness, damping, velocity]: number[] = []) {
-  let params = [mass, stiffness, damping, velocity];
-  let easing = `${params}`;
-  if (EasingDurationCache.has(easing)) 
-    return EasingDurationCache.get(easing)!;
+export function getSpringDuration(frameFunction: TypeFrameFunction = SpringFrame, params: number[] = []) {
+  const easing = JSON.stringify(params);
+  if (EasingDurationCache.has(frameFunction)) {
+    let tempObj = EasingDurationCache.get(frameFunction)!;
+    if (tempObj.has(easing))
+      return tempObj.get(easing)!;
+  }
 
+  const tempObj = EasingDurationCache.has(frameFunction) ? EasingDurationCache.get(frameFunction)! : new Map<string, [number, number]>();
   const step = 1 / 6;
   let time = 0;
 
@@ -176,7 +173,8 @@ export function getSpringDuration([mass, stiffness, damping, velocity]: number[]
         // it's the same reason `restStart` is used instead of time
         if (restSteps === 16) {
           const duration = restStart * 1000;
-          EasingDurationCache.set(easing, [duration, numPoints]);
+          tempObj.set(easing, [duration, numPoints]);
+          EasingDurationCache.set(frameFunction, tempObj);
           return [duration, numPoints]; 
         }
       }
@@ -186,7 +184,8 @@ export function getSpringDuration([mass, stiffness, damping, velocity]: number[]
   }
 
   const duration = time * 1000;
-  EasingDurationCache.set(easing, [duration, numPoints]);
+  tempObj.set(easing, [duration, numPoints]);
+  EasingDurationCache.set(frameFunction, tempObj);
   return [duration, numPoints];
 }
 
@@ -202,8 +201,11 @@ export function getSpringDuration([mass, stiffness, damping, velocity]: number[]
  * the source, I'll gladily place a link to the original source here
  */
 export function EaseOut(frame: TypeFrameFunction): TypeFrameFunction {
-  return (t, params = [], duration) => 1 - frame(1 - t, params, duration);
-}
+  return function (t, params = [], duration) {
+    const easedT = t * (2 - t);  // quadratic ease-out
+    return frame(easedT, params, duration);
+  };
+} 
 
 /**
  * Creates a new frame function where each frame follows an `in-out` pattern
@@ -216,9 +218,8 @@ export function EaseOut(frame: TypeFrameFunction): TypeFrameFunction {
  */
 export function EaseInOut(frame: TypeFrameFunction): TypeFrameFunction {
   return function (t, params = [], duration) {
-    return t < 0.5
-      ? frame(t * 2, params, duration) / 2
-      : 1 - frame(t * -2 + 2, params, duration) / 2;
+    const easedT = t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t;  // quadratic ease-in-out
+    return frame(easedT, params, duration);
   }
 }
 
@@ -233,9 +234,8 @@ export function EaseInOut(frame: TypeFrameFunction): TypeFrameFunction {
  */
 export function EaseOutIn(frame: TypeFrameFunction): TypeFrameFunction {
   return function (t, params = [], duration) {
-    return t < 0.5
-      ? (1 - frame(1 - t * 2, params, duration)) / 2
-      : (frame(t * 2 - 1, params, duration) + 1) / 2;
+    const easedT = t < 0.5 ? -(Math.sqrt(1 - (2 * t) ** 2) - 1) / 2 : (Math.sqrt(1 - (2 * t - 2) ** 2) + 1) / 2;  // circular ease-out-in
+    return frame(easedT, params, duration);
   }
 }
 
@@ -272,14 +272,39 @@ export const SpringInOutFrame = EaseInOut(SpringFrame);
  */
 export const SpringOutInFrame = EaseOutIn(SpringFrame);
 
+
+/**
+ * Spring easing parameter functions.
+ *
+ * @param t - The current time (or position) of the animation, from 0 to 1.
+ * @param spring-parameters
+ *  - dampingRatio = This is a dimensionless measure of damping in the system. It is the ratio of the damping coefficient in the system to the critical damping coefficient. It defines how oscillations in the system decay after a disturbance:
+ *    - dampingRatio < 1: the system is underdamped, it oscillates and slowly returns to equilibrium.
+ *    - dampingRatio = 1: the system is critically damped, it returns to equilibrium as quickly as possible without oscillating.
+ *    - dampingRatio > 1: the system is overdamped, it returns to equilibrium without oscillating but slower than the critically damped case.
+ *  - response = - This is the time taken for the system to cover a significant portion of the total distance to the new state (without taking into account any oscillation that may happen). Essentially, it controls the speed of the animation.
+ *  - velocity = initial velocity of spring
+ *  - mass = mass of object
+ *
+ * @returns The eased value.
+ */
+export function UseNaturalParameters(frame: TypeFrameFunction): TypeFrameFunction {
+  return function (t, params = [], duration) {
+    console.log({
+      natural: fromNaturalParams(params)
+    })
+    return frame(t, [1, 100, 7, 4], duration);
+  };
+}
+
 /**
  * The array frame function format for easings,
  * @example
  * `[SpringFrame, mass, stiffness, damping, velocity]`
  * @example
- * `[SimpleSpringFrame, dampingRatio, response, velocity, mass]`
+ * `[SpringFrame, dampingRatio, response, velocity, mass]`
  */
-export type TypeArrayFrameFunctionFormat = [TypeFrameFunction | TypeSimpleFrameFunction, ...number[]];
+export type TypeArrayFrameFunctionFormat = [TypeFrameFunction, ...number[]];
 
 /**
  * The list of spring easing functions
@@ -297,7 +322,7 @@ export let EasingFunctionKeys = Object.keys(EasingFunctions);
 /**
  * Allows you to register new easing functions
  */
-export function registerEasingFunction<T extends string>(key: T, fn?: TypeFrameFunction | TypeSimpleFrameFunction) {
+export function registerEasingFunction<T extends string>(key: T, fn?: TypeFrameFunction) {
   EasingFunctions = { ...EasingFunctions, [key]: fn };
   EasingFunctionKeys = Object.keys(EasingFunctions);
 }
@@ -305,7 +330,7 @@ export function registerEasingFunction<T extends string>(key: T, fn?: TypeFrameF
 /**
  * Allows you to register multiple new easing functions
  */
-export function registerEasingFunctions<T extends Record<string, TypeFrameFunction | TypeSimpleFrameFunction>>(obj: T) {
+export function registerEasingFunctions<T extends Record<string, TypeFrameFunction>>(obj: T) {
   EasingFunctions = { ...EasingFunctions, ...obj };
   EasingFunctionKeys = Object.keys(EasingFunctions);
 }
@@ -320,12 +345,12 @@ export function registerEasingFunctions<T extends Record<string, TypeFrameFuncti
  * * `"spring-out-in(mass, stiffness, damping, velocity)"`
  * `[SpringFrame, mass, stiffness, damping, velocity]`
  * @example
- * * `"simple-spring(dampingRatio, response, velocity, mass)"`
- * * `"simple-spring-in(dampingRatio, response, velocity, mass)"`
- * * `"simple-spring-out(dampingRatio, response, velocity, mass)"`
- * * `"simple-spring-in-out(dampingRatio, response, velocity, mass)"`
- * * `"simple-spring-out-in(dampingRatio, response, velocity, mass)"`
- * `[SimpleSpringFrame, dampingRatio, response, velocity, mass]`
+ * * `"spring(dampingRatio, response, velocity, mass)"`
+ * * `"spring-in(dampingRatio, response, velocity, mass)"`
+ * * `"spring-out(dampingRatio, response, velocity, mass)"`
+ * * `"spring-in-out(dampingRatio, response, velocity, mass)"`
+ * * `"spring-out-in(dampingRatio, response, velocity, mass)"`
+ * `[SpringFrame, dampingRatio, response, velocity, mass]`
  */
 export type TypeEasings = `${keyof typeof EasingFunctions}` | `${keyof typeof EasingFunctions}(${string})` | (string & {}) | TypeArrayFrameFunctionFormat;
 
@@ -334,7 +359,7 @@ export type TypeEasings = `${keyof typeof EasingFunctions}` | `${keyof typeof Ea
  *
  * | Properties  | Default Value                                              |
  * | ----------- | ---------------------------------------------------------- |
- * | `easing`    | `spring(1, 100, 10, 0)` or `simple-spring(0.5, 0.1, 0, 1)` |
+ * | `easing`    | `spring(1, 100, 10, 0)` or `spring(0.5, 0.1, 0, 1)`        |
  * | `numPoints` | `50`                                                       |
  * | `decimal`   | `3`                                                        |
  */
@@ -345,7 +370,6 @@ export type TypeEasingOptions = {
    * | constant | accelerate                       | decelerate        | accelerate-decelerate | decelerate-accelerate |
    * | :------- | :------------------------------- | :---------------- | :-------------------- | :-------------------- |
    * |          | spring / spring-in               | spring-out        | spring-in-out         | spring-out-in         |
-   * |          | simple-spring / simple-spring-in | simple-spring-out | simple-spring-in-out  | simple-spring-out-in  |
 
    *
    * All **Spring** easing's can be configured using theses parameters,
@@ -364,8 +388,8 @@ export type TypeEasingOptions = {
    * 
    * or
    * 
-   * `"simple-spring-*(dampingRatio, response, velocity, mass)"` or
-   * `[SimpleSpringOutFrame, dampingRatio, response, velocity, mass]`
+   * `"spring-*(dampingRatio, response, velocity, mass)"` or
+   * `[SpringOutFrame, dampingRatio, response, velocity, mass]`
    *
    * Each parameter comes with these defaults
    *
@@ -414,9 +438,10 @@ export function EasingOptions<T extends TypeEasingOptions>(
 
   if (typeof easing === "string") {
     const frameFunction = EasingFunctions[
-      easing.replace(/(\(|\s).+/, "") // Remove the function brackets and parameters
+      easing
+        .replace(/(\(|\s).+/, "") // Remove the function brackets and parameters
         .toLowerCase()
-      .trim() as keyof typeof EasingFunctions
+        .trim() as keyof typeof EasingFunctions
     ];
 
     const params = parseEasingParameters(easing);
@@ -429,7 +454,7 @@ export function EasingOptions<T extends TypeEasingOptions>(
 /**
  * Cache generated frame points for commonly used easing functions
  */
-export const FramePtsCache = new Map<string, WeakMap<Function, [number[], number]>>();
+export const FramePtsCache = new WeakMap<Function, Map<string, [number[], number]>>();
 
 /**
  * Create an Array of frames using the easing specified.
@@ -440,6 +465,17 @@ export const FramePtsCache = new Map<string, WeakMap<Function, [number[], number
  * GenerateSpringFrames({
  *   easing: [SpringOutInFrame, 1, 100, 10, 0],
  *   numPoints: 100
+ * })
+ * ```
+ * 
+ * OR
+ * 
+ * e.g.
+ * ```ts
+ * GenerateSpringFrames({
+ *  type: "natural",
+ *  easing: [SpringOutInFrame, 0.5, 0.1, 0, 1],
+ *  numPoints: 100
  * })
  * ```
  *
@@ -468,14 +504,14 @@ export function GenerateSpringFrames(options: TypeEasingOptions = {}): [number[]
   }
 
   let [frameFunction, ...params] = easing as TypeArrayFrameFunctionFormat;
-  const [idealDuration, idealNumPoints = 38] = getSpringDuration(params);
+  const [idealDuration, idealNumPoints = 38] = getSpringDuration(frameFunction, params);
   if (!numPoints) numPoints = idealNumPoints;
 
-  const key = `${params},${numPoints}`;
-  if (FramePtsCache.has(key)) {
-    let tempObj = FramePtsCache.get(key)!;
-    if (tempObj.has(frameFunction))
-      return tempObj.get(frameFunction)!;
+  const key = JSON.stringify([params, numPoints]);
+  if (FramePtsCache.has(frameFunction)) {
+    let tempObj = FramePtsCache.get(frameFunction)!;
+    if (tempObj.has(key))
+      return tempObj.get(key)!;
   }
 
   const points: number[] = [];
@@ -483,9 +519,9 @@ export function GenerateSpringFrames(options: TypeEasingOptions = {}): [number[]
     points[i] = frameFunction(i / (numPoints - 1), params, idealDuration);
   }
 
-  const tempObj = FramePtsCache.has(key) ? FramePtsCache.get(key)! : new WeakMap();
-  tempObj.set(frameFunction, [points, idealDuration]);
-  FramePtsCache.set(key, tempObj);
+  const tempObj = FramePtsCache.has(frameFunction) ? FramePtsCache.get(frameFunction)! : new Map();
+  tempObj.set(key, [points, idealDuration]);
+  FramePtsCache.set(frameFunction, tempObj);
   return [points, idealDuration];
 }
 

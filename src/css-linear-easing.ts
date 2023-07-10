@@ -1,4 +1,4 @@
-import { EasingOptions, SimpleEasingOptions, GenerateSimpleSpringFrames, GenerateSpringFrames } from "./mod.ts";
+import { EasingOptions, GenerateSpringFrames } from "./mod.ts";
 import { getOptimizedPoints } from "./optimize.ts";
 import { limit, scale } from "./utils.ts";
 
@@ -402,21 +402,3 @@ export function CSSSpringEasing(
  * ]
  * ```
  */
-export function CSSSimpleSpringEasing(
-  options: TypeCSSEasingOptions | TypeCSSEasingOptions["easing"] = {}
-) {
-  const optionsObj = SimpleEasingOptions(options);
-  const [frames, duration] = GenerateSimpleSpringFrames(optionsObj);
-
-  const quality = limit((optionsObj.quality ?? 0.85), 0, 1);
-  const simplify = scale(1 - quality, 0, 0.025);
-
-  const len = frames.length;
-  const pts = frames.map((x, i) => [i / (len - 1), x]) as [x: number, y: number][];
-  const optimizedPoints = getOptimizedPoints(pts, simplify, optionsObj.decimal);
-
-  return [
-    getLinearSyntax(optimizedPoints, optionsObj.decimal).join(", "),
-    duration
-  ] as const;
-}
